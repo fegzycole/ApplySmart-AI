@@ -1,0 +1,1 @@
+export { PricingPageHeader } from "./PricingPageHeader";

@@ -1,0 +1,151 @@
+# ====================
+# DEPENDENCIES
+# ====================
+node_modules/
+jspm_packages/
+bower_components/
+
+# ====================
+# BUILD OUTPUT
+# ====================
+dist/
+dist-ssr/
+build/
+*.local
+
+# ====================
+# VITE
+# ====================
+.vite/
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+# ====================
+# ENVIRONMENT & SECRETS
+# ====================
+.env
+.env.local
+.env.production
+.env.development
+.env.test
+.env.*.local
+*.env
+
+# Keep example files
+!.env.example
+
+# ====================
+# LOGS
+# ====================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ====================
+# EDITOR & IDE
+# ====================
+# VS Code
+.vscode/
+!.vscode/extensions.json
+*.code-workspace
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# WebStorm
+.idea/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# ====================
+# TESTING
+# ====================
+coverage/
+.nyc_output/
+*.lcov
+.jest/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+
+# ====================
+# NEXT.JS (if used)
+# ====================
+.next/
+out/
+
+# ====================
+# REACT (if using CRA)
+# ====================
+.eslintcache
+
+# ====================
+# TYPESCRIPT
+# ====================
+*.tsbuildinfo
+next-env.d.ts
+
+# ====================
+# CACHE
+# ====================
+.cache/
+.parcel-cache/
+.turbo/
+.vercel/
+
+# ====================
+# STORYBOOK
+# ====================
+storybook-static/
+
+# ====================
+# PACKAGE MANAGERS
+# ====================
+# Yarn
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# pnpm
+.pnpm-debug.log*
+.pnpm-store/
+
+# ====================
+# OS
+# ====================
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ====================
+# TEMPORARY FILES
+# ====================
+*.tmp
+*.temp
+.cache
+.temp/
+tmp/
+
+# ====================
+# MISC
+# ====================
+.eslintcache
+.stylelintcache
+*.local

@@ -1,0 +1,130 @@
+# ====================
+# MAVEN
+# ====================
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# ====================
+# GRADLE (if used)
+# ====================
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# ====================
+# SPRING BOOT
+# ====================
+spring-shell.log
+.springBeans
+.factorypath
+
+# ====================
+# COMPILED CLASS FILES
+# ====================
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Compiled class file
+out/
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+# ====================
+# LOGS
+# ====================
+logs/
+*.log
+log/
+*.log.*
+
+# ====================
+# ENVIRONMENT & SECRETS
+# ====================
+application-local.yml
+application-local.properties
+application-secrets.yml
+application-secrets.properties
+.env
+.env.local
+
+# ====================
+# IDE
+# ====================
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Eclipse
+.classpath
+.project
+.settings/
+.metadata
+bin/
+tmp/
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# ====================
+# DATABASE
+# ====================
+*.db
+*.sqlite
+*.sqlite3
+h2/
+data/
+
+# ====================
+# GENERATED FILES
+# ====================
+*.orig
+*.rej
+hs_err_pid*
+replay_pid*
+
+# ====================
+# TESTING
+# ====================
+test-output/
+*.hprof
+
+# ====================
+# BACKUP FILES
+# ====================
+*.bak
+*~
+*.backup
+*.old
+
+# ====================
+# OS
+# ====================
+.DS_Store
+Thumbs.db

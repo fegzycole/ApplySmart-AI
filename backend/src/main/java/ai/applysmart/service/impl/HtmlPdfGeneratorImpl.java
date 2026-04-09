@@ -1,0 +1,249 @@
+package ai.applysmart.service.impl;
+
+import ai.applysmart.dto.resume.ResumeLayoutInfo;
+import ai.applysmart.service.HtmlPdfGenerator;
+import com.openhtmltopdf.pdfboxout.PdfRendererBuilder;
+import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Service;
+
+import java.io.ByteArrayOutputStream;
+
+@Slf4j
+@Service
+public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
+
+    @Override
+    public byte[] generateStyledPdf(String markdownContent, ResumeLayoutInfo layoutInfo) {
+        try {
+            // Convert markdown to HTML
+            String html = markdownToHtml(markdownContent, layoutInfo);
+
+            // Convert HTML to PDF
+            return htmlToPdf(html);
+        } catch (Exception e) {
+            log.error("Error generating styled PDF", e);
+            throw new RuntimeException("Failed to generate styled PDF", e);
+        }
+    }
+
+    private String markdownToHtml(String markdown, ResumeLayoutInfo layout) {
+        StringBuilder html = new StringBuilder();
+
+        html.append("<!DOCTYPE html>");
+        html.append("<html>");
+        html.append("<head>");
+        html.append("<meta charset=\"UTF-8\"/>");
+        html.append("<style>");
+        html.append(generateCSS(layout));
+        html.append("</style>");
+        html.append("</head>");
+        html.append("<body>");
+
+        // Process markdown line by line
+        String[] lines = markdown.split("\\n");
+        boolean inList = false;
+
+        for (String line : lines) {
+            line = line.trim();
+
+            if (line.isEmpty()) {
+                if (inList) {
+                    html.append("</ul>");
+                    inList = false;
+                }
+                html.append("<br/>");
+                continue;
+            }
+
+            // Main heading (# Name)
+            if (line.startsWith("# ")) {
+                if (inList) {
+                    html.append("</ul>");
+                    inList = false;
+                }
+                html.append("<h1>").append(escapeHtml(line.substring(2))).append("</h1>");
+            }
+            // Section headers (## SECTION)
+            else if (line.startsWith("## ")) {
+                if (inList) {
+                    html.append("</ul>");
+                    inList = false;
+                }
+                html.append("<h2>").append(escapeHtml(line.substring(3))).append("</h2>");
+            }
+            // Bullet points
+            else if (line.startsWith("- ") || line.startsWith("* ") || line.startsWith("• ")) {
+                if (!inList) {
+                    html.append("<ul>");
+                    inList = true;
+                }
+                String content = line.substring(2);
+                html.append("<li>").append(processInlineFormatting(content)).append("</li>");
+            }
+            // Regular paragraphs
+            else {
+                if (inList) {
+                    html.append("</ul>");
+                    inList = false;
+                }
+                html.append("<p>").append(processInlineFormatting(line)).append("</p>");
+            }
+        }
+
+        if (inList) {
+            html.append("</ul>");
+        }
+
+        html.append("</body>");
+        html.append("</html>");
+
+        return html.toString();
+    }
+
+    private String processInlineFormatting(String text) {
+        // Process **bold**
+        text = text.replaceAll("\\*\\*(.+?)\\*\\*", "<strong>$1</strong>");
+        // Process *italic*
+        text = text.replaceAll("(?<!\\*)\\*(?!\\*)(.+?)(?<!\\*)\\*(?!\\*)", "<em>$1</em>");
+        return escapeHtml(text);
+    }
+
+    private String escapeHtml(String text) {
+        // Don't escape if it already contains HTML tags
+        if (text.contains("<strong>") || text.contains("<em>")) {
+            return text;
+        }
+        return text.replace("&", "&amp;")
+                   .replace("<", "&lt;")
+                   .replace(">", "&gt;")
+                   .replace("\"", "&quot;");
+    }
+
+    private String generateCSS(ResumeLayoutInfo layout) {
+        String primaryFont = layout.getPrimaryFont() != null ? layout.getPrimaryFont() : "Arial";
+        String accentColor = layout.getAccentColor() != null ? layout.getAccentColor() : "#2c3e50";
+        String primaryColor = layout.getPrimaryColor() != null ? layout.getPrimaryColor() : "#000000";
+        double fontSize = layout.getAverageFontSize() != null ? layout.getAverageFontSize() : 11.0;
+        double headingSize = layout.getHeadingFontSize() != null ? layout.getHeadingFontSize() : 16.0;
+
+        // Build comprehensive font stack with fallbacks
+        String fontStack = buildFontStack(primaryFont);
+
+        log.info("Generating PDF with font: {} (stack: {}), size: {}pt, accent color: {}",
+                 primaryFont, fontStack, fontSize, accentColor);
+
+        return String.format(
+            "@page { size: A4; margin: 0.75in; } " +
+            "* { " +
+            "  -fs-font-subset: complete-font; " +
+            "} " +
+            "body { " +
+            "  font-family: %s; " +
+            "  font-size: %.1fpt; " +
+            "  line-height: 1.4; " +
+            "  color: %s; " +
+            "  margin: 0; " +
+            "  padding: 0; " +
+            "} " +
+            "h1 { " +
+            "  font-family: %s; " +
+            "  font-size: %.1fpt; " +
+            "  font-weight: bold; " +
+            "  color: %s; " +
+            "  margin: 0 0 8pt 0; " +
+            "  padding: 0; " +
+            "  text-align: center; " +
+            "} " +
+            "h2 { " +
+            "  font-family: %s; " +
+            "  font-size: %.1fpt; " +
+            "  font-weight: bold; " +
+            "  color: %s; " +
+            "  margin: 12pt 0 6pt 0; " +
+            "  padding-bottom: 3pt; " +
+            "  border-bottom: 1.5pt solid %s; " +
+            "  text-transform: uppercase; " +
+            "} " +
+            "p { " +
+            "  margin: 4pt 0; " +
+            "  padding: 0; " +
+            "  font-family: %s; " +
+            "} " +
+            "ul { " +
+            "  margin: 4pt 0; " +
+            "  padding-left: 20pt; " +
+            "} " +
+            "li { " +
+            "  margin: 2pt 0; " +
+            "  padding: 0; " +
+            "  font-family: %s; " +
+            "} " +
+            "strong { " +
+            "  font-weight: bold; " +
+            "  color: %s; " +
+            "} " +
+            "br { " +
+            "  line-height: 0.5; " +
+            "}",
+            fontStack, fontSize, primaryColor,
+            fontStack, headingSize, accentColor,
+            fontStack, fontSize * 1.2, accentColor, accentColor,
+            fontStack,
+            fontStack,
+            accentColor
+        );
+    }
+
+    private String buildFontStack(String primaryFont) {
+        // Build a comprehensive font fallback stack
+        StringBuilder fontStack = new StringBuilder();
+
+        // Add the primary font
+        if (primaryFont != null && !primaryFont.isEmpty()) {
+            fontStack.append("'").append(primaryFont).append("', ");
+        }
+
+        // Add similar fonts as fallbacks based on the primary font
+        if (primaryFont != null) {
+            if (primaryFont.contains("Calibri")) {
+                fontStack.append("'Calibri', 'Candara', 'Segoe UI', ");
+            } else if (primaryFont.contains("Times") || primaryFont.contains("Garamond")) {
+                fontStack.append("'Times New Roman', 'Georgia', 'Garamond', serif, ");
+            } else if (primaryFont.contains("Helvetica") || primaryFont.contains("Arial")) {
+                fontStack.append("'Arial', 'Helvetica', ");
+            } else if (primaryFont.contains("Verdana") || primaryFont.contains("Tahoma")) {
+                fontStack.append("'Verdana', 'Tahoma', ");
+            } else if (primaryFont.contains("Courier")) {
+                fontStack.append("'Courier New', 'Courier', monospace, ");
+            } else if (primaryFont.contains("Georgia")) {
+                fontStack.append("'Georgia', 'Times New Roman', serif, ");
+            } else if (primaryFont.contains("Trebuchet")) {
+                fontStack.append("'Trebuchet MS', 'Lucida Grande', ");
+            }
+        }
+
+        // Add generic fallbacks
+        fontStack.append("'Helvetica Neue', Helvetica, Arial, sans-serif");
+
+        return fontStack.toString();
+    }
+
+    private byte[] htmlToPdf(String html) throws Exception {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            // Clean HTML with Jsoup
+            Document document = Jsoup.parse(html);
+            document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
+            String xhtml = document.html();
+
+            // Build PDF
+            PdfRendererBuilder builder = new PdfRendererBuilder();
+            builder.withHtmlContent(xhtml, null);
+            builder.toStream(outputStream);
+            builder.run();
+
+            return outputStream.toByteArray();
+        }
+    }
+}

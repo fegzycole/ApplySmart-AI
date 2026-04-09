@@ -1,0 +1,1 @@
+export { CoverLetterGeneratorPage } from './CoverLetterGeneratorPage';

@@ -1,0 +1,77 @@
+const API_BASE = '/api/v1';
+
+export const API_ENDPOINTS = {
+  AUTH: {
+    LOGIN: `${API_BASE}/auth/login`,
+    SIGNUP: `${API_BASE}/auth/signup`,
+    LOGOUT: `${API_BASE}/auth/logout`,
+    RESET_PASSWORD: `${API_BASE}/auth/reset-password`,
+    REFRESH_TOKEN: `${API_BASE}/auth/refresh`,
+    CURRENT_USER: `${API_BASE}/auth/me`,
+    OAUTH_GOOGLE: `${API_BASE}/auth/oauth2/authorize/google`,
+    OAUTH_GITHUB: `${API_BASE}/auth/oauth2/authorize/github`,
+    OAUTH_CALLBACK: `${API_BASE}/auth/oauth2/callback`,
+  },
+  RESUMES: {
+    LIST: `${API_BASE}/resumes`,
+    CREATE: `${API_BASE}/resumes`,
+    GET: (id: string) => `${API_BASE}/resumes/${id}`,
+    UPDATE: (id: string) => `${API_BASE}/resumes/${id}`,
+    DELETE: (id: string) => `${API_BASE}/resumes/${id}`,
+    OPTIMIZE: (id: string) => `${API_BASE}/resumes/${id}/optimize`,
+    UPLOAD: `${API_BASE}/resumes/upload`,
+    ANALYZE: (id: string) => `${API_BASE}/resumes/${id}/analyze`,
+    OPTIMIZE_FILE: `${API_BASE}/resumes/optimize-file`,
+  },
+  COVER_LETTERS: {
+    GENERATE: `${API_BASE}/cover-letters/generate`,
+    LIST: `${API_BASE}/cover-letters`,
+    GET: (id: string) => `${API_BASE}/cover-letters/${id}`,
+    UPDATE: (id: string) => `${API_BASE}/cover-letters/${id}`,
+    DELETE: (id: string) => `${API_BASE}/cover-letters/${id}`,
+    REGENERATE: (id: string) => `${API_BASE}/cover-letters/${id}/regenerate`,
+  },
+  JOBS: {
+    LIST: `${API_BASE}/jobs`,
+    CREATE: `${API_BASE}/jobs`,
+    GET: (id: string) => `${API_BASE}/jobs/${id}`,
+    UPDATE: (id: string) => `${API_BASE}/jobs/${id}`,
+    DELETE: (id: string) => `${API_BASE}/jobs/${id}`,
+    BY_STATUS: (status: string) => `${API_BASE}/jobs/status/${status}`,
+    SEARCH: `${API_BASE}/jobs/search`,
+  },
+  DASHBOARD: {
+    MAIN: `${API_BASE}/dashboard`,
+    STATS: `${API_BASE}/dashboard/stats`,
+    RECENT_APPLICATIONS: `${API_BASE}/dashboard/recent-applications`,
+    FUNNEL: `${API_BASE}/dashboard/funnel`,
+    METRICS: `${API_BASE}/dashboard/metrics`,
+  },
+  SETTINGS: {
+    PROFILE: `${API_BASE}/settings/profile`,
+    BILLING: {
+      PLAN: `${API_BASE}/settings/billing/plan`,
+      PAYMENT_METHOD: `${API_BASE}/settings/billing/payment-method`,
+      INVOICES: `${API_BASE}/settings/billing/invoices`,
+      CANCEL_SUBSCRIPTION: `${API_BASE}/settings/billing/subscription/cancel`,
+    },
+    SECURITY: {
+      MAIN: `${API_BASE}/settings/security`,
+      SESSIONS: `${API_BASE}/settings/security/sessions`,
+      REVOKE_SESSION: (deviceName: string) => `${API_BASE}/settings/security/sessions/${deviceName}`,
+      CHANGE_PASSWORD: `${API_BASE}/settings/security/password`,
+      ENABLE_2FA: `${API_BASE}/settings/security/2fa/enable`,
+      DISABLE_2FA: `${API_BASE}/settings/security/2fa/disable`,
+    },
+    NOTIFICATIONS: `${API_BASE}/settings/notifications`,
+    UPDATE_NOTIFICATION: (settingId: string) => `${API_BASE}/settings/notifications/${settingId}`,
+    ACCOUNT: {
+      DELETE: `${API_BASE}/settings/account/delete`,
+      EXPORT: `${API_BASE}/settings/account/export`,
+    },
+  },
+  ADMIN: {
+    USERS: `${API_BASE}/admin/users`,
+    ANALYTICS: `${API_BASE}/admin/analytics`,
+  },
+} as const;

@@ -1,0 +1,1 @@
+export { GeneratedLetterCard } from './GeneratedLetterCard';

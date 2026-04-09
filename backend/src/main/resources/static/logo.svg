@@ -1,0 +1,37 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect x="10" y="10" width="180" height="180" rx="45" ry="45" fill="url(#purpleGradient)"/>
+
+  <!-- Main sparkle icon - 4 pointed with curved center -->
+  <g transform="translate(100, 100)">
+    <!-- Top point -->
+    <path d="M 0,-40 L 3,-12 L 0,-10 L -3,-12 Z" fill="white"/>
+    <!-- Bottom point -->
+    <path d="M 0,40 L -3,12 L 0,10 L 3,12 Z" fill="white"/>
+    <!-- Right point -->
+    <path d="M 40,0 L 12,3 L 10,0 L 12,-3 Z" fill="white"/>
+    <!-- Left point -->
+    <path d="M -40,0 L -12,-3 L -10,0 L -12,3 Z" fill="white"/>
+
+    <!-- Center diamond -->
+    <circle cx="0" cy="0" r="8" fill="white"/>
+  </g>
+
+  <!-- Small sparkle accents -->
+  <g>
+    <!-- Top right sparkle -->
+    <path d="M 145,65 L 146,60 L 147,65 L 152,66 L 147,67 L 146,72 L 145,67 L 140,66 Z"
+          fill="white" opacity="0.7"/>
+
+    <!-- Bottom left sparkle -->
+    <path d="M 55,135 L 56,131 L 57,135 L 61,136 L 57,137 L 56,141 L 55,137 L 51,136 Z"
+          fill="white" opacity="0.6"/>
+  </g>
+</svg>
