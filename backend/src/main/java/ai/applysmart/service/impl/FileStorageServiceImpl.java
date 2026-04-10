@@ -2,6 +2,7 @@ package ai.applysmart.service.impl;
 
 import ai.applysmart.dto.FileUploadResult;
 import ai.applysmart.exception.BadRequestException;
+import ai.applysmart.exception.FileProcessingException;
 import ai.applysmart.service.FileStorageService;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
@@ -39,7 +40,7 @@ public class FileStorageServiceImpl implements FileStorageService {
                     .build();
         } catch (IOException e) {
             log.error("Failed to upload file to Cloudinary: {}", file.getOriginalFilename(), e);
-            throw new RuntimeException("Failed to upload file", e);
+            throw new FileProcessingException("Failed to upload file", e);
         }
     }
 
@@ -62,7 +63,7 @@ public class FileStorageServiceImpl implements FileStorageService {
                     .build();
         } catch (IOException e) {
             log.error("Failed to upload file bytes to Cloudinary: {}", filename, e);
-            throw new RuntimeException("Failed to upload file", e);
+            throw new FileProcessingException("Failed to upload file", e);
         }
     }
 

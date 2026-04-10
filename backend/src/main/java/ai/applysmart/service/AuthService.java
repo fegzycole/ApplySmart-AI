@@ -22,4 +22,6 @@ public interface AuthService {
     UserDto getCurrentUser(Long userId);
 
     UserDto convertToDto(User user);
+
+    void logout(String token, User user);
 }

@@ -4,17 +4,23 @@ import ai.applysmart.dto.common.ApiResponse;
 import ai.applysmart.dto.coverletter.CoverLetterRequest;
 import ai.applysmart.dto.coverletter.CoverLetterResponseDto;
 import ai.applysmart.dto.coverletter.UpdateCoverLetterRequest;
+import ai.applysmart.dto.resume.CoverLetterDto;
 import ai.applysmart.entity.User;
 import ai.applysmart.service.CoverLetterService;
+import ai.applysmart.util.PaginationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -37,10 +43,37 @@ public class CoverLetterController {
         return ResponseEntity.status(HttpStatus.CREATED).body(coverLetter);
     }
 
+    @PostMapping(value = "/generate-from-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Generate cover letter from resume file with customizable tone")
+    public ResponseEntity<CoverLetterDto> generateCoverLetterFromFile(
+            @RequestPart(value = "resume", required = false) MultipartFile resumeFile,
+            @RequestPart("jobDescription") String jobDescription,
+            @RequestPart(value = "companyName", required = false) String companyName,
+            @RequestPart(value = "positionTitle", required = false) String positionTitle,
+            @RequestPart(value = "tone", required = false) String tone,
+            @RequestPart(value = "keyAchievements", required = false) String keyAchievements,
+            @AuthenticationPrincipal User user) {
+        log.info("Generate cover letter from file request from user: {} for company: {}, position: {}",
+                 user.getId(), companyName, positionTitle);
+        CoverLetterDto coverLetter = coverLetterService.generateCoverLetter(
+                resumeFile, jobDescription, companyName, positionTitle, tone, keyAchievements, user);
+        return ResponseEntity.ok(coverLetter);
+    }
+
     @GetMapping
-    @Operation(summary = "Get all cover letters for authenticated user")
-    public ResponseEntity<List<CoverLetterResponseDto>> getAllCoverLetters(@AuthenticationPrincipal User user) {
-        log.info("Get all cover letters request from user: {}", user.getId());
+    @Operation(summary = "Get all cover letters for authenticated user with pagination support")
+    public ResponseEntity<?> getAllCoverLetters(
+            @AuthenticationPrincipal User user,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        log.info("Get all cover letters request from user: {} (page: {}, size: {})", user.getId(), page, size);
+
+        if (PaginationUtils.isPaginationRequested(page, size)) {
+            Pageable pageable = PaginationUtils.createPageable(page, size);
+            Page<CoverLetterResponseDto> coverLetterPage = coverLetterService.getAllCoverLetters(user, pageable);
+            return ResponseEntity.ok(coverLetterPage);
+        }
+
         List<CoverLetterResponseDto> coverLetters = coverLetterService.getAllCoverLetters(user);
         return ResponseEntity.ok(coverLetters);
     }

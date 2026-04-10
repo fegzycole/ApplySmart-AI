@@ -4,11 +4,14 @@ import ai.applysmart.dto.common.ApiResponse;
 import ai.applysmart.dto.resume.*;
 import ai.applysmart.entity.User;
 import ai.applysmart.service.ResumeService;
+import ai.applysmart.util.PaginationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +31,19 @@ public class ResumeController {
     private final ResumeService resumeService;
 
     @GetMapping
-    @Operation(summary = "Get all resumes for authenticated user")
-    public ResponseEntity<List<ResumeDto>> getAllResumes(@AuthenticationPrincipal User user) {
-        log.info("Get all resumes request from user: {}", user.getId());
+    @Operation(summary = "Get all resumes for authenticated user with pagination support")
+    public ResponseEntity<?> getAllResumes(
+            @AuthenticationPrincipal User user,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        log.info("Get all resumes request from user: {} (page: {}, size: {})", user.getId(), page, size);
+
+        if (PaginationUtils.isPaginationRequested(page, size)) {
+            Pageable pageable = PaginationUtils.createPageable(page, size);
+            Page<ResumeDto> resumePage = resumeService.getAllResumes(user, pageable);
+            return ResponseEntity.ok(resumePage);
+        }
+
         List<ResumeDto> resumes = resumeService.getAllResumes(user);
         return ResponseEntity.ok(resumes);
     }
@@ -122,22 +135,5 @@ public class ResumeController {
         log.info("Optimize uploaded file request from user: {}", user.getId());
         ResumeOptimizationDto optimization = resumeService.optimizeUploadedFile(file, jobDescription, user);
         return ResponseEntity.ok(optimization);
-    }
-
-    @PostMapping(value = "/cover-letter", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Generate cover letter for job application with customizable tone")
-    public ResponseEntity<CoverLetterDto> generateCoverLetter(
-            @RequestPart(value = "resume", required = false) MultipartFile resumeFile,
-            @RequestPart("jobDescription") String jobDescription,
-            @RequestPart(value = "companyName", required = false) String companyName,
-            @RequestPart(value = "positionTitle", required = false) String positionTitle,
-            @RequestPart(value = "tone", required = false) String tone,
-            @RequestPart(value = "keyAchievements", required = false) String keyAchievements,
-            @AuthenticationPrincipal User user) {
-        log.info("Generate cover letter request from user: {} for company: {}, position: {}",
-                 user.getId(), companyName, positionTitle);
-        CoverLetterDto coverLetter = resumeService.generateCoverLetter(
-                resumeFile, jobDescription, companyName, positionTitle, tone, keyAchievements, user);
-        return ResponseEntity.ok(coverLetter);
     }
 }

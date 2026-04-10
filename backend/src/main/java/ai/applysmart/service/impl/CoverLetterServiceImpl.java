@@ -12,8 +12,12 @@ import ai.applysmart.exception.ResourceNotFoundException;
 import ai.applysmart.repository.CoverLetterRepository;
 import ai.applysmart.repository.ResumeRepository;
 import ai.applysmart.service.*;
+import ai.applysmart.util.LayoutUtils;
+import ai.applysmart.util.TextUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,28 +57,10 @@ public class CoverLetterServiceImpl implements CoverLetterService {
             resumeContent = resume.getContent();
 
             // Use default professional layout for text-based resumes
-            layoutInfo = ResumeLayoutInfo.builder()
-                    .primaryFont("Calibri")
-                    .secondaryFont("Calibri")
-                    .primaryColor("#000000")
-                    .accentColor("#2c3e50")
-                    .backgroundColor("#ffffff")
-                    .averageFontSize(11.0)
-                    .headingFontSize(16.0)
-                    .lineSpacing(14)
-                    .build();
+            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
         } else {
             // Use default layout if no resume provided
-            layoutInfo = ResumeLayoutInfo.builder()
-                    .primaryFont("Calibri")
-                    .secondaryFont("Calibri")
-                    .primaryColor("#000000")
-                    .accentColor("#2c3e50")
-                    .backgroundColor("#ffffff")
-                    .averageFontSize(11.0)
-                    .headingFontSize(16.0)
-                    .lineSpacing(14)
-                    .build();
+            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
         }
 
         // Generate cover letter with Claude
@@ -120,12 +106,63 @@ public class CoverLetterServiceImpl implements CoverLetterService {
     }
 
     @Override
+    @Transactional
+    public ai.applysmart.dto.resume.CoverLetterDto generateCoverLetter(
+            org.springframework.web.multipart.MultipartFile resumeFile, String jobDescription, String companyName,
+            String positionTitle, String tone, String keyAchievements, User user) {
+        log.info("Generating cover letter for user: {} - Company: {}, Position: {}, Tone: {}",
+                 user.getId(), companyName, positionTitle, tone);
+
+        if (jobDescription == null || jobDescription.isBlank()) {
+            throw new BadRequestException("Job description is required");
+        }
+
+        String resumeContent = null;
+        ResumeLayoutInfo layoutInfo = null;
+
+        // Extract resume content and layout if file is provided
+        if (resumeFile != null && !resumeFile.isEmpty()) {
+            resumeContent = fileParserService.extractTextFromFile(resumeFile);
+            layoutInfo = pdfLayoutAnalyzer.analyzeLayout(resumeFile);
+            log.info("Extracted resume - Primary font: {}", layoutInfo.getPrimaryFont());
+        } else {
+            // Use default professional layout
+            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
+        }
+
+        // Generate cover letter with Claude
+        String coverLetterContent = claudeService.generateCoverLetter(
+                resumeContent, jobDescription, companyName, positionTitle, tone, keyAchievements);
+
+        long timestamp = System.currentTimeMillis();
+
+        // Generate PDF
+        String pdfFilename = String.format("user-%d-cover-letter-%d.pdf", user.getId(), timestamp);
+        byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(coverLetterContent, layoutInfo);
+        ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
+
+        return ai.applysmart.dto.resume.CoverLetterDto.builder()
+                .content(coverLetterContent)
+                .pdfUrl(pdfUploadResult.getUrl())
+                .build();
+    }
+
+    @Override
     public List<CoverLetterResponseDto> getAllCoverLetters(User user) {
         log.info("Fetching all cover letters for user: {}", user.getId());
 
         return coverLetterRepository.findByUserOrderByCreatedAtDesc(user).stream()
                 .map(cl -> convertToDto(cl, null))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<CoverLetterResponseDto> getAllCoverLetters(User user, Pageable pageable) {
+        log.info("Fetching paginated cover letters for user: {} (page: {}, size: {})",
+                user.getId(), pageable.getPageNumber(), pageable.getPageSize());
+
+        return coverLetterRepository.findByUserOrderByCreatedAtDesc(user, pageable)
+                .map(cl -> convertToDto(cl, null));
     }
 
     @Override

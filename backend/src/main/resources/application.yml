@@ -129,6 +129,11 @@ app:
     max-age: 3600
 
   rate-limit:
+    # Authentication endpoint rate limiting (per IP address)
+    capacity: 10                    # Maximum requests allowed in burst
+    refill-tokens: 10               # Tokens to add per refill interval
+    refill-duration-minutes: 1      # Refill interval in minutes
+    # Feature-level rate limits
     free-tier:
       resume-analysis: 10
       resume-optimization: 5

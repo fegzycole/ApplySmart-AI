@@ -26,6 +26,7 @@
         <jjwt.version>0.12.3</jjwt.version>
         <commons-io.version>2.15.1</commons-io.version>
         <tika.version>2.9.1</tika.version>
+        <bucket4j.version>8.7.0</bucket4j.version>
     </properties>
 
     <dependencies>
@@ -98,6 +99,22 @@
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
+        </dependency>
+
+        <!-- Bucket4j for rate limiting -->
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-core</artifactId>
+            <version>${bucket4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.bucket4j</groupId>
+            <artifactId>bucket4j-redis</artifactId>
+            <version>${bucket4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
         </dependency>
 
         <!-- JWT -->

@@ -7,8 +7,12 @@ import ai.applysmart.exception.BadRequestException;
 import ai.applysmart.exception.ResourceNotFoundException;
 import ai.applysmart.repository.ResumeRepository;
 import ai.applysmart.service.*;
+import ai.applysmart.util.LayoutUtils;
+import ai.applysmart.util.TextUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +39,15 @@ public class ResumeServiceImpl implements ResumeService {
         return resumeRepository.findByUserOrderByUpdatedAtDesc(user).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<ResumeDto> getAllResumes(User user, Pageable pageable) {
+        log.info("Fetching paginated resumes for user: {} (page: {}, size: {})",
+                user.getId(), pageable.getPageNumber(), pageable.getPageSize());
+
+        return resumeRepository.findByUserOrderByUpdatedAtDesc(user, pageable)
+                .map(this::convertToDto);
     }
 
     @Override
@@ -156,16 +169,7 @@ public class ResumeServiceImpl implements ResumeService {
         long timestamp = System.currentTimeMillis();
 
         // Use professional default layout (Calibri font, dark blue accents)
-        ai.applysmart.dto.resume.ResumeLayoutInfo defaultLayout = ai.applysmart.dto.resume.ResumeLayoutInfo.builder()
-                .primaryFont("Calibri")
-                .secondaryFont("Calibri")
-                .primaryColor("#000000")
-                .accentColor("#2c3e50")
-                .backgroundColor("#ffffff")
-                .averageFontSize(11.0)
-                .headingFontSize(16.0)
-                .lineSpacing(14)
-                .build();
+        ai.applysmart.dto.resume.ResumeLayoutInfo defaultLayout = LayoutUtils.createDefaultProfessionalLayout();
 
         // Generate PDF with professional styling
         String pdfFilename = String.format("resume-%d-optimized-%d.pdf", id, timestamp);
@@ -268,56 +272,6 @@ public class ResumeServiceImpl implements ResumeService {
         optimization.setPdfUrl(pdfUploadResult.getUrl());
         optimization.setFileUrl(pdfUploadResult.getUrl()); // Backward compatibility
         return optimization;
-    }
-
-    @Override
-    @Transactional
-    public CoverLetterDto generateCoverLetter(MultipartFile resumeFile, String jobDescription, String companyName,
-                                              String positionTitle, String tone, String keyAchievements, User user) {
-        log.info("Generating cover letter for user: {} - Company: {}, Position: {}, Tone: {}",
-                 user.getId(), companyName, positionTitle, tone);
-
-        if (jobDescription == null || jobDescription.isBlank()) {
-            throw new BadRequestException("Job description is required");
-        }
-
-        String resumeContent = null;
-        ai.applysmart.dto.resume.ResumeLayoutInfo layoutInfo = null;
-
-        // Extract resume content and layout if file is provided
-        if (resumeFile != null && !resumeFile.isEmpty()) {
-            resumeContent = fileParserService.extractTextFromFile(resumeFile);
-            layoutInfo = pdfLayoutAnalyzer.analyzeLayout(resumeFile);
-            log.info("Extracted resume - Primary font: {}", layoutInfo.getPrimaryFont());
-        } else {
-            // Use default professional layout
-            layoutInfo = ai.applysmart.dto.resume.ResumeLayoutInfo.builder()
-                    .primaryFont("Calibri")
-                    .secondaryFont("Calibri")
-                    .primaryColor("#000000")
-                    .accentColor("#2c3e50")
-                    .backgroundColor("#ffffff")
-                    .averageFontSize(11.0)
-                    .headingFontSize(16.0)
-                    .lineSpacing(14)
-                    .build();
-        }
-
-        // Generate cover letter with Claude
-        String coverLetterContent = claudeService.generateCoverLetter(
-                resumeContent, jobDescription, companyName, positionTitle, tone, keyAchievements);
-
-        long timestamp = System.currentTimeMillis();
-
-        // Generate PDF
-        String pdfFilename = String.format("user-%d-cover-letter-%d.pdf", user.getId(), timestamp);
-        byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(coverLetterContent, layoutInfo);
-        ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
-
-        return CoverLetterDto.builder()
-                .content(coverLetterContent)
-                .pdfUrl(pdfUploadResult.getUrl())
-                .build();
     }
 
     private ResumeDto convertToDto(Resume resume) {

@@ -5,12 +5,15 @@ import ai.applysmart.dto.job.JobDto;
 import ai.applysmart.dto.job.UpdateJobRequest;
 import ai.applysmart.entity.Job;
 import ai.applysmart.entity.User;
-import ai.applysmart.exception.BadRequestException;
 import ai.applysmart.exception.ResourceNotFoundException;
 import ai.applysmart.repository.JobRepository;
 import ai.applysmart.service.JobService;
+import ai.applysmart.util.EnumUtils;
+import ai.applysmart.util.TextUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +32,7 @@ public class JobServiceImpl implements JobService {
     public JobDto createJob(CreateJobRequest request, User user) {
         log.info("Creating job for user: {} - Company: {}, Role: {}", user.getId(), request.getCompany(), request.getRole());
 
-        Job.Status status = Job.Status.SAVED; // Default status
-        if (request.getStatus() != null && !request.getStatus().isBlank()) {
-            try {
-                status = Job.Status.valueOf(request.getStatus().toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new BadRequestException("Invalid status: " + request.getStatus());
-            }
-        }
+        Job.Status status = EnumUtils.parseEnumOrDefault(Job.Status.class, request.getStatus(), Job.Status.SAVED);
 
         Job job = Job.builder()
                 .user(user)
@@ -63,6 +59,15 @@ public class JobServiceImpl implements JobService {
         return jobRepository.findByUserOrderByUpdatedAtDesc(user).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<JobDto> getAllJobs(User user, Pageable pageable) {
+        log.info("Fetching paginated jobs for user: {} (page: {}, size: {})",
+                user.getId(), pageable.getPageNumber(), pageable.getPageSize());
+
+        return jobRepository.findByUserOrderByUpdatedAtDesc(user, pageable)
+                .map(this::convertToDto);
     }
 
     @Override
@@ -95,12 +100,8 @@ public class JobServiceImpl implements JobService {
             job.setLink(request.getLink());
         }
 
-        if (request.getStatus() != null) {
-            try {
-                job.setStatus(Job.Status.valueOf(request.getStatus().toUpperCase()));
-            } catch (IllegalArgumentException e) {
-                throw new BadRequestException("Invalid status: " + request.getStatus());
-            }
+        if (TextUtils.isNotBlank(request.getStatus())) {
+            job.setStatus(EnumUtils.parseEnum(Job.Status.class, request.getStatus(), "status"));
         }
 
         if (request.getNotes() != null) {
@@ -141,12 +142,7 @@ public class JobServiceImpl implements JobService {
     public List<JobDto> getJobsByStatus(String status, User user) {
         log.info("Fetching jobs with status {} for user: {}", status, user.getId());
 
-        Job.Status jobStatus;
-        try {
-            jobStatus = Job.Status.valueOf(status.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Invalid status: " + status);
-        }
+        Job.Status jobStatus = EnumUtils.parseEnum(Job.Status.class, status, "status");
 
         return jobRepository.findByUserAndStatusOrderByUpdatedAtDesc(user, jobStatus).stream()
                 .map(this::convertToDto)
@@ -157,7 +153,7 @@ public class JobServiceImpl implements JobService {
     public List<JobDto> searchJobs(String query, User user) {
         log.info("Searching jobs for user: {} with query: {}", user.getId(), query);
 
-        if (query == null || query.isBlank()) {
+        if (TextUtils.isBlank(query)) {
             return getAllJobs(user);
         }
 

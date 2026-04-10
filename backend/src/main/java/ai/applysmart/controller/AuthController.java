@@ -106,4 +106,23 @@ public class AuthController {
         UserDto userDto = authService.getCurrentUser(user.getId());
         return ResponseEntity.ok(userDto);
     }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Logout user and revoke current token")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader("Authorization") String authHeader,
+            @AuthenticationPrincipal User user) {
+        log.info("Logout request received for user ID: {}", user.getId());
+
+        // Extract token from "Bearer <token>" format
+        String token = authHeader.replace("Bearer ", "");
+        authService.logout(token, user);
+
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .success(true)
+                        .message("Logged out successfully")
+                        .build()
+        );
+    }
 }

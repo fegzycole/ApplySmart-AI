@@ -1,6 +1,7 @@
 package ai.applysmart.service.impl;
 
 import ai.applysmart.exception.BadRequestException;
+import ai.applysmart.exception.FileProcessingException;
 import ai.applysmart.service.FileParserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -35,7 +36,7 @@ public class FileParserServiceImpl implements FileParserService {
             }
         } catch (IOException e) {
             log.error("Error extracting text from file: {}", filename, e);
-            throw new RuntimeException("Failed to extract text from file", e);
+            throw new FileProcessingException("Failed to extract text from file", e);
         }
     }
 

@@ -6,11 +6,14 @@ import ai.applysmart.dto.job.JobDto;
 import ai.applysmart.dto.job.UpdateJobRequest;
 import ai.applysmart.entity.User;
 import ai.applysmart.service.JobService;
+import ai.applysmart.util.PaginationUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -38,9 +41,19 @@ public class JobController {
     }
 
     @GetMapping
-    @Operation(summary = "Get all job applications for authenticated user")
-    public ResponseEntity<List<JobDto>> getAllJobs(@AuthenticationPrincipal User user) {
-        log.info("Get all jobs request from user: {}", user.getId());
+    @Operation(summary = "Get all job applications for authenticated user with pagination support")
+    public ResponseEntity<?> getAllJobs(
+            @AuthenticationPrincipal User user,
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        log.info("Get all jobs request from user: {} (page: {}, size: {})", user.getId(), page, size);
+
+        if (PaginationUtils.isPaginationRequested(page, size)) {
+            Pageable pageable = PaginationUtils.createPageable(page, size);
+            Page<JobDto> jobPage = jobService.getAllJobs(user, pageable);
+            return ResponseEntity.ok(jobPage);
+        }
+
         List<JobDto> jobs = jobService.getAllJobs(user);
         return ResponseEntity.ok(jobs);
     }

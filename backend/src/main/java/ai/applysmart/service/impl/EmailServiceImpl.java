@@ -1,5 +1,6 @@
 package ai.applysmart.service.impl;
 
+import ai.applysmart.exception.EmailSendingException;
 import ai.applysmart.service.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -71,7 +72,7 @@ public class EmailServiceImpl implements EmailService {
 
         } catch (MessagingException e) {
             log.error("Failed to send email to: {}", to, e);
-            throw new RuntimeException("Failed to send email", e);
+            throw new EmailSendingException("Failed to send email", e);
         }
     }
 }

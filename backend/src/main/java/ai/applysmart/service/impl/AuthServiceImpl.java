@@ -9,6 +9,7 @@ import ai.applysmart.exception.UnauthorizedException;
 import ai.applysmart.repository.UserRepository;
 import ai.applysmart.service.AuthService;
 import ai.applysmart.service.EmailService;
+import ai.applysmart.service.TokenService;
 import ai.applysmart.service.VerificationService;
 import ai.applysmart.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Date;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final EmailService emailService;
     private final VerificationService verificationService;
+    private final TokenService tokenService;
 
     @Override
     @Transactional
@@ -152,8 +158,8 @@ public class AuthServiceImpl implements AuthService {
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
-
-        log.info("Password successfully reset for email: {}", request.getEmail());
+        tokenService.revokeAllUserTokens(user.getId());
+        log.info("Password successfully reset for email: {}, all tokens revoked", request.getEmail());
     }
 
     @Override
@@ -232,5 +238,29 @@ public class AuthServiceImpl implements AuthService {
                 .createdAt(user.getCreatedAt())
                 .subscription(subscriptionDto)
                 .build();
+    }
+
+    @Override
+    public void logout(String token, User user) {
+        log.info("Logging out user with ID: {}", user.getId());
+
+        String jti = tokenProvider.getJtiFromToken(token);
+        if (jti != null) {
+            Date expiration = tokenProvider.getExpirationFromToken(token);
+            if (expiration != null) {
+                Duration remainingTTL = Duration.between(Instant.now(), expiration.toInstant());
+
+                if (!remainingTTL.isNegative()) {
+                    tokenService.revokeToken(jti, remainingTTL);
+                    log.info("Token revoked for user {}, JTI: {}", user.getId(), jti);
+                } else {
+                    log.debug("Token already expired for user {}, skipping revocation", user.getId());
+                }
+            } else {
+                log.warn("Could not extract expiration from token for user {}", user.getId());
+            }
+        } else {
+            log.warn("Could not extract JTI from token for user {}", user.getId());
+        }
     }
 }
