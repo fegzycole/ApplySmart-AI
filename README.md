@@ -315,38 +315,6 @@ curl -X GET http://localhost:8080/api/v1/admin/analytics \
 - File uploads to Cloudinary
 - Analytics tracking
 
-## 🧪 Testing
-
-### Backend Tests
-
-```bash
-cd backend
-
-# Run all tests
-./mvnw test
-
-# Run specific test class
-./mvnw test -Dtest=AuthControllerTest
-
-# Run with coverage
-./mvnw test jacoco:report
-```
-
-### Frontend Tests
-
-```bash
-cd frontend
-
-# Run unit tests
-npm test
-
-# Run with coverage
-npm test -- --coverage
-
-# Run E2E tests (if configured)
-npm run test:e2e
-```
-
 ## 📈 Monitoring & Observability
 
 ### Health Checks
