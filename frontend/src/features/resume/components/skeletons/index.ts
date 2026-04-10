@@ -1,0 +1,1 @@
+export { ResumesPageSkeleton } from './ResumesPageSkeleton';

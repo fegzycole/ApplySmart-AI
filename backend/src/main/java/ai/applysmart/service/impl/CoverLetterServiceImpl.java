@@ -206,8 +206,8 @@ public class CoverLetterServiceImpl implements CoverLetterService {
         CoverLetter coverLetter = coverLetterRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Cover letter not found"));
 
-        coverLetterRepository.delete(coverLetter);
-        log.info("Deleted cover letter with ID: {}", id);
+        coverLetterRepository.softDelete(id, user);
+        log.info("Soft deleted cover letter with ID: {}", id);
     }
 
     @Override

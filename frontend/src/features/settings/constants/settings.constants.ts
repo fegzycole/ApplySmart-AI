@@ -3,13 +3,19 @@ import {
   type SettingsTab,
   type NotificationSetting,
 } from "../types/settings.types";
+import { FEATURE_FLAGS } from "@/shared/config/feature-flags";
 
-export const SETTINGS_TABS: SettingsTab[] = [
+const ALL_TABS: SettingsTab[] = [
   { id: "profile", label: "Profile", icon: User },
   { id: "notifications", label: "Notifications", icon: Bell },
   { id: "billing", label: "Billing", icon: CreditCard },
   { id: "security", label: "Security", icon: Shield },
 ];
+
+// Filter out billing tab when subscriptions are disabled
+export const SETTINGS_TABS: SettingsTab[] = ALL_TABS.filter(
+  tab => tab.id !== "billing" || FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED
+);
 
 export const NOTIFICATION_SETTINGS: NotificationSetting[] = [
   {

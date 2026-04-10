@@ -5,8 +5,11 @@ import {
 } from "../../constants/settings.constants";
 
 export function SettingsTabs() {
+  // Dynamically set grid columns based on number of tabs
+  const gridColsClass = `grid-cols-${SETTINGS_TABS.length}`;
+
   return (
-    <TabsList className="grid w-full grid-cols-4 h-14 bg-gradient-to-r from-violet-100/50 via-fuchsia-100/50 to-cyan-100/50 dark:from-violet-950/30 dark:via-fuchsia-950/30 dark:to-cyan-950/30 p-1 rounded-xl">
+    <TabsList className={`grid w-full ${gridColsClass} h-14 bg-gradient-to-r from-violet-100/50 via-fuchsia-100/50 to-cyan-100/50 dark:from-violet-950/30 dark:via-fuchsia-950/30 dark:to-cyan-950/30 p-1 rounded-xl`}>
       {SETTINGS_TABS.map(({ id, label, icon: Icon }) => (
         <TabsTrigger key={id} value={id} className={TRIGGER_STYLES}>
           <Icon className="size-4" />

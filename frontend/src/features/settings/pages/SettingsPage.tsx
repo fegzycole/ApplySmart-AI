@@ -7,6 +7,7 @@ import {
   BillingTab,
   SecurityTab,
 } from "../components";
+import { FEATURE_FLAGS } from "@/shared/config/feature-flags";
 
 const TAB_CONTENT_STYLES = "space-y-6 mt-6";
 
@@ -27,9 +28,11 @@ export function SettingsPage() {
             <NotificationsTab />
           </TabsContent>
 
-          <TabsContent value="billing" className={TAB_CONTENT_STYLES}>
-            <BillingTab />
-          </TabsContent>
+          {FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED && (
+            <TabsContent value="billing" className={TAB_CONTENT_STYLES}>
+              <BillingTab />
+            </TabsContent>
+          )}
 
           <TabsContent value="security" className={TAB_CONTENT_STYLES}>
             <SecurityTab />

@@ -134,8 +134,8 @@ public class JobServiceImpl implements JobService {
         Job job = jobRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Job not found"));
 
-        jobRepository.delete(job);
-        log.info("Deleted job with ID: {}", id);
+        jobRepository.softDelete(id, user);
+        log.info("Soft deleted job with ID: {}", id);
     }
 
     @Override

@@ -1,4 +1,5 @@
 import { PricingCard } from "./PricingCard";
+import { FEATURE_FLAGS } from "@/shared/config/feature-flags";
 
 const plans = [
   {
@@ -53,6 +54,11 @@ const plans = [
 ];
 
 export function PricingPreview() {
+  // Hide pricing section when subscriptions are disabled
+  if (!FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED) {
+    return null;
+  }
+
   return (
     <section className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">

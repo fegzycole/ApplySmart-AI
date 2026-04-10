@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
     Optional<Subscription> findByUser(User user);
+
+    long countByPlan(Subscription.Plan plan);
 }

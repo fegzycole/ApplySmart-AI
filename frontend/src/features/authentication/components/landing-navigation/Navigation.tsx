@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { Button } from "@/shared/components/ui/button";
 import { Sparkles, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { FEATURE_FLAGS } from "@/shared/config/feature-flags";
 
 export function Navigation() {
   const { theme, setTheme } = useTheme();
@@ -27,9 +28,11 @@ export function Navigation() {
                 <Moon className="size-5 text-violet-600" />
               )}
             </button>
-            <Link to="/pricing" className="hidden sm:inline-block">
-              <Button variant="ghost" className="hover:bg-violet-100 dark:hover:bg-violet-900/30">Pricing</Button>
-            </Link>
+            {FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED && (
+              <Link to="/pricing" className="hidden sm:inline-block">
+                <Button variant="ghost" className="hover:bg-violet-100 dark:hover:bg-violet-900/30">Pricing</Button>
+              </Link>
+            )}
             <Link to="/login" className="hidden sm:inline-block">
               <Button variant="ghost" className="hover:bg-violet-100 dark:hover:bg-violet-900/30">Sign In</Button>
             </Link>

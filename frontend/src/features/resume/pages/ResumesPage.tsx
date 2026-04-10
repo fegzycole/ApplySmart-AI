@@ -7,6 +7,7 @@ import {
   Pagination,
   DeleteDialog,
 } from "../components";
+import { ResumesPageSkeleton } from "../components/skeletons";
 import { useResumeManager, useDeleteDialog } from "../hooks";
 import { PAGINATION_CONFIG } from "../constants/pagination.constants";
 
@@ -28,15 +29,7 @@ export function ResumesPage() {
   const deleteDialog = useDeleteDialog();
 
   if (isLoading) {
-    return (
-      <div className="p-4 lg:p-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center h-64">
-            <div className="text-zinc-500">Loading resumes...</div>
-          </div>
-        </div>
-      </div>
-    );
+    return <ResumesPageSkeleton />;
   }
 
   return (

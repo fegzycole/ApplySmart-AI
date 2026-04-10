@@ -7,6 +7,7 @@ import {
   QuickActionsCard
 } from "../components";
 import { DashboardPageHeader } from "../components/dashboard-header";
+import { DashboardSkeleton } from "../components/skeletons";
 import { DASHBOARD_PAGE_STYLES } from "../constants/dashboard.constants";
 import { useDashboardStats } from "../hooks";
 
@@ -16,12 +17,7 @@ export function DashboardHomePage() {
   if (isLoading) {
     return (
       <div className={DASHBOARD_PAGE_STYLES.container}>
-        <div className={DASHBOARD_PAGE_STYLES.wrapper}>
-          <DashboardPageHeader />
-          <div className="flex items-center justify-center h-64">
-            <div className="text-zinc-500">Loading dashboard...</div>
-          </div>
-        </div>
+        <DashboardSkeleton />
       </div>
     );
   }

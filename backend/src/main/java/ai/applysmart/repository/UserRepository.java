@@ -4,6 +4,7 @@ import ai.applysmart.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -36,4 +37,20 @@ public interface UserRepository extends JpaRepository<User, Long> {
      * @return Optional containing the user if found
      */
     Optional<User> findByAuthProviderAndProviderId(User.AuthProvider authProvider, String providerId);
+
+    /**
+     * Count active users.
+     *
+     * @return number of enabled users
+     */
+    long countByEnabledTrue();
+
+    /**
+     * Count users created between two dates.
+     *
+     * @param start start date
+     * @param end end date
+     * @return number of users created in the period
+     */
+    long countByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 }

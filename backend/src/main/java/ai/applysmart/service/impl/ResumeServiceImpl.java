@@ -124,8 +124,8 @@ public class ResumeServiceImpl implements ResumeService {
             fileStorageService.deleteFile(resume.getCloudinaryPublicId());
         }
 
-        resumeRepository.delete(resume);
-        log.info("Deleted resume with ID: {}", resume.getId());
+        resumeRepository.softDelete(id, user);
+        log.info("Soft deleted resume with ID: {}", id);
     }
 
     @Override

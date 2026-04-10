@@ -5,6 +5,7 @@ import ai.applysmart.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -15,17 +16,16 @@ import java.util.Optional;
 @Repository
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
 
-    @Query("SELECT r FROM Resume r WHERE r.user = :user AND r.deleted = false ORDER BY r.updatedAt DESC")
-    List<Resume> findByUserOrderByUpdatedAtDesc(@Param("user") User user);
+    // @Where clause automatically filters deleted = false
+    List<Resume> findByUserOrderByUpdatedAtDesc(User user);
 
-    @Query("SELECT r FROM Resume r WHERE r.user = :user AND r.deleted = false ORDER BY r.updatedAt DESC")
-    Page<Resume> findByUserOrderByUpdatedAtDesc(@Param("user") User user, Pageable pageable);
+    Page<Resume> findByUserOrderByUpdatedAtDesc(User user, Pageable pageable);
 
-    @Query("SELECT r FROM Resume r WHERE r.id = :id AND r.user = :user AND r.deleted = false")
-    Optional<Resume> findByIdAndUser(@Param("id") Long id, @Param("user") User user);
+    Optional<Resume> findByIdAndUser(Long id, User user);
 
-    void deleteByIdAndUser(Long id, User user);
+    long countByUser(User user);
 
-    @Query("SELECT COUNT(r) FROM Resume r WHERE r.user = :user AND r.deleted = false")
-    long countByUser(@Param("user") User user);
+    @Modifying
+    @Query("UPDATE Resume r SET r.deleted = true WHERE r.id = :id AND r.user = :user")
+    void softDelete(@Param("id") Long id, @Param("user") User user);
 }
