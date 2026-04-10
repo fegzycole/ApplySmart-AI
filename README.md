@@ -42,8 +42,7 @@ career-boost-ai/
 │   │   └── db/migration/    # Flyway migrations
 │   └── pom.xml
 ├── docker-compose.yml       # Docker services
-├── .env.example             # Environment variables template
-└── API_DOCUMENTATION.md     # Complete API documentation
+└── .env.example             # Environment variables template
 
 ```
 
