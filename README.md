@@ -1,4 +1,4 @@
-# Career Boost AI - Full Stack Application
+# Apply Smart AI - Full Stack Application
 
 A production-ready, AI-powered career optimization platform built with React + Spring Boot.
 
@@ -50,6 +50,7 @@ career-boost-ai/
 ## 🛠 Technology Stack
 
 ### Frontend
+
 - **Framework**: React 18 with TypeScript
 - **Build Tool**: Vite
 - **State Management**: TanStack Query (React Query)
@@ -59,6 +60,7 @@ career-boost-ai/
 - **HTTP Client**: Axios
 
 ### Backend
+
 - **Framework**: Spring Boot 3.2
 - **Language**: Java 17
 - **Database**: PostgreSQL 15
@@ -71,6 +73,7 @@ career-boost-ai/
 - **Build Tool**: Maven
 
 ### DevOps
+
 - **Containerization**: Docker & Docker Compose
 - **Monitoring**: Spring Actuator + Prometheus
 - **Logging**: SLF4J + Logback
@@ -181,6 +184,7 @@ npm run type-check
 Complete API documentation is available in [API_DOCUMENTATION.md](./API_DOCUMENTATION.md).
 
 Quick links:
+
 - Authentication: `/api/v1/auth/*`
 - Resumes: `/api/v1/resumes/*`
 - Cover Letters: `/api/v1/cover-letters/*`
@@ -191,6 +195,7 @@ Quick links:
 ### Example API Calls
 
 #### Register a new user
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/auth/signup \
   -H "Content-Type: application/json" \
@@ -203,6 +208,7 @@ curl -X POST http://localhost:8080/api/v1/auth/signup \
 ```
 
 #### Analyze Resume with AI
+
 ```bash
 curl -X POST http://localhost:8080/api/v1/resumes/1/analyze \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
@@ -246,18 +252,21 @@ curl -X POST http://localhost:8080/api/v1/resumes/1/analyze \
 ## 📊 Performance Optimizations
 
 ### Caching Strategy
+
 - **User data**: 5-minute TTL
 - **Resume list**: 2-minute TTL
 - **Dashboard data**: 5-minute TTL
 - **Job list**: 1-minute TTL
 
 ### Database
+
 - Proper indexing on frequently queried fields
 - Connection pooling (HikariCP)
 - Query optimization with projections
 - Lazy loading for large content fields
 
 ### Async Processing
+
 - Email sending (Spring @Async)
 - File uploads to Cloudinary
 - Analytics tracking
@@ -297,6 +306,7 @@ npm run test:e2e
 ## 📈 Monitoring & Observability
 
 ### Health Checks
+
 ```bash
 # Application health
 curl http://localhost:8080/actuator/health
@@ -306,6 +316,7 @@ curl http://localhost:8080/actuator/health/details
 ```
 
 ### Metrics
+
 ```bash
 # Prometheus metrics
 curl http://localhost:8080/actuator/prometheus
@@ -315,6 +326,7 @@ curl http://localhost:8080/actuator/metrics
 ```
 
 ### Logs
+
 ```bash
 # View backend logs
 tail -f backend/logs/career-boost.log
@@ -375,11 +387,13 @@ npm run build
 ### Backend Won't Start
 
 1. Check if PostgreSQL is running:
+
    ```bash
    docker-compose ps postgres
    ```
 
 2. Check database connection:
+
    ```bash
    psql -h localhost -U postgres -d careerboost
    ```
@@ -392,6 +406,7 @@ npm run build
 ### Frontend Build Fails
 
 1. Clear node_modules and reinstall:
+
    ```bash
    cd frontend
    rm -rf node_modules package-lock.json
@@ -416,6 +431,7 @@ redis-cli -h localhost -p 6379 -a redis_password ping
 ### AI API Errors
 
 1. Verify Anthropic API key is set:
+
    ```bash
    echo $ANTHROPIC_API_KEY
    ```
@@ -450,6 +466,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🎯 Roadmap
 
 ### Version 1.1
+
 - [ ] Interview preparation AI assistant
 - [ ] LinkedIn profile optimizer
 - [ ] Salary negotiation guidance
@@ -457,6 +474,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Mobile app (React Native)
 
 ### Version 1.2
+
 - [ ] Job scraping integration
 - [ ] Company research AI
 - [ ] Networking recommendations
@@ -466,6 +484,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 💡 Architecture Highlights
 
 ### Backend Design Patterns
+
 - **Layered Architecture**: Controller → Service → Repository
 - **DTO Pattern**: Separate DTOs from entities
 - **Repository Pattern**: Spring Data JPA repositories
@@ -475,6 +494,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **SOLID Principles**: Throughout the codebase
 
 ### Frontend Architecture
+
 - **Feature-Based**: Organized by domain features
 - **Custom Hooks**: Reusable React hooks
 - **React Query**: Server state management
