@@ -4,10 +4,23 @@ A production-ready, AI-powered career optimization platform built with React + S
 
 ## 🚀 Features
 
+### Core Features
+
 - **AI-Powered Resume Optimization** - Uses Claude AI to analyze and optimize resumes for ATS systems
 - **AI Cover Letter Generation** - Personalized cover letters tailored to job descriptions
 - **Job Application Tracker** - Kanban-style board to manage your job search
 - **Dashboard Analytics** - Visual insights into your job search progress
+- **Admin Panel** - Complete admin dashboard with user management and analytics
+- **Feature Flags** - Centralized feature toggle system for controlled rollouts
+
+### User Experience
+
+- **Skeleton Loading States** - Professional loading animations across all pages
+- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
+- **Dark Mode** - Full dark mode support throughout the application
+
+### Technical Features
+
 - **File Storage** - Cloudinary integration for resume uploads
 - **Email Notifications** - Automated emails for application updates
 - **Secure Authentication** - JWT-based auth with refresh tokens
@@ -19,30 +32,51 @@ A production-ready, AI-powered career optimization platform built with React + S
 
 ```
 career-boost-ai/
-├── frontend/                 # React + TypeScript + Vite
+├── frontend/                     # React + TypeScript + Vite
 │   ├── src/
-│   │   ├── features/        # Feature-based architecture
-│   │   ├── shared/          # Shared components & services
+│   │   ├── features/            # Feature-based architecture
+│   │   │   ├── admin/           # Admin panel & analytics
+│   │   │   ├── authentication/  # Login, signup, landing
+│   │   │   ├── cover-letter/    # AI cover letter generation
+│   │   │   ├── dashboard/       # User dashboard & charts
+│   │   │   ├── job-tracker/     # Kanban job tracker
+│   │   │   ├── pricing/         # Pricing page
+│   │   │   ├── resume/          # Resume management & AI
+│   │   │   └── settings/        # User settings & profile
+│   │   ├── shared/              # Shared resources
+│   │   │   ├── components/      # Reusable UI components
+│   │   │   │   ├── ui/          # shadcn/ui components
+│   │   │   │   └── skeletons/   # Loading skeletons
+│   │   │   ├── config/          # Feature flags & config
+│   │   │   ├── services/        # API clients
+│   │   │   ├── hooks/           # Custom React hooks
+│   │   │   └── utils/           # Utility functions
 │   │   └── main.tsx
 │   ├── package.json
 │   └── vite.config.ts
-├── backend/                 # Spring Boot 3.2
-│   ├── src/main/java/ai/careerboost/
-│   │   ├── config/          # Application configuration
-│   │   ├── security/        # Security & JWT
-│   │   ├── entity/          # JPA entities
-│   │   ├── repository/      # Data repositories
-│   │   ├── service/         # Business logic
-│   │   ├── controller/      # REST controllers
-│   │   ├── dto/             # Data Transfer Objects
-│   │   ├── exception/       # Exception handling
-│   │   └── util/            # Utility classes
+├── backend/                     # Spring Boot 3.2
+│   ├── src/main/java/ai/applysmart/
+│   │   ├── config/              # Application configuration
+│   │   │   ├── FeatureFlags.java
+│   │   │   └── SecurityConfig.java
+│   │   ├── security/            # Security & JWT
+│   │   ├── entity/              # JPA entities
+│   │   ├── repository/          # Data repositories
+│   │   ├── service/             # Business logic
+│   │   │   ├── impl/            # Service implementations
+│   │   │   └── AdminService.java
+│   │   ├── controller/          # REST controllers
+│   │   │   └── AdminController.java
+│   │   ├── dto/                 # Data Transfer Objects
+│   │   │   └── admin/           # Admin DTOs
+│   │   ├── exception/           # Exception handling
+│   │   └── util/                # Utility classes
 │   ├── src/main/resources/
 │   │   ├── application.yml
-│   │   └── db/migration/    # Flyway migrations
+│   │   └── db/migration/        # Flyway migrations
 │   └── pom.xml
-├── docker-compose.yml       # Docker services
-└── .env.example             # Environment variables template
+├── docker-compose.yml           # Docker services
+└── .env.example                 # Environment variables template
 
 ```
 
@@ -55,8 +89,11 @@ career-boost-ai/
 - **State Management**: TanStack Query (React Query)
 - **Routing**: React Router v7
 - **Styling**: Tailwind CSS
-- **UI Components**: Radix UI
+- **UI Components**: shadcn/ui (Radix UI + Tailwind)
+- **Charts**: Recharts
+- **Drag & Drop**: React DnD
 - **HTTP Client**: Axios
+- **Form Handling**: React Hook Form + Zod
 
 ### Backend
 
@@ -190,6 +227,7 @@ Quick links:
 - Jobs: `/api/v1/jobs/*`
 - Dashboard: `/api/v1/dashboard/*`
 - Settings: `/api/v1/settings/*`
+- Admin: `/api/v1/admin/*` (Admin role required)
 
 ### Example API Calls
 
@@ -215,6 +253,13 @@ curl -X POST http://localhost:8080/api/v1/resumes/1/analyze \
   -d '{
     "jobDescription": "We are seeking a Senior Java Developer..."
   }'
+```
+
+#### Get Admin Analytics (Admin only)
+
+```bash
+curl -X GET http://localhost:8080/api/v1/admin/analytics \
+  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"
 ```
 
 ## 🗄 Database Schema
@@ -464,21 +509,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🎯 Roadmap
 
-### Version 1.1
+### Version 1.0 (Current)
 
-- [ ] Interview preparation AI assistant
-- [ ] LinkedIn profile optimizer
-- [ ] Salary negotiation guidance
-- [ ] Resume templates library
-- [ ] Mobile app (React Native)
-
-### Version 1.2
-
-- [ ] Job scraping integration
-- [ ] Company research AI
-- [ ] Networking recommendations
-- [ ] Career path suggestions
-- [ ] Skills gap analysis
+- [x] AI-powered resume optimization
+- [x] Cover letter generation
+- [x] Job application tracker
+- [x] User dashboard with analytics
+- [x] Admin panel with user management
+- [x] Feature flags system
+- [x] Skeleton loading states
+- [ ] Subscription & billing system (planned)
 
 ## 💡 Architecture Highlights
 
@@ -504,16 +544,19 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 1. **Production-Ready**: Complete authentication, authorization, and security
 2. **AI Integration**: Real Claude API integration, not mocked
-3. **Cloud Services**: Cloudinary for file storage, not local filesystem
-4. **Caching Strategy**: Redis for performance optimization
-5. **Email Notifications**: Real SMTP integration
-6. **Docker Support**: One-command deployment
-7. **Comprehensive Testing**: Unit and integration tests
-8. **API Documentation**: OpenAPI/Swagger with examples
-9. **Error Handling**: Graceful degradation and user-friendly errors
-10. **Performance**: Optimized queries, caching, and async processing
-11. **Security**: JWT, BCrypt, rate limiting, input validation
-12. **Code Quality**: SOLID principles, clean code, documentation
+3. **Admin Panel**: Full-featured admin dashboard with analytics and user management
+4. **Feature Flags**: Centralized feature toggle system across frontend and backend
+5. **Professional UX**: Skeleton loading states and responsive design
+6. **Cloud Services**: Cloudinary for file storage, not local filesystem
+7. **Caching Strategy**: Redis for performance optimization
+8. **Email Notifications**: Real SMTP integration
+9. **Docker Support**: One-command deployment
+10. **Comprehensive Testing**: Unit and integration tests
+11. **API Documentation**: OpenAPI/Swagger with examples
+12. **Error Handling**: Graceful degradation and user-friendly errors
+13. **Performance**: Optimized queries, caching, and async processing
+14. **Security**: JWT, BCrypt, rate limiting, input validation
+15. **Code Quality**: SOLID principles, DRY code, clean architecture
 
 ## 👨‍💻 Author
 
