@@ -99,6 +99,11 @@ public class JwtTokenProvider {
      *
      * @param authToken the JWT token
      * @return true if valid, false otherwise
+     * @throws SignatureException if JWT signature validation fails
+     * @throws MalformedJwtException if JWT is malformed
+     * @throws ExpiredJwtException if JWT is expired
+     * @throws UnsupportedJwtException if JWT format is unsupported
+     * @throws IllegalArgumentException if JWT is empty or null
      */
     public boolean validateToken(String authToken) {
         try {
@@ -109,16 +114,20 @@ public class JwtTokenProvider {
             return true;
         } catch (SignatureException ex) {
             log.error("Invalid JWT signature: {}", ex.getMessage());
+            throw new SignatureException("Invalid JWT signature");
         } catch (MalformedJwtException ex) {
             log.error("Invalid JWT token: {}", ex.getMessage());
+            throw new MalformedJwtException("Malformed JWT token");
         } catch (ExpiredJwtException ex) {
             log.error("Expired JWT token: {}", ex.getMessage());
+            throw new ExpiredJwtException(ex.getHeader(), ex.getClaims(), "JWT token has expired");
         } catch (UnsupportedJwtException ex) {
             log.error("Unsupported JWT token: {}", ex.getMessage());
+            throw new UnsupportedJwtException("Unsupported JWT token");
         } catch (IllegalArgumentException ex) {
             log.error("JWT claims string is empty: {}", ex.getMessage());
+            throw new IllegalArgumentException("JWT token is empty or invalid");
         }
-        return false;
     }
 
     /**

@@ -1,6 +1,8 @@
 package ai.applysmart.config;
 
+import ai.applysmart.security.CustomAccessDeniedHandler;
 import ai.applysmart.security.CustomUserDetailsService;
+import ai.applysmart.security.JwtAuthenticationEntryPoint;
 import ai.applysmart.security.JwtAuthenticationFilter;
 import ai.applysmart.security.oauth2.CustomOAuth2UserService;
 import ai.applysmart.security.oauth2.OAuth2AuthenticationFailureHandler;
@@ -40,6 +42,8 @@ public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
@@ -71,6 +75,10 @@ public class SecurityConfig {
                         // All API endpoints require JWT authentication
                         // Protected: /api/v1/resumes/**, /api/v1/cover-letters/**, /api/v1/jobs/**
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authorization -> authorization

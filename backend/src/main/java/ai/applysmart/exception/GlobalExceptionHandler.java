@@ -4,6 +4,7 @@ import ai.applysmart.dto.common.ErrorResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -179,6 +180,49 @@ public class GlobalExceptionHandler {
 
         log.error("OAuth2 authentication failed: {}", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    /**
+     * Handle database constraint violations (e.g., unique constraints, foreign key violations)
+     * Returns 409 Conflict for duplicate entries
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+            DataIntegrityViolationException ex,
+            WebRequest request) {
+
+        String message = "A conflict occurred with existing data";
+
+        // Parse the error message to provide more specific feedback
+        String rootCauseMessage = ex.getRootCause() != null ?
+                ex.getRootCause().getMessage() : ex.getMessage();
+
+        if (rootCauseMessage != null) {
+            if (rootCauseMessage.contains("users_email_key") ||
+                rootCauseMessage.contains("idx_email") ||
+                rootCauseMessage.toLowerCase().contains("duplicate") &&
+                rootCauseMessage.toLowerCase().contains("email")) {
+                message = "Email address already in use";
+            } else if (rootCauseMessage.contains("subscriptions_user_id_key") ||
+                      rootCauseMessage.toLowerCase().contains("subscription")) {
+                message = "User already has an active subscription";
+            } else if (rootCauseMessage.toLowerCase().contains("duplicate")) {
+                message = "This record already exists";
+            } else if (rootCauseMessage.toLowerCase().contains("foreign key")) {
+                message = "Cannot complete operation due to related data constraints";
+            }
+        }
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.CONFLICT.value())
+                .error("Conflict")
+                .message(message)
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        log.warn("Data integrity violation: {}", message);
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
     /**

@@ -2,6 +2,10 @@ package ai.applysmart.security;
 
 import ai.applysmart.repository.UserRepository;
 import ai.applysmart.util.JwtTokenProvider;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -37,7 +41,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
+            if (StringUtils.hasText(jwt)) {
+                // Validate token - this will throw specific exceptions if invalid
+                tokenProvider.validateToken(jwt);
+
                 Long userId = tokenProvider.getUserIdFromToken(jwt);
 
                 UserDetails userDetails = userRepository.findById(userId)
@@ -55,8 +62,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 log.debug("Set authentication for user: {}", userId);
             }
+        } catch (ExpiredJwtException ex) {
+            log.warn("JWT token expired for request: {}", request.getRequestURI());
+            request.setAttribute("jwtError", "JWT token has expired");
+        } catch (SignatureException ex) {
+            log.warn("Invalid JWT signature for request: {}", request.getRequestURI());
+            request.setAttribute("jwtError", "Invalid JWT signature");
+        } catch (MalformedJwtException ex) {
+            log.warn("Malformed JWT token for request: {}", request.getRequestURI());
+            request.setAttribute("jwtError", "Malformed JWT token");
+        } catch (UnsupportedJwtException ex) {
+            log.warn("Unsupported JWT token for request: {}", request.getRequestURI());
+            request.setAttribute("jwtError", "Unsupported JWT token");
+        } catch (IllegalArgumentException ex) {
+            log.warn("JWT token is empty or invalid for request: {}", request.getRequestURI());
+            request.setAttribute("jwtError", "JWT token is empty or invalid");
         } catch (Exception ex) {
             log.error("Could not set user authentication in security context", ex);
+            request.setAttribute("jwtError", "Authentication failed");
         }
 
         filterChain.doFilter(request, response);
