@@ -3,7 +3,7 @@ spring:
     name: applysmart-backend
 
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:applysmart}
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME:applysmart}
     username: ${DB_USER:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -39,7 +39,7 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:redis_password}
+      password: ${REDIS_PASSWORD}
       timeout: 60000
       lettuce:
         pool:
@@ -51,7 +51,7 @@ spring:
   cache:
     type: redis
     redis:
-      time-to-live: 300000 # 5 minutes default
+      time-to-live: 300000
       cache-null-values: false
 
   mail:
@@ -69,9 +69,9 @@ spring:
             port: ${MAIL_PORT:465}
             class: javax.net.ssl.SSLSocketFactory
             fallback: false
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
+          connectiontimeout: 15000
+          timeout: 15000
+          writetimeout: 15000
 
   servlet:
     multipart:
@@ -114,9 +114,9 @@ app:
   api-url: ${API_URL:http://localhost:8080}
 
   jwt:
-    secret: ${JWT_SECRET:your-super-secret-jwt-key-change-this-in-production-min-256-bits}
-    expiration-ms: ${JWT_EXPIRATION:86400000} # 24 hours
-    refresh-expiration-ms: 2592000000 # 30 days
+    secret: ${JWT_SECRET}
+    expiration-ms: ${JWT_EXPIRATION:86400000}
+    refresh-expiration-ms: 2592000000
 
   oauth2:
     authorized-redirect-uri: ${OAUTH2_REDIRECT_URI:http://localhost:5173/auth/oauth2/callback}
@@ -178,7 +178,7 @@ logging:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
   file:
-    name: logs/applysmart.log
+    name: /app/logs/applysmart.log
   logback:
     rollingpolicy:
       max-file-size: 10MB
@@ -228,12 +228,6 @@ spring:
 logging:
   level:
     ai.applysmart: DEBUG
-
----
-spring:
-  config:
-    activate:
-      on-profile: docker
 
 ---
 spring:
