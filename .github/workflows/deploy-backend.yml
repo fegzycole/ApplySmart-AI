@@ -1,0 +1,182 @@
+name: Deploy Backend to VPS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'backend/**'
+      - '.github/workflows/deploy-backend.yml'
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build with Maven
+        working-directory: ./backend
+        run: |
+          chmod +x mvnw
+          ./mvnw clean package -DskipTests -B
+
+      - name: Get artifact name
+        id: artifact
+        working-directory: ./backend/target
+        run: |
+          JAR_FILE=$(ls *.jar | head -n 1)
+          echo "jar_name=$JAR_FILE" >> $GITHUB_OUTPUT
+          echo "Building: $JAR_FILE"
+
+      - name: Create deployment package
+        working-directory: ./backend
+        run: |
+          mkdir -p deploy
+          cp target/*.jar deploy/
+          cp ../scripts/deploy.sh deploy/
+          chmod +x deploy/deploy.sh
+          tar -czf backend-deploy.tar.gz deploy/
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H $VPS_HOST >> ~/.ssh/known_hosts
+
+      - name: Upload to VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
+        run: |
+          scp -i ~/.ssh/deploy_key \
+            backend/backend-deploy.tar.gz \
+            $VPS_USERNAME@$VPS_HOST:/tmp/
+
+      - name: Deploy on VPS
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
+        run: |
+          ssh -i ~/.ssh/deploy_key $VPS_USERNAME@$VPS_HOST << 'EOF'
+            set -e
+
+            # Extract deployment package
+            cd /tmp
+            tar -xzf backend-deploy.tar.gz
+
+            # Move to application directory
+            sudo mkdir -p /var/www/apply-smart-ai
+            sudo mv deploy/* /var/www/apply-smart-ai/
+            sudo chown -R $USER:$USER /var/www/apply-smart-ai
+
+            # Stop current service
+            sudo systemctl stop apply-smart-backend || true
+
+            # Backup old JAR
+            cd /var/www/apply-smart-ai
+            if [ -f app.jar ]; then
+              mv app.jar app.jar.backup.$(date +%Y%m%d_%H%M%S)
+            fi
+
+            # Move new JAR
+            mv *.jar app.jar
+
+            # Ensure logs directory exists
+            mkdir -p /var/www/apply-smart-ai/logs
+
+            # Start service
+            sudo systemctl start apply-smart-backend
+
+            # Cleanup
+            rm -rf /tmp/deploy /tmp/backend-deploy.tar.gz
+
+            # Wait for application to start
+            echo "Waiting for application to start..."
+            sleep 15
+
+            # Check if service is running
+            sudo systemctl status apply-smart-backend
+          EOF
+
+      - name: Health Check
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+        run: |
+          echo "Performing health check..."
+          sleep 10
+
+          MAX_RETRIES=30
+          RETRY_COUNT=0
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" ${BACKEND_URL:-http://${{ secrets.VPS_HOST }}:8080}/actuator/health || echo "000")
+
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Health check passed! Backend is running."
+              exit 0
+            fi
+
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+            echo "⏳ Attempt $RETRY_COUNT/$MAX_RETRIES - Health check returned $HTTP_CODE, retrying in 5 seconds..."
+            sleep 5
+          done
+
+          echo "❌ Health check failed after $MAX_RETRIES attempts"
+          exit 1
+
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -f ~/.ssh/deploy_key
+
+      - name: Deployment Summary
+        if: success()
+        run: |
+          echo "🎉 Backend deployment successful!"
+          echo "📦 Artifact: ${{ steps.artifact.outputs.jar_name }}"
+          echo "🌐 Server: ${{ secrets.VPS_HOST }}"
+          echo "✅ Health check passed"
+
+      - name: Rollback on Failure
+        if: failure()
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+        run: |
+          echo "⚠️ Deployment failed, attempting rollback..."
+
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          ssh -i ~/.ssh/deploy_key $VPS_USERNAME@$VPS_HOST << 'EOF'
+            cd /var/www/apply-smart-ai
+
+            # Find latest backup
+            BACKUP=$(ls -t app.jar.backup.* 2>/dev/null | head -n 1)
+
+            if [ -n "$BACKUP" ]; then
+              echo "Rolling back to $BACKUP"
+              sudo systemctl stop apply-smart-backend || true
+              cp "$BACKUP" app.jar
+              sudo systemctl start apply-smart-backend
+              echo "✅ Rollback completed"
+            else
+              echo "⚠️ No backup found for rollback"
+            fi
+          EOF

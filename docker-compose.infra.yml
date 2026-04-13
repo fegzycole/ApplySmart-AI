@@ -1,0 +1,61 @@
+# Docker Compose for VPS Infrastructure
+# This runs only PostgreSQL and Redis on the VPS
+# The backend JAR runs as a systemd service
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: applysmart-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-applysmart}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "127.0.0.1:5432:5432"  # Only expose to localhost
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - applysmart-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis:7-alpine
+    container_name: applysmart-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    ports:
+      - "127.0.0.1:6379:6379"  # Only expose to localhost
+    volumes:
+      - redis_data:/data
+    networks:
+      - applysmart-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  applysmart-network:
+    driver: bridge

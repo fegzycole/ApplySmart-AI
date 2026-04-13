@@ -31,7 +31,7 @@ A production-ready, AI-powered career optimization platform built with React + S
 ## 📁 Project Structure
 
 ```
-career-boost-ai/
+apply-smart-ai/
 ├── frontend/                     # React + TypeScript + Vite
 │   ├── src/
 │   │   ├── features/            # Feature-based architecture
@@ -133,8 +133,8 @@ career-boost-ai/
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/career-boost-ai.git
-cd career-boost-ai
+git clone https://github.com/your-username/apply-smart-ai.git
+cd apply-smart-ai
 ```
 
 ### 2. Configure Environment Variables
@@ -341,7 +341,7 @@ curl http://localhost:8080/actuator/metrics
 
 ```bash
 # View backend logs
-tail -f backend/logs/career-boost.log
+tail -f backend/logs/apply-smart.log
 
 # View Docker logs
 docker-compose logs -f backend
@@ -349,29 +349,68 @@ docker-compose logs -f backend
 
 ## 🚢 Deployment
 
-### Production Checklist
+This application uses GitHub Actions for automated deployment:
+- **Backend**: Deployed to VPS server
+- **Frontend**: Deployed to Vercel
 
-- [ ] Update `.env` with production values
-- [ ] Set strong `JWT_SECRET` (min 256 bits)
-- [ ] Configure production database
-- [ ] Set up Redis with authentication
-- [ ] Configure HTTPS/SSL
-- [ ] Set up CDN for static assets
-- [ ] Configure backup strategy
-- [ ] Set up monitoring (Sentry, Datadog, etc.)
-- [ ] Enable rate limiting
-- [ ] Configure CORS properly
-- [ ] Review security headers
-- [ ] Set up CI/CD pipeline
+### Quick Start
 
-### Docker Production Deployment
+See the complete deployment guide: [DEPLOYMENT.md](./DEPLOYMENT.md)
 
+### Architecture
+
+```
+┌─────────────────┐         ┌──────────────────┐
+│                 │         │                  │
+│   Vercel        │────────▶│   VPS Server     │
+│   (Frontend)    │   API   │   (Backend)      │
+│                 │         │                  │
+└─────────────────┘         │  ┌────────────┐  │
+                            │  │ PostgreSQL │  │
+                            │  └────────────┘  │
+                            │  ┌────────────┐  │
+                            │  │   Redis    │  │
+                            │  └────────────┘  │
+                            └──────────────────┘
+```
+
+### Deployment Workflows
+
+**Backend** (`.github/workflows/deploy-backend.yml`):
+- Triggers on push to `main` (backend changes)
+- Builds JAR with Maven
+- Deploys to VPS via SSH
+- Runs health checks
+- Auto-rollback on failure
+
+**Frontend** (`.github/workflows/deploy-frontend.yml`):
+- Triggers on push to `main` (frontend changes)
+- Builds with Vite
+- Deploys to Vercel
+- Provides preview URLs
+
+### Required Secrets
+
+Configure in GitHub Settings → Secrets and variables → Actions:
+
+**VPS Secrets:**
+- `VPS_HOST`
+- `VPS_USERNAME`
+- `VPS_SSH_PRIVATE_KEY`
+
+**Vercel Secrets:**
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+**Environment Variables:** See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete list.
+
+### Manual Deployment
+
+**Local Docker (Development)**:
 ```bash
-# Build images
-docker-compose build
-
-# Start in production mode
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# Start all services
+docker-compose up -d
 
 # View logs
 docker-compose logs -f
@@ -380,19 +419,13 @@ docker-compose logs -f
 docker-compose down
 ```
 
-### Manual Deployment
-
+**VPS Infrastructure Only**:
 ```bash
-# Backend
-cd backend
-./mvnw clean package -DskipTests
-java -jar target/career-boost-backend-1.0.0.jar --spring.profiles.active=prod
-
-# Frontend
-cd frontend
-npm run build
-# Deploy dist/ folder to CDN or static hosting
+# On VPS - start PostgreSQL and Redis
+docker compose -f docker-compose.infra.yml up -d
 ```
+
+For complete deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 ## 🐛 Troubleshooting
 
@@ -407,12 +440,12 @@ npm run build
 2. Check database connection:
 
    ```bash
-   psql -h localhost -U postgres -d careerboost
+   psql -h localhost -U postgres -d applysmart
    ```
 
 3. View backend logs:
    ```bash
-   tail -f backend/logs/career-boost.log
+   tail -f backend/logs/apply-smart.log
    ```
 
 ### Frontend Build Fails
@@ -472,8 +505,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🤝 Support
 
 - **Documentation**: [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
-- **Issues**: [GitHub Issues](https://github.com/your-username/career-boost-ai/issues)
-- **Email**: support@careerboost.ai
+- **Issues**: [GitHub Issues](https://github.com/your-username/apply-smart-ai/issues)
+- **Email**: support@applysmart.ai
 
 ## 🎯 Roadmap
 
