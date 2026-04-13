@@ -99,8 +99,8 @@ spring:
               - profile
             redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
           github:
-            client-id: ${GITHUB_CLIENT_ID}
-            client-secret: ${GITHUB_CLIENT_SECRET}
+            client-id: ${GH_OAUTH_CLIENT_ID}
+            client-secret: ${GH_OAUTH_CLIENT_SECRET}
             scope:
               - user:email
               - read:user

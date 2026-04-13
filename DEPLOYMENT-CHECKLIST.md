@@ -115,8 +115,8 @@ Add all secrets in GitHub Settings → Secrets and variables → Actions:
 - [ ] `OAUTH2_REDIRECT_URI`
 - [ ] `GOOGLE_CLIENT_ID`
 - [ ] `GOOGLE_CLIENT_SECRET`
-- [ ] `GITHUB_CLIENT_ID`
-- [ ] `GITHUB_CLIENT_SECRET`
+- [ ] `GH_OAUTH_CLIENT_ID`
+- [ ] `GH_OAUTH_CLIENT_SECRET`
 
 **Email:**
 - [ ] `MAIL_HOST` - `smtp.gmail.com`

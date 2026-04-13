@@ -125,8 +125,8 @@ JWT_EXPIRATION=86400000
 OAUTH2_REDIRECT_URI=https://yourapp.vercel.app/auth/oauth2/callback
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
-GITHUB_CLIENT_ID=your-github-client-id
-GITHUB_CLIENT_SECRET=your-github-client-secret
+GH_OAUTH_CLIENT_ID=your-github-client-id
+GH_OAUTH_CLIENT_SECRET=your-github-client-secret
 
 # Email
 MAIL_HOST=smtp.gmail.com
@@ -241,8 +241,8 @@ Add the following secrets:
 - `OAUTH2_REDIRECT_URI`: Your OAuth redirect URI
 - `GOOGLE_CLIENT_ID`: Your Google client ID
 - `GOOGLE_CLIENT_SECRET`: Your Google client secret
-- `GITHUB_CLIENT_ID`: Your GitHub client ID
-- `GITHUB_CLIENT_SECRET`: Your GitHub client secret
+- `GH_OAUTH_CLIENT_ID`: Your GitHub client ID
+- `GH_OAUTH_CLIENT_SECRET`: Your GitHub client secret
 - `MAIL_HOST`: `smtp.gmail.com`
 - `MAIL_PORT`: `465`
 - `MAIL_USERNAME`: Your email
