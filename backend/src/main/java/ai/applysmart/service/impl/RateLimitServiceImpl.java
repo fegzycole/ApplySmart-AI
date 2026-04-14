@@ -7,6 +7,7 @@ import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.distributed.proxy.ProxyManager;
 import io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager;
+import io.github.bucket4j.redis.lettuce.cas.expiration.AfterWriteExpirationAfterWriteStrategy;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
@@ -51,7 +52,7 @@ public class RateLimitServiceImpl implements RateLimitService {
     public void init() {
         try {
             String redisUri = (redisPassword != null && !redisPassword.isEmpty())
-                    ? String.format("redis://%s@%s:%d", redisPassword, redisHost, redisPort)
+                    ? String.format("redis://:%s@%s:%d", redisPassword, redisHost, redisPort)
                     : String.format("redis://%s:%d", redisHost, redisPort);
 
             redisClient = RedisClient.create(redisUri);
@@ -62,6 +63,11 @@ public class RateLimitServiceImpl implements RateLimitService {
             connection = redisClient.connect(codec);
 
             proxyManager = LettuceBasedProxyManager.builderFor(connection)
+                    .withExpirationStrategy(
+                            AfterWriteExpirationAfterWriteStrategy.builder()
+                                    .timeToLive(Duration.ofMinutes(refillDurationMinutes))
+                                    .build()
+                    )
                     .build();
 
             log.info("Rate limiting initialized: {} requests per {} minutes",
@@ -76,12 +82,8 @@ public class RateLimitServiceImpl implements RateLimitService {
     @PreDestroy
     public void cleanup() {
         try {
-            if (connection != null) {
-                connection.close();
-            }
-            if (redisClient != null) {
-                redisClient.shutdown();
-            }
+            if (connection != null) connection.close();
+            if (redisClient != null) redisClient.shutdown();
             log.info("Rate limiting resources cleaned up");
         } catch (Exception e) {
             log.error("Error cleaning up rate limiting resources", e);
@@ -94,10 +96,15 @@ public class RateLimitServiceImpl implements RateLimitService {
             Bucket bucket = getBucket(key);
             ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
-            return probe.isConsumed();
+            if (probe.isConsumed()) {
+                return true;
+            }
+
+            log.warn("Rate limit exceeded for key: {}", key);
+            return false;
 
         } catch (Exception e) {
-            log.error("Error checking rate limit for key: {}", key, e);
+            log.error("Rate limit error for key: {}", key, e);
             return true;
         }
     }
@@ -108,7 +115,6 @@ public class RateLimitServiceImpl implements RateLimitService {
             Bucket bucket = getBucket(key);
             return bucket.getAvailableTokens();
         } catch (Exception e) {
-            log.error("Error getting remaining requests for key: {}", key, e);
             return -1;
         }
     }
@@ -120,7 +126,6 @@ public class RateLimitServiceImpl implements RateLimitService {
             ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(0);
             return probe.getNanosToWaitForRefill() / 1_000_000_000;
         } catch (Exception e) {
-            log.error("Error getting reset time for key: {}", key, e);
             return -1;
         }
     }
@@ -139,7 +144,6 @@ public class RateLimitServiceImpl implements RateLimitService {
                     .build();
         };
 
-        return proxyManager.builder()
-                .build(bucketKey, configSupplier);
+        return proxyManager.getProxy(bucketKey, configSupplier);
     }
 }
