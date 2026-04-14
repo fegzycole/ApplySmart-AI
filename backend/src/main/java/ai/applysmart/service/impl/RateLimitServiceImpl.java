@@ -50,7 +50,7 @@ public class RateLimitServiceImpl implements RateLimitService {
     @PostConstruct
     public void init() {
         try {
-            String redisUri = redisPassword != null && !redisPassword.isEmpty()
+            String redisUri = (redisPassword != null && !redisPassword.isEmpty())
                     ? String.format("redis://%s@%s:%d", redisPassword, redisHost, redisPort)
                     : String.format("redis://%s:%d", redisHost, redisPort);
 
@@ -62,10 +62,6 @@ public class RateLimitServiceImpl implements RateLimitService {
             connection = redisClient.connect(codec);
 
             proxyManager = LettuceBasedProxyManager.builderFor(connection)
-                    .withExpirationStrategy(
-                            io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager.ExpirationAfterWriteStrategy
-                                    .basedOnTimeForRefillingBucketUpToMaxAge()
-                    )
                     .build();
 
             log.info("Rate limiting initialized: {} requests per {} minutes",
@@ -98,11 +94,8 @@ public class RateLimitServiceImpl implements RateLimitService {
             Bucket bucket = getBucket(key);
             ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
-            if (probe.isConsumed()) {
-                return true;
-            } else {
-                return false;
-            }
+            return probe.isConsumed();
+
         } catch (Exception e) {
             log.error("Error checking rate limit for key: {}", key, e);
             return true;
@@ -146,6 +139,7 @@ public class RateLimitServiceImpl implements RateLimitService {
                     .build();
         };
 
-        return proxyManager.getProxy(bucketKey, configSupplier);
+        return proxyManager.builder()
+                .build(bucketKey, configSupplier);
     }
 }
