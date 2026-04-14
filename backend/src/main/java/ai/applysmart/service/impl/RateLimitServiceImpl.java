@@ -65,6 +65,8 @@ public class RateLimitServiceImpl implements RateLimitService {
             connection = redisClient.connect(codec);
 
             proxyManager = LettuceBasedProxyManager.builderFor(connection)
+                    .withExpirationStrategy(io.github.bucket4j.distributed.ExpirationAfterWriteStrategy.basedOnTimeForRefillingBucketUpToMax(
+                            java.time.Duration.ofMinutes(refillDurationMinutes)))
                     .build();
 
             log.info("Rate limiting initialized: {} requests per {} minutes",
