@@ -26,9 +26,6 @@ export function HeroSection() {
               Start Free Trial
             </Button>
           </Link>
-          <Button size="lg" variant="outline" className="w-full sm:w-auto text-base sm:text-lg px-8 sm:px-10 h-12 sm:h-14 rounded-full border-2 border-violet-200 dark:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/30">
-            Watch Demo
-          </Button>
         </div>
         <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-500 mt-4 sm:mt-6 px-4">
           ✨ No credit card required • 🚀 7-day free trial • 🔒 Cancel anytime
