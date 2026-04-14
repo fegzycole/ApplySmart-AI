@@ -28,11 +28,10 @@ export function HeroSection() {
           </Link>
         </div>
         <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-500 mt-4 sm:mt-6 px-4">
-          ✨ No credit card required • 🚀 7-day free trial • 🔒 Cancel anytime
+          ✨ No credit card required
         </p>
       </div>
 
-      {/* Floating decorative elements */}
       <div className="hidden sm:block absolute top-20 right-10 w-20 h-20 bg-gradient-to-br from-violet-400 to-fuchsia-500 rounded-2xl opacity-20 blur-xl animate-pulse" />
       <div className="hidden sm:block absolute bottom-20 left-10 w-32 h-32 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-full opacity-20 blur-xl animate-pulse" style={{ animationDelay: '1s' }} />
     </section>
