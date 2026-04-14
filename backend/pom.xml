@@ -95,12 +95,6 @@
             <artifactId>flyway-core</artifactId>
         </dependency>
 
-        <!-- Redis -->
-        <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-        </dependency>
-
         <!-- Bucket4j for rate limiting -->
         <dependency>
             <groupId>com.bucket4j</groupId>
