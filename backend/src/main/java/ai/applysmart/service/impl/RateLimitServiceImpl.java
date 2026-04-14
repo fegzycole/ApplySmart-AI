@@ -21,10 +21,6 @@ import jakarta.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.function.Supplier;
 
-/**
- * Redis-based rate limiting implementation using Bucket4j.
- * Uses token bucket algorithm for flexible rate limiting.
- */
 @Slf4j
 @Service
 public class RateLimitServiceImpl implements RateLimitService {
@@ -54,21 +50,27 @@ public class RateLimitServiceImpl implements RateLimitService {
     @PostConstruct
     public void init() {
         try {
-            // Build Redis URI with authentication
             String redisUri = redisPassword != null && !redisPassword.isEmpty()
                     ? String.format("redis://%s@%s:%d", redisPassword, redisHost, redisPort)
                     : String.format("redis://%s:%d", redisHost, redisPort);
 
             redisClient = RedisClient.create(redisUri);
 
-            RedisCodec<String, byte[]> codec = RedisCodec.of(StringCodec.UTF8, ByteArrayCodec.INSTANCE);
+            RedisCodec<String, byte[]> codec =
+                    RedisCodec.of(StringCodec.UTF8, ByteArrayCodec.INSTANCE);
+
             connection = redisClient.connect(codec);
 
             proxyManager = LettuceBasedProxyManager.builderFor(connection)
+                    .withExpirationStrategy(
+                            io.github.bucket4j.redis.lettuce.cas.LettuceBasedProxyManager.ExpirationAfterWriteStrategy
+                                    .basedOnTimeForRefillingBucketUpToMaxAge()
+                    )
                     .build();
 
             log.info("Rate limiting initialized: {} requests per {} minutes",
                     capacity, refillDurationMinutes);
+
         } catch (Exception e) {
             log.error("Failed to initialize rate limiting with Redis", e);
             throw new RuntimeException("Rate limiting initialization failed", e);
@@ -97,17 +99,12 @@ public class RateLimitServiceImpl implements RateLimitService {
             ConsumptionProbe probe = bucket.tryConsumeAndReturnRemaining(1);
 
             if (probe.isConsumed()) {
-                log.debug("Rate limit check passed for key: {}, remaining: {}",
-                        key, probe.getRemainingTokens());
                 return true;
             } else {
-                log.warn("Rate limit exceeded for key: {}, retry after: {} seconds",
-                        key, probe.getNanosToWaitForRefill() / 1_000_000_000);
                 return false;
             }
         } catch (Exception e) {
             log.error("Error checking rate limit for key: {}", key, e);
-            // Fail open: allow request if rate limiting fails
             return true;
         }
     }
@@ -135,12 +132,6 @@ public class RateLimitServiceImpl implements RateLimitService {
         }
     }
 
-    /**
-     * Get or create a bucket for the given key.
-     *
-     * @param key rate limit key
-     * @return Bucket instance
-     */
     private Bucket getBucket(String key) {
         String bucketKey = "rate_limit:" + key;
 
@@ -155,7 +146,6 @@ public class RateLimitServiceImpl implements RateLimitService {
                     .build();
         };
 
-        return proxyManager.builder()
-                .build(bucketKey, configSupplier);
+        return proxyManager.getProxy(bucketKey, configSupplier);
     }
 }
