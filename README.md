@@ -155,8 +155,8 @@ docker-compose ps
 
 # Build and start backend
 cd backend
-./mvnw clean install
-./mvnw spring-boot:run
+mvn clean install
+mvn spring-boot:run
 
 # In a new terminal, start frontend
 cd frontend
@@ -179,16 +179,16 @@ npm run dev
 cd backend
 
 # Install dependencies and build
-./mvnw clean install
+mvn clean install
 
 # Run tests
-./mvnw test
+mvn test
 
 # Run application in dev mode
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
 
 # Package for production
-./mvnw clean package -DskipTests
+mvn clean package -DskipTests
 ```
 
 ### Frontend Setup

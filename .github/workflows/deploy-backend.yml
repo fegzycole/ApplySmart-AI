@@ -26,9 +26,7 @@ jobs:
 
       - name: Build with Maven
         working-directory: ./backend
-        run: |
-          chmod +x mvnw
-          ./mvnw clean package -DskipTests -B
+        run: mvn clean package -DskipTests -B
 
       - name: Get artifact name
         id: artifact
@@ -44,6 +42,7 @@ jobs:
           mkdir -p deploy
           cp target/*.jar deploy/
           cp ../scripts/deploy.sh deploy/
+          cp ../scripts/apply-smart-backend.service deploy/
           chmod +x deploy/deploy.sh
           tar -czf backend-deploy.tar.gz deploy/
 
@@ -78,10 +77,19 @@ jobs:
             cd /tmp
             tar -xzf backend-deploy.tar.gz
 
-            # Move to application directory
+            # Setup application directory
             sudo mkdir -p /var/www/apply-smart-ai
-            sudo mv deploy/* /var/www/apply-smart-ai/
             sudo chown -R $USER:$USER /var/www/apply-smart-ai
+
+            # Install systemd service (if not already installed)
+            if [ ! -f /etc/systemd/system/apply-smart-backend.service ]; then
+              echo "📦 Installing systemd service..."
+              sudo cp /tmp/deploy/apply-smart-backend.service /etc/systemd/system/
+              sudo chmod 644 /etc/systemd/system/apply-smart-backend.service
+              sudo systemctl daemon-reload
+              sudo systemctl enable apply-smart-backend
+              echo "✅ Service installed and enabled"
+            fi
 
             # Stop current service
             sudo systemctl stop apply-smart-backend || true
@@ -89,27 +97,39 @@ jobs:
             # Backup old JAR
             cd /var/www/apply-smart-ai
             if [ -f app.jar ]; then
+              echo "💾 Backing up current JAR..."
               mv app.jar app.jar.backup.$(date +%Y%m%d_%H%M%S)
             fi
 
             # Move new JAR
-            mv *.jar app.jar
+            echo "📦 Installing new JAR..."
+            mv /tmp/deploy/*.jar app.jar
+            chmod 644 app.jar
 
             # Ensure logs directory exists
             mkdir -p /var/www/apply-smart-ai/logs
 
-            # Start service
-            sudo systemctl start apply-smart-backend
-
-            # Cleanup
+            # Cleanup deployment files
             rm -rf /tmp/deploy /tmp/backend-deploy.tar.gz
 
+            # Start service
+            echo "🚀 Starting service..."
+            sudo systemctl start apply-smart-backend
+
             # Wait for application to start
-            echo "Waiting for application to start..."
+            echo "⏳ Waiting for application to start..."
             sleep 15
 
             # Check if service is running
-            sudo systemctl status apply-smart-backend
+            if sudo systemctl is-active --quiet apply-smart-backend; then
+              echo "✅ Service is running"
+              sudo systemctl status apply-smart-backend --no-pager | head -n 10
+            else
+              echo "❌ Service failed to start"
+              echo "Recent logs:"
+              sudo journalctl -u apply-smart-backend -n 50 --no-pager
+              exit 1
+            fi
           EOF
 
       - name: Health Check

@@ -1,0 +1,40 @@
+[Unit]
+Description=Apply Smart AI Backend Application
+Documentation=https://github.com/your-username/apply-smart-ai
+After=network.target docker.service postgresql.service redis.service
+Wants=postgresql.service redis.service
+
+[Service]
+Type=simple
+User=deploy
+Group=deploy
+WorkingDirectory=/var/www/apply-smart-ai
+
+# Environment
+Environment="JAVA_OPTS=-Xms512m -Xmx2048m -XX:+UseG1GC"
+EnvironmentFile=/var/www/apply-smart-ai/.env
+
+# Start command
+ExecStart=/usr/bin/java $JAVA_OPTS -jar /var/www/apply-smart-ai/app.jar
+
+# Restart policy
+Restart=always
+RestartSec=10
+StartLimitBurst=5
+StartLimitInterval=60s
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=apply-smart-backend
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Resource limits
+LimitNOFILE=65536
+TasksMax=4096
+
+[Install]
+WantedBy=multi-user.target

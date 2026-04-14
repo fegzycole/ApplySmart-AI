@@ -23,25 +23,20 @@ Quick reference checklist for deploying Apply Smart AI to production.
 - [ ] `.env.example` file up to date
 - [ ] Database migrations tested
 - [ ] Frontend builds successfully (`npm run build`)
-- [ ] Backend builds successfully (`./mvnw clean package`)
+- [ ] Backend builds successfully (`mvn clean package`)
 
 ## VPS Setup
 
 ### 1. Initial Server Configuration
-
-```bash
-# Run setup script
-sudo bash scripts/setup-vps.sh
-```
-
-**Manual steps if not using script:**
 
 - [ ] Update system: `sudo apt update && sudo apt upgrade -y`
 - [ ] Install Docker and Docker Compose
 - [ ] Install Java 17
 - [ ] Install Nginx
 - [ ] Install Certbot
-- [ ] Create `deploy` user
+- [ ] Create `deploy` user: `sudo useradd -m -s /bin/bash deploy`
+- [ ] Add to docker group: `sudo usermod -aG docker deploy`
+- [ ] **Configure passwordless sudo** (see DEPLOYMENT.md for command)
 - [ ] Configure UFW firewall (ports 22, 80, 443)
 - [ ] Setup fail2ban
 - [ ] Generate SSH key for GitHub
@@ -64,10 +59,12 @@ sudo bash scripts/setup-vps.sh
 
 ### 4. Systemd Service
 
+**Note:** The systemd service is automatically installed by GitHub Actions on first deployment.
+
+If you need to manually set it up (optional):
 - [ ] Copy service file: `sudo cp scripts/apply-smart-backend.service /etc/systemd/system/`
 - [ ] Reload systemd: `sudo systemctl daemon-reload`
 - [ ] Enable service: `sudo systemctl enable apply-smart-backend`
-- [ ] (Don't start yet - will be started by GitHub Actions)
 
 ### 5. Nginx Configuration
 

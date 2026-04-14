@@ -85,6 +85,20 @@ sudo useradd -m -s /bin/bash deploy
 sudo usermod -aG docker deploy
 sudo chown -R deploy:deploy /var/www/apply-smart-ai
 
+# Configure passwordless sudo for systemd service management (REQUIRED for GitHub Actions)
+sudo bash -c 'cat > /etc/sudoers.d/deploy-user <<EOF
+deploy ALL=(ALL) NOPASSWD: /bin/systemctl start apply-smart-backend
+deploy ALL=(ALL) NOPASSWD: /bin/systemctl stop apply-smart-backend
+deploy ALL=(ALL) NOPASSWD: /bin/systemctl restart apply-smart-backend
+deploy ALL=(ALL) NOPASSWD: /bin/systemctl status apply-smart-backend
+deploy ALL=(ALL) NOPASSWD: /bin/journalctl -u apply-smart-backend*
+deploy ALL=(ALL) NOPASSWD: /bin/mkdir -p /var/www/apply-smart-ai*
+deploy ALL=(ALL) NOPASSWD: /bin/chown -R deploy\:deploy /var/www/apply-smart-ai*
+EOF'
+
+# Set correct permissions
+sudo chmod 440 /etc/sudoers.d/deploy-user
+
 # Generate SSH key for GitHub Actions
 sudo -u deploy ssh-keygen -t ed25519 -C "github-actions@yourdomain.com"
 # Copy the public key and add as a deploy key to your GitHub repo
@@ -353,12 +367,14 @@ The GitHub Actions workflows will:
 
 ### Backend Workflow (on push to main):
 1. Build the Spring Boot application with Maven
-2. Create JAR file
+2. Create deployment package (JAR + service file)
 3. SSH into VPS
-4. Stop current backend service
-5. Deploy new JAR
-6. Restart backend service
-7. Run health checks
+4. Install systemd service (first deployment only)
+5. Stop current backend service
+6. Backup old JAR and deploy new JAR
+7. Start backend service
+8. Run health checks
+9. Auto-rollback on failure
 
 ### Frontend Workflow (on push to main):
 1. Build the Vite application
@@ -477,6 +493,38 @@ docker exec -it applysmart-postgres psql -U postgres -d applysmart
 
 - Add your frontend URL to `CORS_ALLOWED_ORIGINS` in backend .env
 - Restart backend after changing CORS settings
+
+### GitHub Actions: "sudo: a password is required"
+
+**Error:** GitHub Actions deployment fails with `sudo: a terminal is required to read the password`
+
+**Cause:** Deploy user doesn't have passwordless sudo configured
+
+**Solution:** Run this ONE command on your VPS:
+
+```bash
+# SSH into VPS as root
+ssh root@YOUR_VPS_IP
+
+# Configure passwordless sudo for deploy user
+sudo bash -c 'cat > /etc/sudoers.d/deploy-user <<EOF
+deploy ALL=(ALL) NOPASSWD: /bin/systemctl start apply-smart-backend
+deploy ALL=(ALL) NOPASSWD: /bin/systemctl stop apply-smart-backend
+deploy ALL=(ALL) NOPASSWD: /bin/systemctl restart apply-smart-backend
+deploy ALL=(ALL) NOPASSWD: /bin/systemctl status apply-smart-backend
+deploy ALL=(ALL) NOPASSWD: /bin/journalctl -u apply-smart-backend*
+deploy ALL=(ALL) NOPASSWD: /bin/mkdir -p /var/www/apply-smart-ai*
+deploy ALL=(ALL) NOPASSWD: /bin/chown -R deploy\:deploy /var/www/apply-smart-ai*
+EOF'
+
+# Set correct permissions
+sudo chmod 440 /etc/sudoers.d/deploy-user
+
+# Verify it works
+sudo -u deploy sudo systemctl status apply-smart-backend
+```
+
+This allows the deploy user to manage the systemd service without a password.
 
 ## Security Checklist
 
