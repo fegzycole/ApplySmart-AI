@@ -171,33 +171,32 @@ jobs:
           echo "🌐 Server: ${{ secrets.VPS_HOST }}"
           echo "✅ Health check passed"
 
-      # Rollback disabled for now - not useful during active development
-      # - name: Rollback on Failure
-      #   if: failure()
-      #   env:
-      #     VPS_HOST: ${{ secrets.VPS_HOST }}
-      #     VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
-      #     SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-      #   run: |
-      #     echo "⚠️ Deployment failed, attempting rollback..."
-      #
-      #     mkdir -p ~/.ssh
-      #     echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
-      #     chmod 600 ~/.ssh/deploy_key
-      #
-      #     ssh -i ~/.ssh/deploy_key $VPS_USERNAME@$VPS_HOST << 'EOF'
-      #       cd /var/www/apply-smart-ai
-      #
-      #       # Find latest backup
-      #       BACKUP=$(ls -t app.jar.backup.* 2>/dev/null | head -n 1)
-      #
-      #       if [ -n "$BACKUP" ]; then
-      #         echo "Rolling back to $BACKUP"
-      #         sudo systemctl stop apply-smart-backend || true
-      #         cp "$BACKUP" app.jar
-      #         sudo systemctl start apply-smart-backend
-      #         echo "✅ Rollback completed"
-      #       else
-      #         echo "⚠️ No backup found for rollback"
-      #       fi
-      #     EOF
+      - name: Rollback on Failure
+        if: failure()
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USERNAME: ${{ secrets.VPS_USERNAME }}
+          SSH_PRIVATE_KEY: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+        run: |
+          echo "⚠️ Deployment failed, attempting rollback..."
+
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          ssh -i ~/.ssh/deploy_key $VPS_USERNAME@$VPS_HOST << 'EOF'
+            cd /var/www/apply-smart-ai
+
+            # Find latest backup
+            BACKUP=$(ls -t app.jar.backup.* 2>/dev/null | head -n 1)
+
+            if [ -n "$BACKUP" ]; then
+              echo "Rolling back to $BACKUP"
+              sudo systemctl stop apply-smart-backend || true
+              cp "$BACKUP" app.jar
+              sudo systemctl start apply-smart-backend
+              echo "✅ Rollback completed"
+            else
+              echo "⚠️ No backup found for rollback"
+            fi
+          EOF
