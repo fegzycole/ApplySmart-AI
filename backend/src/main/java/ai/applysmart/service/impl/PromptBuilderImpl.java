@@ -72,11 +72,10 @@ public class PromptBuilderImpl implements PromptBuilder {
         return """
                 Please provide your analysis in the following JSON format:
                 {
-                  "overallScore": <number 0-100>,
-                  "atsScore": <number 0-100>,
+                  "score": <number 0-100>,
+                  "atsCompatibility": <number 0-100>,
                   "strengths": ["<strength 1>", "<strength 2>", ...],
-                  "weaknesses": ["<weakness 1>", "<weakness 2>", ...],
-                  "suggestions": ["<suggestion 1>", "<suggestion 2>", ...],
+                  "improvements": ["<improvement 1>", "<improvement 2>", ...],
                   "keywords": ["<keyword 1>", "<keyword 2>", ...]
                 }
 
@@ -97,10 +96,10 @@ public class PromptBuilderImpl implements PromptBuilder {
         return """
                 Return a JSON object with the following format:
                 {
-                  "optimizedContent": "<complete optimized resume text>",
+                  "originalScore": <number 0-100 representing the original resume score>,
+                  "optimizedScore": <number 0-100 representing the optimized resume score>,
                   "changes": ["<change 1>", "<change 2>", ...],
-                  "keywords": ["<keyword 1>", "<keyword 2>", ...],
-                  "atsScore": <number 0-100>
+                  "content": "<complete optimized resume text>"
                 }
 
                 Requirements:
@@ -110,6 +109,7 @@ public class PromptBuilderImpl implements PromptBuilder {
                 - Quantify achievements where possible
                 - Ensure ATS-friendly formatting
                 - Keep the same overall length (±10%)
+                - IMPORTANT: Limit each experience entry to a maximum of 5 bullet points. If there are more than 5, consolidate or remove the least impactful ones.
                 """;
     }
 

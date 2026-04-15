@@ -127,22 +127,27 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
         String primaryColor = layout.getPrimaryColor() != null ? layout.getPrimaryColor() : "#000000";
         double fontSize = layout.getAverageFontSize() != null ? layout.getAverageFontSize() : 11.0;
         double headingSize = layout.getHeadingFontSize() != null ? layout.getHeadingFontSize() : 16.0;
+        int lineSpacing = layout.getLineSpacing() != null ? layout.getLineSpacing() : (int) Math.round(fontSize * 1.4);
+
+        // Calculate line-height as a ratio (lineSpacing / fontSize)
+        // This preserves the original document's line spacing
+        double lineHeight = lineSpacing / fontSize;
 
         // Build comprehensive font stack with fallbacks
         String fontStack = buildFontStack(primaryFont);
 
-        log.info("Generating PDF with font: {} (stack: {}), size: {}pt, accent color: {}",
-                 primaryFont, fontStack, fontSize, accentColor);
+        log.info("Generating PDF with font: {} (stack: {}), size: {}pt, line-height: {}, accent color: {}",
+                 primaryFont, fontStack, fontSize, lineHeight, accentColor);
 
         return String.format(
-            "@page { size: A4; margin: 0.75in; } " +
+            "@page { size: A4; margin: 0.5in; } " +
             "* { " +
             "  -fs-font-subset: complete-font; " +
             "} " +
             "body { " +
             "  font-family: %s; " +
             "  font-size: %.1fpt; " +
-            "  line-height: 1.4; " +
+            "  line-height: %.2f; " +
             "  color: %s; " +
             "  margin: 0; " +
             "  padding: 0; " +
@@ -155,6 +160,7 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
             "  margin: 0 0 8pt 0; " +
             "  padding: 0; " +
             "  text-align: center; " +
+            "  line-height: %.2f; " +
             "} " +
             "h2 { " +
             "  font-family: %s; " +
@@ -165,11 +171,13 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
             "  padding-bottom: 3pt; " +
             "  border-bottom: 1.5pt solid %s; " +
             "  text-transform: uppercase; " +
+            "  line-height: %.2f; " +
             "} " +
             "p { " +
             "  margin: 4pt 0; " +
             "  padding: 0; " +
             "  font-family: %s; " +
+            "  line-height: %.2f; " +
             "} " +
             "ul { " +
             "  margin: 4pt 0; " +
@@ -179,6 +187,7 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
             "  margin: 2pt 0; " +
             "  padding: 0; " +
             "  font-family: %s; " +
+            "  line-height: %.2f; " +
             "} " +
             "strong { " +
             "  font-weight: bold; " +
@@ -187,11 +196,11 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
             "br { " +
             "  line-height: 0.5; " +
             "}",
-            fontStack, fontSize, primaryColor,
-            fontStack, headingSize, accentColor,
-            fontStack, fontSize * 1.2, accentColor, accentColor,
-            fontStack,
-            fontStack,
+            fontStack, fontSize, lineHeight, primaryColor,
+            fontStack, headingSize, accentColor, lineHeight * 0.9,
+            fontStack, fontSize * 1.2, accentColor, accentColor, lineHeight * 0.95,
+            fontStack, lineHeight,
+            fontStack, lineHeight,
             accentColor
         );
     }

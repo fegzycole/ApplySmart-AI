@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -168,12 +169,29 @@ public class ResumeServiceImpl implements ResumeService {
 
         long timestamp = System.currentTimeMillis();
 
-        // Use professional default layout (Calibri font, dark blue accents)
-        ai.applysmart.dto.resume.ResumeLayoutInfo defaultLayout = LayoutUtils.createDefaultProfessionalLayout();
+        // Try to analyze layout from original PDF if available
+        ai.applysmart.dto.resume.ResumeLayoutInfo layoutInfo = null;
+        if (resume.getFileUrl() != null && resume.getName() != null && resume.getName().toLowerCase().endsWith(".pdf")) {
+            try {
+                log.info("Analyzing layout from original PDF: {}", resume.getFileUrl());
+                byte[] originalPdfBytes = downloadFileFromUrl(resume.getFileUrl());
+                layoutInfo = pdfLayoutAnalyzer.analyzeLayout(originalPdfBytes);
+                log.info("Successfully analyzed layout - Primary font: {}, Accent color: {}",
+                         layoutInfo.getPrimaryFont(), layoutInfo.getAccentColor());
+            } catch (Exception e) {
+                log.warn("Failed to analyze original PDF layout, using default: {}", e.getMessage());
+            }
+        }
 
-        // Generate PDF with professional styling
+        // Fall back to default layout if no PDF or analysis failed
+        if (layoutInfo == null) {
+            log.info("Using default professional layout");
+            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
+        }
+
+        // Generate PDF with analyzed or default styling
         String pdfFilename = String.format("resume-%d-optimized-%d.pdf", id, timestamp);
-        byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), defaultLayout);
+        byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
 
         // Delete old files if they exist
@@ -190,9 +208,25 @@ public class ResumeServiceImpl implements ResumeService {
         resume.setCloudinaryPublicId(pdfUploadResult.getPublicId());
         resumeRepository.save(resume);
 
-        optimization.setPdfUrl(pdfUploadResult.getUrl());
-        optimization.setFileUrl(pdfUploadResult.getUrl()); // Backward compatibility
+        optimization.setFileUrl(pdfUploadResult.getUrl());
         return optimization;
+    }
+
+    /**
+     * Download file from URL and return as byte array
+     */
+    private byte[] downloadFileFromUrl(String fileUrl) throws IOException {
+        log.debug("Downloading file from URL: {}", fileUrl);
+        java.net.URL url = new java.net.URL(fileUrl);
+        try (java.io.InputStream in = url.openStream();
+             java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream()) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            return out.toByteArray();
+        }
     }
 
     @Override
@@ -269,8 +303,7 @@ public class ResumeServiceImpl implements ResumeService {
         byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
 
-        optimization.setPdfUrl(pdfUploadResult.getUrl());
-        optimization.setFileUrl(pdfUploadResult.getUrl()); // Backward compatibility
+        optimization.setFileUrl(pdfUploadResult.getUrl());
         return optimization;
     }
 

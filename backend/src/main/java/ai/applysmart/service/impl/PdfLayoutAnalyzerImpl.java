@@ -36,16 +36,20 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
         Map<String, Integer> fontCounts = new HashMap<>();
         List<Float> fontSizes = new ArrayList<>();
         Set<String> detectedFonts = new HashSet<>();
+        List<Float> yPositions = new ArrayList<>();
 
         try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
 
-            // Create custom stripper to extract font information
+            // Create custom stripper to extract font and position information
             PDFTextStripper stripper = new PDFTextStripper() {
+                private float lastY = -1;
+
                 @Override
                 protected void writeString(String text, List<TextPosition> textPositions) throws IOException {
                     for (TextPosition position : textPositions) {
                         PDFont font = position.getFont();
                         float fontSize = position.getFontSizeInPt();
+                        float yPos = position.getY();
 
                         if (font != null) {
                             String fontName = extractFontFamily(font.getName());
@@ -58,6 +62,12 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
                         if (fontSize > 0) {
                             fontSizes.add(fontSize);
                         }
+
+                        // Track Y positions for line spacing calculation
+                        if (lastY > 0 && Math.abs(yPos - lastY) > 1) {
+                            yPositions.add(Math.abs(yPos - lastY));
+                        }
+                        lastY = yPos;
                     }
                     super.writeString(text, textPositions);
                 }
@@ -67,11 +77,11 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
             StringWriter writer = new StringWriter();
             stripper.writeText(document, writer);
 
-            log.info("Font analysis complete. Detected {} unique fonts, {} font size samples",
-                     detectedFonts.size(), fontSizes.size());
+            log.info("Font analysis complete. Detected {} unique fonts, {} font size samples, {} line spacing samples",
+                     detectedFonts.size(), fontSizes.size(), yPositions.size());
             log.info("Font usage: {}", fontCounts);
 
-            return buildLayoutInfo(fontCounts, fontSizes, detectedFonts);
+            return buildLayoutInfo(fontCounts, fontSizes, detectedFonts, yPositions);
 
         } catch (IOException e) {
             log.error("Error analyzing PDF layout", e);
@@ -109,7 +119,8 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
 
     private ResumeLayoutInfo buildLayoutInfo(Map<String, Integer> fontCounts,
                                              List<Float> fontSizes,
-                                             Set<String> detectedFonts) {
+                                             Set<String> detectedFonts,
+                                             List<Float> yPositions) {
         // Determine primary font (most used)
         String primaryFont = fontCounts.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
@@ -134,8 +145,11 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
                 .max()
                 .orElse(16.0);
 
-        log.info("Primary font: {}, Secondary font: {}, Avg size: {}pt, Heading size: {}pt",
-                 primaryFont, secondaryFont, averageFontSize, headingFontSize);
+        // Calculate line spacing from Y positions
+        int lineSpacing = calculateLineSpacing(yPositions, averageFontSize);
+
+        log.info("Primary font: {}, Secondary font: {}, Avg size: {}pt, Heading size: {}pt, Line spacing: {}pt",
+                 primaryFont, secondaryFont, averageFontSize, headingFontSize, lineSpacing);
 
         return ResumeLayoutInfo.builder()
                 .primaryFont(primaryFont)
@@ -148,8 +162,41 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
                 .averageFontSize(averageFontSize)
                 .headingFontSize(headingFontSize)
                 .hasMultipleColumns(false)
-                .lineSpacing(14)
+                .lineSpacing(lineSpacing)
                 .build();
+    }
+
+    /**
+     * Calculate line spacing from Y position differences
+     */
+    private int calculateLineSpacing(List<Float> yPositions, double averageFontSize) {
+        if (yPositions.isEmpty()) {
+            return (int) Math.round(averageFontSize * 1.3); // Default 1.3x font size
+        }
+
+        // Filter out outliers (very large or very small gaps)
+        double median = yPositions.stream()
+                .mapToDouble(Float::doubleValue)
+                .sorted()
+                .skip(yPositions.size() / 2)
+                .findFirst()
+                .orElse(averageFontSize * 1.3);
+
+        List<Float> filtered = yPositions.stream()
+                .filter(y -> y > averageFontSize * 0.8 && y < averageFontSize * 3.0)
+                .collect(java.util.stream.Collectors.toList());
+
+        if (filtered.isEmpty()) {
+            return (int) Math.round(median);
+        }
+
+        // Calculate average line spacing
+        double avgLineSpacing = filtered.stream()
+                .mapToDouble(Float::doubleValue)
+                .average()
+                .orElse(median);
+
+        return (int) Math.round(avgLineSpacing);
     }
 
     private ResumeLayoutInfo getDefaultLayout() {

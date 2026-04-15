@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -42,8 +44,133 @@ public class FileParserServiceImpl implements FileParserService {
 
     private String extractTextFromPdf(MultipartFile file) throws IOException {
         try (PDDocument document = PDDocument.load(file.getInputStream())) {
-            PDFTextStripper stripper = new PDFTextStripper();
+            // Use custom stripper to preserve formatting
+            StructuredPDFTextStripper stripper = new StructuredPDFTextStripper();
             return stripper.getText(document);
+        }
+    }
+
+    /**
+     * Custom PDF text stripper that preserves structure (headings, bold text) as markdown
+     */
+    private static class StructuredPDFTextStripper extends PDFTextStripper {
+        private final List<TextInfo> textInfos = new ArrayList<>();
+        private float averageFontSize = 0;
+        private float maxFontSize = 0;
+
+        private static class TextInfo {
+            String text;
+            float fontSize;
+            boolean isBold;
+
+            TextInfo(String text, float fontSize, boolean isBold) {
+                this.text = text;
+                this.fontSize = fontSize;
+                this.isBold = isBold;
+            }
+        }
+
+        public StructuredPDFTextStripper() throws IOException {
+            super();
+        }
+
+        @Override
+        protected void writeString(String text, List<org.apache.pdfbox.text.TextPosition> textPositions) throws IOException {
+            if (textPositions.isEmpty()) {
+                super.writeString(text, textPositions);
+                return;
+            }
+
+            // Get font info from first position
+            org.apache.pdfbox.text.TextPosition firstPos = textPositions.get(0);
+            float fontSize = firstPos.getFontSizeInPt();
+            String fontName = firstPos.getFont() != null ? firstPos.getFont().getName() : "";
+            boolean isBold = fontName.toLowerCase().contains("bold");
+
+            // Track font sizes for analysis
+            if (fontSize > maxFontSize) {
+                maxFontSize = fontSize;
+            }
+
+            textInfos.add(new TextInfo(text, fontSize, isBold));
+            super.writeString(text, textPositions);
+        }
+
+        @Override
+        public String getText(org.apache.pdfbox.pdmodel.PDDocument document) throws IOException {
+            // First pass: collect text with formatting info
+            textInfos.clear();
+            maxFontSize = 0;
+            String rawText = super.getText(document);
+
+            // Calculate average font size
+            if (!textInfos.isEmpty()) {
+                float sum = 0;
+                for (TextInfo info : textInfos) {
+                    sum += info.fontSize;
+                }
+                averageFontSize = sum / textInfos.size();
+            }
+
+            // Second pass: reconstruct with markdown formatting
+            StringBuilder formatted = new StringBuilder();
+            String[] lines = rawText.split("\\n");
+            int textInfoIndex = 0;
+
+            for (String line : lines) {
+                if (line.trim().isEmpty()) {
+                    formatted.append("\n");
+                    continue;
+                }
+
+                // Find font size for this line
+                float lineFontSize = averageFontSize;
+                boolean lineBold = false;
+
+                if (textInfoIndex < textInfos.size()) {
+                    // Look ahead to find the text info for this line
+                    for (int i = textInfoIndex; i < textInfos.size(); i++) {
+                        TextInfo info = textInfos.get(i);
+                        if (line.contains(info.text.trim())) {
+                            lineFontSize = info.fontSize;
+                            lineBold = info.isBold;
+                            textInfoIndex = i + 1;
+                            break;
+                        }
+                    }
+                }
+
+                // Format based on size and style
+                String formattedLine = formatLine(line, lineFontSize, lineBold);
+                formatted.append(formattedLine).append("\n");
+            }
+
+            return formatted.toString();
+        }
+
+        private String formatLine(String line, float fontSize, boolean isBold) {
+            String trimmed = line.trim();
+
+            // Detect if this is likely a heading based on font size
+            boolean isMainHeading = fontSize >= maxFontSize * 0.9; // Within 90% of max
+            boolean isSubHeading = fontSize >= averageFontSize * 1.3; // 30% larger than average
+
+            // Main heading (name)
+            if (isMainHeading && trimmed.length() < 50) {
+                return "# " + trimmed;
+            }
+            // Section heading (EXPERIENCE, EDUCATION, etc.)
+            else if ((isSubHeading || isBold) && trimmed.length() < 50 && trimmed.toUpperCase().equals(trimmed)) {
+                return "## " + trimmed;
+            }
+            // Bold text (job titles, company names)
+            else if (isBold && !trimmed.startsWith("•") && !trimmed.startsWith("-")) {
+                return "**" + trimmed + "**";
+            }
+            // Regular text
+            else {
+                return line;
+            }
         }
     }
 
