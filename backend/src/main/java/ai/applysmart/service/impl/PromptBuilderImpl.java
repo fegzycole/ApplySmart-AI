@@ -5,10 +5,6 @@ import ai.applysmart.util.TextUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/**
- * Implementation of prompt building service.
- * Centralizes all AI prompt construction logic.
- */
 @Slf4j
 @Service
 public class PromptBuilderImpl implements PromptBuilder {
@@ -65,9 +61,6 @@ public class PromptBuilderImpl implements PromptBuilder {
         return prompt.toString();
     }
 
-    /**
-     * Build detailed analysis instructions.
-     */
     private String buildAnalysisInstructions() {
         return """
                 Please provide your analysis in the following JSON format:
@@ -89,9 +82,6 @@ public class PromptBuilderImpl implements PromptBuilder {
                 """;
     }
 
-    /**
-     * Build optimization instructions.
-     */
     private String buildOptimizationInstructions() {
         return """
                 Return a JSON object with the following format:
@@ -113,9 +103,6 @@ public class PromptBuilderImpl implements PromptBuilder {
                 """;
     }
 
-    /**
-     * Build cover letter instructions based on tone.
-     */
     private String buildCoverLetterInstructions(String tone) {
         String toneInstruction = getToneInstruction(tone);
 
@@ -138,9 +125,6 @@ public class PromptBuilderImpl implements PromptBuilder {
                 """, toneInstruction);
     }
 
-    /**
-     * Get tone-specific instructions.
-     */
     private String getToneInstruction(String tone) {
         if (TextUtils.isBlank(tone)) {
             return "Use a professional, enthusiastic tone";
@@ -155,9 +139,6 @@ public class PromptBuilderImpl implements PromptBuilder {
         };
     }
 
-    /**
-     * Append section to prompt if value is present.
-     */
     private void appendIfPresent(StringBuilder prompt, String label, String value) {
         if (TextUtils.isNotBlank(value)) {
             prompt.append(label).append(":\n").append(value).append("\n\n");

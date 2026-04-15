@@ -101,17 +101,14 @@ public class SettingsServiceImpl implements SettingsService {
     public void changePassword(ChangePasswordRequest request, User user) {
         log.info("Changing password for user: {}", user.getId());
 
-        // Check if user has a password (OAuth users might not)
         if (user.getPassword() == null || user.getPassword().isEmpty()) {
             throw new BadRequestException("Cannot change password for OAuth users");
         }
 
-        // Verify current password
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new BadRequestException("Current password is incorrect");
         }
 
-        // Update password
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
 
@@ -202,7 +199,6 @@ public class SettingsServiceImpl implements SettingsService {
     public void deleteAccount(User user) {
         log.info("Deleting account for user: {}", user.getId());
 
-        // Delete user (cascade will handle related entities)
         userRepository.delete(user);
 
         log.info("Account deleted for user: {}", user.getId());

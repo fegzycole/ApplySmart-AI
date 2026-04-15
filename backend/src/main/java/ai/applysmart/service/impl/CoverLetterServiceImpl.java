@@ -50,20 +50,16 @@ public class CoverLetterServiceImpl implements CoverLetterService {
         String resumeContent = null;
         ResumeLayoutInfo layoutInfo = null;
 
-        // Get resume content if resumeId is provided
         if (request.getResumeId() != null) {
             Resume resume = resumeRepository.findByIdAndUser(request.getResumeId(), user)
                     .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
             resumeContent = resume.getContent();
 
-            // Use default professional layout for text-based resumes
             layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
         } else {
-            // Use default layout if no resume provided
             layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
         }
 
-        // Generate cover letter with Claude
         String coverLetterContent = claudeService.generateCoverLetter(
                 resumeContent,
                 request.getJobDescription(),
@@ -75,7 +71,6 @@ public class CoverLetterServiceImpl implements CoverLetterService {
 
         long timestamp = System.currentTimeMillis();
 
-        // Generate PDF
         String pdfFilename = String.format("user-%d-cover-letter-%s-%s-%d.pdf",
                 user.getId(),
                 request.getCompany().replaceAll("[^a-zA-Z0-9]", "-"),
@@ -84,10 +79,8 @@ public class CoverLetterServiceImpl implements CoverLetterService {
         byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(coverLetterContent, layoutInfo);
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
 
-        // Calculate word count
         Integer wordCount = calculateWordCount(coverLetterContent);
 
-        // Save cover letter entity
         CoverLetter coverLetter = CoverLetter.builder()
                 .user(user)
                 .company(request.getCompany())
@@ -120,23 +113,19 @@ public class CoverLetterServiceImpl implements CoverLetterService {
         String resumeContent = null;
         ResumeLayoutInfo layoutInfo = null;
 
-        // Extract resume content and layout if file is provided
         if (resumeFile != null && !resumeFile.isEmpty()) {
             resumeContent = fileParserService.extractTextFromFile(resumeFile);
             layoutInfo = pdfLayoutAnalyzer.analyzeLayout(resumeFile);
             log.info("Extracted resume - Primary font: {}", layoutInfo.getPrimaryFont());
         } else {
-            // Use default professional layout
             layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
         }
 
-        // Generate cover letter with Claude
         String coverLetterContent = claudeService.generateCoverLetter(
                 resumeContent, jobDescription, companyName, positionTitle, tone, keyAchievements);
 
         long timestamp = System.currentTimeMillis();
 
-        // Generate PDF
         String pdfFilename = String.format("user-%d-cover-letter-%d.pdf", user.getId(), timestamp);
         byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(coverLetterContent, layoutInfo);
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
@@ -218,10 +207,8 @@ public class CoverLetterServiceImpl implements CoverLetterService {
         CoverLetter existingCoverLetter = coverLetterRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Cover letter not found"));
 
-        // Delete the old one
         coverLetterRepository.delete(existingCoverLetter);
 
-        // Generate new one with the provided request
         return generateCoverLetter(request, user);
     }
 

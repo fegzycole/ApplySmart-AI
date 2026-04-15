@@ -120,7 +120,6 @@ public class ResumeServiceImpl implements ResumeService {
         Resume resume = resumeRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
 
-        // Delete file from storage if exists
         if (resume.getCloudinaryPublicId() != null) {
             fileStorageService.deleteFile(resume.getCloudinaryPublicId());
         }
@@ -142,7 +141,6 @@ public class ResumeServiceImpl implements ResumeService {
 
         ResumeAnalysisDto analysis = claudeService.analyzeResume(resume.getContent(), jobDescription);
 
-        // Update resume score
         resume.setScore(analysis.getScore());
         resume.setAtsScore(analysis.getAtsCompatibility());
         resumeRepository.save(resume);
@@ -169,7 +167,6 @@ public class ResumeServiceImpl implements ResumeService {
 
         long timestamp = System.currentTimeMillis();
 
-        // Try to analyze layout from original PDF if available
         ai.applysmart.dto.resume.ResumeLayoutInfo layoutInfo = null;
         if (resume.getFileUrl() != null && resume.getName() != null && resume.getName().toLowerCase().endsWith(".pdf")) {
             try {
@@ -183,23 +180,19 @@ public class ResumeServiceImpl implements ResumeService {
             }
         }
 
-        // Fall back to default layout if no PDF or analysis failed
         if (layoutInfo == null) {
             log.info("Using default professional layout");
             layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
         }
 
-        // Generate PDF with analyzed or default styling
         String pdfFilename = String.format("resume-%d-optimized-%d.pdf", id, timestamp);
         byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
 
-        // Delete old files if they exist
         if (resume.getCloudinaryPublicId() != null) {
             fileStorageService.deleteFile(resume.getCloudinaryPublicId());
         }
 
-        // Update resume (store PDF URL as primary)
         resume.setContent(optimization.getContent());
         resume.setScore(optimization.getOptimizedScore());
         resume.setStatus(Resume.Status.OPTIMIZED);
@@ -212,9 +205,6 @@ public class ResumeServiceImpl implements ResumeService {
         return optimization;
     }
 
-    /**
-     * Download file from URL and return as byte array
-     */
     private byte[] downloadFileFromUrl(String fileUrl) throws IOException {
         log.debug("Downloading file from URL: {}", fileUrl);
         java.net.URL url = new java.net.URL(fileUrl);
@@ -243,11 +233,9 @@ public class ResumeServiceImpl implements ResumeService {
             throw new BadRequestException("Invalid file name");
         }
 
-        // Extract text and upload file
         String content = fileParserService.extractTextFromFile(file);
         ai.applysmart.dto.FileUploadResult uploadResult = fileStorageService.uploadFile(file);
 
-        // Create resume entity
         Resume resume = Resume.builder()
                 .user(user)
                 .name(originalFilename)
@@ -285,20 +273,16 @@ public class ResumeServiceImpl implements ResumeService {
             throw new BadRequestException("Job description is required");
         }
 
-        // Analyze original PDF layout (fonts, colors, structure)
         ai.applysmart.dto.resume.ResumeLayoutInfo layoutInfo = pdfLayoutAnalyzer.analyzeLayout(file);
         log.info("Extracted layout info - Primary font: {}, Accent color: {}",
                  layoutInfo.getPrimaryFont(), layoutInfo.getAccentColor());
 
-        // Extract text from uploaded file
         String originalContent = fileParserService.extractTextFromFile(file);
 
-        // Optimize with Claude
         ResumeOptimizationDto optimization = claudeService.optimizeResume(originalContent, jobDescription);
 
         long timestamp = System.currentTimeMillis();
 
-        // Generate PDF with preserved layout and styling
         String pdfFilename = String.format("user-%d-optimized-%d.pdf", user.getId(), timestamp);
         byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);

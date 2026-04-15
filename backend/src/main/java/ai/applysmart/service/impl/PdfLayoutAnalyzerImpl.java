@@ -40,7 +40,6 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
 
         try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
 
-            // Create custom stripper to extract font and position information
             PDFTextStripper stripper = new PDFTextStripper() {
                 private float lastY = -1;
 
@@ -63,7 +62,6 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
                             fontSizes.add(fontSize);
                         }
 
-                        // Track Y positions for line spacing calculation
                         if (lastY > 0 && Math.abs(yPos - lastY) > 1) {
                             yPositions.add(Math.abs(yPos - lastY));
                         }
@@ -73,7 +71,6 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
                 }
             };
 
-            // Extract text to trigger font analysis
             StringWriter writer = new StringWriter();
             stripper.writeText(document, writer);
 
@@ -94,14 +91,11 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
             return "Arial";
         }
 
-        // Remove subset prefix (e.g., "ABCDEE+FontName" -> "FontName")
         String cleaned = fullFontName.replaceAll("^[A-Z]{6}\\+", "");
 
-        // Extract base font family
-        cleaned = cleaned.split("-")[0];  // "TimesNewRoman-Bold" -> "TimesNewRoman"
-        cleaned = cleaned.split(",")[0];   // "Arial,Bold" -> "Arial"
+        cleaned = cleaned.split("-")[0];
+        cleaned = cleaned.split(",")[0];
 
-        // Map common PDF fonts to web-safe fonts
         if (cleaned.contains("Times")) return "Times New Roman";
         if (cleaned.contains("Helvetica") || cleaned.contains("Arial")) return "Arial";
         if (cleaned.contains("Courier")) return "Courier New";
@@ -121,20 +115,17 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
                                              List<Float> fontSizes,
                                              Set<String> detectedFonts,
                                              List<Float> yPositions) {
-        // Determine primary font (most used)
         String primaryFont = fontCounts.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse("Arial");
 
-        // Determine secondary font (second most used)
         String secondaryFont = fontCounts.entrySet().stream()
                 .filter(e -> !e.getKey().equals(primaryFont))
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse(primaryFont);
 
-        // Calculate average and heading font sizes
         double averageFontSize = fontSizes.stream()
                 .mapToDouble(Float::doubleValue)
                 .average()
@@ -145,7 +136,6 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
                 .max()
                 .orElse(16.0);
 
-        // Calculate line spacing from Y positions
         int lineSpacing = calculateLineSpacing(yPositions, averageFontSize);
 
         log.info("Primary font: {}, Secondary font: {}, Avg size: {}pt, Heading size: {}pt, Line spacing: {}pt",
@@ -154,9 +144,9 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
         return ResumeLayoutInfo.builder()
                 .primaryFont(primaryFont)
                 .secondaryFont(secondaryFont)
-                .primaryColor("#000000")  // Default black
-                .accentColor("#2c3e50")   // Default dark blue
-                .backgroundColor("#ffffff") // White background
+                .primaryColor("#000000")
+                .accentColor("#2c3e50")
+                .backgroundColor("#ffffff")
                 .detectedFonts(new ArrayList<>(detectedFonts))
                 .fontUsageCount(fontCounts)
                 .averageFontSize(averageFontSize)
@@ -166,15 +156,11 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
                 .build();
     }
 
-    /**
-     * Calculate line spacing from Y position differences
-     */
     private int calculateLineSpacing(List<Float> yPositions, double averageFontSize) {
         if (yPositions.isEmpty()) {
-            return (int) Math.round(averageFontSize * 1.3); // Default 1.3x font size
+            return (int) Math.round(averageFontSize * 1.3);
         }
 
-        // Filter out outliers (very large or very small gaps)
         double median = yPositions.stream()
                 .mapToDouble(Float::doubleValue)
                 .sorted()
@@ -190,7 +176,6 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
             return (int) Math.round(median);
         }
 
-        // Calculate average line spacing
         double avgLineSpacing = filtered.stream()
                 .mapToDouble(Float::doubleValue)
                 .average()

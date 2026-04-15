@@ -11,10 +11,6 @@ import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Redis-based implementation of token management service.
- * Uses Redis for high-performance token storage and revocation.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,11 +31,9 @@ public class TokenServiceImpl implements TokenService {
                 return;
             }
 
-            // Store token with user ID
             String tokenKey = ACTIVE_TOKEN_PREFIX + jti;
             redisTemplate.opsForValue().set(tokenKey, userId, ttl, TimeUnit.MILLISECONDS);
 
-            // Add token to user's token set
             String userTokensKey = USER_TOKENS_PREFIX + userId;
             redisTemplate.opsForSet().add(userTokensKey, jti);
             redisTemplate.expire(userTokensKey, ttl, TimeUnit.MILLISECONDS);
@@ -53,11 +47,9 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public boolean isTokenRevoked(String jti) {
         try {
-            // Check if token is in blacklist
             String blacklistKey = BLACKLIST_TOKEN_PREFIX + jti;
             Boolean isBlacklisted = redisTemplate.hasKey(blacklistKey);
 
-            // Check if token exists in active list
             String tokenKey = ACTIVE_TOKEN_PREFIX + jti;
             Boolean isActive = redisTemplate.hasKey(tokenKey);
 
@@ -71,7 +63,6 @@ public class TokenServiceImpl implements TokenService {
             return revoked;
         } catch (Exception e) {
             log.error("Failed to check token revocation status: {}", jti, e);
-            // Fail secure: treat as revoked if we can't verify
             return true;
         }
     }
@@ -79,16 +70,13 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public void revokeToken(String jti, Duration remainingTTL) {
         try {
-            // Add to blacklist
             String blacklistKey = BLACKLIST_TOKEN_PREFIX + jti;
             redisTemplate.opsForValue().set(blacklistKey, true, remainingTTL);
 
-            // Remove from active tokens
             String tokenKey = ACTIVE_TOKEN_PREFIX + jti;
             Object userId = redisTemplate.opsForValue().get(tokenKey);
 
             if (userId != null) {
-                // Remove from user's token set
                 String userTokensKey = USER_TOKENS_PREFIX + userId;
                 redisTemplate.opsForSet().remove(userTokensKey, jti);
             }
@@ -116,18 +104,15 @@ public class TokenServiceImpl implements TokenService {
             for (Object jti : userTokens) {
                 String jtiStr = jti.toString();
 
-                // Add to blacklist with default 7-day TTL
                 String blacklistKey = BLACKLIST_TOKEN_PREFIX + jtiStr;
                 redisTemplate.opsForValue().set(blacklistKey, true, 7, TimeUnit.DAYS);
 
-                // Remove from active tokens
                 String tokenKey = ACTIVE_TOKEN_PREFIX + jtiStr;
                 redisTemplate.delete(tokenKey);
 
                 revokedCount++;
             }
 
-            // Clear user's token set
             redisTemplate.delete(userTokensKey);
 
             log.info("Revoked {} tokens for user: {}", revokedCount, userId);
@@ -153,7 +138,6 @@ public class TokenServiceImpl implements TokenService {
         try {
             log.info("Starting cleanup of expired tokens");
 
-            // Redis automatically removes expired keys, but we can log the cleanup
             Set<String> activeTokenKeys = redisTemplate.keys(ACTIVE_TOKEN_PREFIX + "*");
             Set<String> blacklistKeys = redisTemplate.keys(BLACKLIST_TOKEN_PREFIX + "*");
 
