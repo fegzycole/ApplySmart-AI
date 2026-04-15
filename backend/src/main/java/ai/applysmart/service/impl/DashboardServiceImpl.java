@@ -47,7 +47,6 @@ public class DashboardServiceImpl implements DashboardService {
         List<Job> allJobs = jobRepository.findByUserOrderByUpdatedAtDesc(user);
         List<Resume> allResumes = resumeRepository.findByUserOrderByUpdatedAtDesc(user);
 
-        // Calculate statistics
         long totalApplications = allJobs.size();
         long activeApplications = allJobs.stream()
                 .filter(job -> job.getStatus() == Job.Status.APPLIED || job.getStatus() == Job.Status.INTERVIEW)
@@ -59,7 +58,6 @@ public class DashboardServiceImpl implements DashboardService {
                 .filter(job -> job.getStatus() == Job.Status.OFFER)
                 .count();
 
-        // Calculate trends (compared to last 30 days)
         LocalDateTime thirtyDaysAgo = LocalDateTime.now().minus(30, ChronoUnit.DAYS);
         long recentApplications = allJobs.stream()
                 .filter(job -> job.getCreatedAt().isAfter(thirtyDaysAgo))
@@ -134,7 +132,6 @@ public class DashboardServiceImpl implements DashboardService {
             );
         }
 
-        // Count jobs by status
         Map<Job.Status, Long> statusCounts = allJobs.stream()
                 .collect(Collectors.groupingBy(Job::getStatus, Collectors.counting()));
 

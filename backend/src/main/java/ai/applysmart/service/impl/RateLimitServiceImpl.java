@@ -21,10 +21,6 @@ import jakarta.annotation.PreDestroy;
 import java.time.Duration;
 import java.util.function.Supplier;
 
-/**
- * Redis-based rate limiting implementation using Bucket4j.
- * Uses token bucket algorithm for flexible rate limiting.
- */
 @Slf4j
 @Service
 public class RateLimitServiceImpl implements RateLimitService {
@@ -54,7 +50,6 @@ public class RateLimitServiceImpl implements RateLimitService {
     @PostConstruct
     public void init() {
         try {
-            // Build Redis URI with authentication
             String redisUri = redisPassword != null && !redisPassword.isEmpty()
                     ? String.format("redis://%s@%s:%d", redisPassword, redisHost, redisPort)
                     : String.format("redis://%s:%d", redisHost, redisPort);
@@ -109,7 +104,6 @@ public class RateLimitServiceImpl implements RateLimitService {
             }
         } catch (Exception e) {
             log.error("Error checking rate limit for key: {}", key, e);
-            // Fail open: allow request if rate limiting fails
             return true;
         }
     }
@@ -137,12 +131,6 @@ public class RateLimitServiceImpl implements RateLimitService {
         }
     }
 
-    /**
-     * Get or create a bucket for the given key.
-     *
-     * @param key rate limit key
-     * @return Bucket instance
-     */
     private Bucket getBucket(String key) {
         String bucketKey = "rate_limit:" + key;
 

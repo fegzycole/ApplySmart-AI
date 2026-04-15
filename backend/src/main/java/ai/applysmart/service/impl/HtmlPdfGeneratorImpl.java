@@ -17,10 +17,8 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
     @Override
     public byte[] generateStyledPdf(String markdownContent, ResumeLayoutInfo layoutInfo) {
         try {
-            // Convert markdown to HTML
             String html = markdownToHtml(markdownContent, layoutInfo);
 
-            // Convert HTML to PDF
             return htmlToPdf(html);
         } catch (Exception e) {
             log.error("Error generating styled PDF", e);
@@ -41,7 +39,6 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
         html.append("</head>");
         html.append("<body>");
 
-        // Process markdown line by line
         String[] lines = markdown.split("\\n");
         boolean inList = false;
 
@@ -57,7 +54,6 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
                 continue;
             }
 
-            // Main heading (# Name)
             if (line.startsWith("# ")) {
                 if (inList) {
                     html.append("</ul>");
@@ -65,7 +61,6 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
                 }
                 html.append("<h1>").append(escapeHtml(line.substring(2))).append("</h1>");
             }
-            // Section headers (## SECTION)
             else if (line.startsWith("## ")) {
                 if (inList) {
                     html.append("</ul>");
@@ -73,7 +68,6 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
                 }
                 html.append("<h2>").append(escapeHtml(line.substring(3))).append("</h2>");
             }
-            // Bullet points
             else if (line.startsWith("- ") || line.startsWith("* ") || line.startsWith("• ")) {
                 if (!inList) {
                     html.append("<ul>");
@@ -82,7 +76,6 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
                 String content = line.substring(2);
                 html.append("<li>").append(processInlineFormatting(content)).append("</li>");
             }
-            // Regular paragraphs
             else {
                 if (inList) {
                     html.append("</ul>");
@@ -103,15 +96,12 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
     }
 
     private String processInlineFormatting(String text) {
-        // Process **bold**
         text = text.replaceAll("\\*\\*(.+?)\\*\\*", "<strong>$1</strong>");
-        // Process *italic*
         text = text.replaceAll("(?<!\\*)\\*(?!\\*)(.+?)(?<!\\*)\\*(?!\\*)", "<em>$1</em>");
         return escapeHtml(text);
     }
 
     private String escapeHtml(String text) {
-        // Don't escape if it already contains HTML tags
         if (text.contains("<strong>") || text.contains("<em>")) {
             return text;
         }
@@ -127,22 +117,24 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
         String primaryColor = layout.getPrimaryColor() != null ? layout.getPrimaryColor() : "#000000";
         double fontSize = layout.getAverageFontSize() != null ? layout.getAverageFontSize() : 11.0;
         double headingSize = layout.getHeadingFontSize() != null ? layout.getHeadingFontSize() : 16.0;
+        int lineSpacing = layout.getLineSpacing() != null ? layout.getLineSpacing() : (int) Math.round(fontSize * 1.4);
 
-        // Build comprehensive font stack with fallbacks
+        double lineHeight = lineSpacing / fontSize;
+
         String fontStack = buildFontStack(primaryFont);
 
-        log.info("Generating PDF with font: {} (stack: {}), size: {}pt, accent color: {}",
-                 primaryFont, fontStack, fontSize, accentColor);
+        log.info("Generating PDF with font: {} (stack: {}), size: {}pt, line-height: {}, accent color: {}",
+                 primaryFont, fontStack, fontSize, lineHeight, accentColor);
 
         return String.format(
-            "@page { size: A4; margin: 0.75in; } " +
+            "@page { size: A4; margin: 0.5in; } " +
             "* { " +
             "  -fs-font-subset: complete-font; " +
             "} " +
             "body { " +
             "  font-family: %s; " +
             "  font-size: %.1fpt; " +
-            "  line-height: 1.4; " +
+            "  line-height: %.2f; " +
             "  color: %s; " +
             "  margin: 0; " +
             "  padding: 0; " +
@@ -155,6 +147,7 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
             "  margin: 0 0 8pt 0; " +
             "  padding: 0; " +
             "  text-align: center; " +
+            "  line-height: %.2f; " +
             "} " +
             "h2 { " +
             "  font-family: %s; " +
@@ -165,11 +158,13 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
             "  padding-bottom: 3pt; " +
             "  border-bottom: 1.5pt solid %s; " +
             "  text-transform: uppercase; " +
+            "  line-height: %.2f; " +
             "} " +
             "p { " +
             "  margin: 4pt 0; " +
             "  padding: 0; " +
             "  font-family: %s; " +
+            "  line-height: %.2f; " +
             "} " +
             "ul { " +
             "  margin: 4pt 0; " +
@@ -179,6 +174,7 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
             "  margin: 2pt 0; " +
             "  padding: 0; " +
             "  font-family: %s; " +
+            "  line-height: %.2f; " +
             "} " +
             "strong { " +
             "  font-weight: bold; " +
@@ -187,25 +183,22 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
             "br { " +
             "  line-height: 0.5; " +
             "}",
-            fontStack, fontSize, primaryColor,
-            fontStack, headingSize, accentColor,
-            fontStack, fontSize * 1.2, accentColor, accentColor,
-            fontStack,
-            fontStack,
+            fontStack, fontSize, lineHeight, primaryColor,
+            fontStack, headingSize, accentColor, lineHeight * 0.9,
+            fontStack, fontSize * 1.2, accentColor, accentColor, lineHeight * 0.95,
+            fontStack, lineHeight,
+            fontStack, lineHeight,
             accentColor
         );
     }
 
     private String buildFontStack(String primaryFont) {
-        // Build a comprehensive font fallback stack
         StringBuilder fontStack = new StringBuilder();
 
-        // Add the primary font
         if (primaryFont != null && !primaryFont.isEmpty()) {
             fontStack.append("'").append(primaryFont).append("', ");
         }
 
-        // Add similar fonts as fallbacks based on the primary font
         if (primaryFont != null) {
             if (primaryFont.contains("Calibri")) {
                 fontStack.append("'Calibri', 'Candara', 'Segoe UI', ");
@@ -224,7 +217,6 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
             }
         }
 
-        // Add generic fallbacks
         fontStack.append("'Helvetica Neue', Helvetica, Arial, sans-serif");
 
         return fontStack.toString();
@@ -232,12 +224,10 @@ public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
 
     private byte[] htmlToPdf(String html) throws Exception {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
-            // Clean HTML with Jsoup
             Document document = Jsoup.parse(html);
             document.outputSettings().syntax(Document.OutputSettings.Syntax.xml);
             String xhtml = document.html();
 
-            // Build PDF
             PdfRendererBuilder builder = new PdfRendererBuilder();
             builder.withHtmlContent(xhtml, null);
             builder.toStream(outputStream);

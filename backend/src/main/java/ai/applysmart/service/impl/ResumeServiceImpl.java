@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -119,7 +120,6 @@ public class ResumeServiceImpl implements ResumeService {
         Resume resume = resumeRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
 
-        // Delete file from storage if exists
         if (resume.getCloudinaryPublicId() != null) {
             fileStorageService.deleteFile(resume.getCloudinaryPublicId());
         }
@@ -141,7 +141,6 @@ public class ResumeServiceImpl implements ResumeService {
 
         ResumeAnalysisDto analysis = claudeService.analyzeResume(resume.getContent(), jobDescription);
 
-        // Update resume score
         resume.setScore(analysis.getScore());
         resume.setAtsScore(analysis.getAtsCompatibility());
         resumeRepository.save(resume);
@@ -168,20 +167,32 @@ public class ResumeServiceImpl implements ResumeService {
 
         long timestamp = System.currentTimeMillis();
 
-        // Use professional default layout (Calibri font, dark blue accents)
-        ai.applysmart.dto.resume.ResumeLayoutInfo defaultLayout = LayoutUtils.createDefaultProfessionalLayout();
+        ai.applysmart.dto.resume.ResumeLayoutInfo layoutInfo = null;
+        if (resume.getFileUrl() != null && resume.getName() != null && resume.getName().toLowerCase().endsWith(".pdf")) {
+            try {
+                log.info("Analyzing layout from original PDF: {}", resume.getFileUrl());
+                byte[] originalPdfBytes = downloadFileFromUrl(resume.getFileUrl());
+                layoutInfo = pdfLayoutAnalyzer.analyzeLayout(originalPdfBytes);
+                log.info("Successfully analyzed layout - Primary font: {}, Accent color: {}",
+                         layoutInfo.getPrimaryFont(), layoutInfo.getAccentColor());
+            } catch (Exception e) {
+                log.warn("Failed to analyze original PDF layout, using default: {}", e.getMessage());
+            }
+        }
 
-        // Generate PDF with professional styling
+        if (layoutInfo == null) {
+            log.info("Using default professional layout");
+            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
+        }
+
         String pdfFilename = String.format("resume-%d-optimized-%d.pdf", id, timestamp);
-        byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), defaultLayout);
+        byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
 
-        // Delete old files if they exist
         if (resume.getCloudinaryPublicId() != null) {
             fileStorageService.deleteFile(resume.getCloudinaryPublicId());
         }
 
-        // Update resume (store PDF URL as primary)
         resume.setContent(optimization.getContent());
         resume.setScore(optimization.getOptimizedScore());
         resume.setStatus(Resume.Status.OPTIMIZED);
@@ -190,9 +201,22 @@ public class ResumeServiceImpl implements ResumeService {
         resume.setCloudinaryPublicId(pdfUploadResult.getPublicId());
         resumeRepository.save(resume);
 
-        optimization.setPdfUrl(pdfUploadResult.getUrl());
-        optimization.setFileUrl(pdfUploadResult.getUrl()); // Backward compatibility
+        optimization.setFileUrl(pdfUploadResult.getUrl());
         return optimization;
+    }
+
+    private byte[] downloadFileFromUrl(String fileUrl) throws IOException {
+        log.debug("Downloading file from URL: {}", fileUrl);
+        java.net.URL url = new java.net.URL(fileUrl);
+        try (java.io.InputStream in = url.openStream();
+             java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream()) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = in.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
+            }
+            return out.toByteArray();
+        }
     }
 
     @Override
@@ -209,11 +233,9 @@ public class ResumeServiceImpl implements ResumeService {
             throw new BadRequestException("Invalid file name");
         }
 
-        // Extract text and upload file
         String content = fileParserService.extractTextFromFile(file);
         ai.applysmart.dto.FileUploadResult uploadResult = fileStorageService.uploadFile(file);
 
-        // Create resume entity
         Resume resume = Resume.builder()
                 .user(user)
                 .name(originalFilename)
@@ -251,26 +273,21 @@ public class ResumeServiceImpl implements ResumeService {
             throw new BadRequestException("Job description is required");
         }
 
-        // Analyze original PDF layout (fonts, colors, structure)
         ai.applysmart.dto.resume.ResumeLayoutInfo layoutInfo = pdfLayoutAnalyzer.analyzeLayout(file);
         log.info("Extracted layout info - Primary font: {}, Accent color: {}",
                  layoutInfo.getPrimaryFont(), layoutInfo.getAccentColor());
 
-        // Extract text from uploaded file
         String originalContent = fileParserService.extractTextFromFile(file);
 
-        // Optimize with Claude
         ResumeOptimizationDto optimization = claudeService.optimizeResume(originalContent, jobDescription);
 
         long timestamp = System.currentTimeMillis();
 
-        // Generate PDF with preserved layout and styling
         String pdfFilename = String.format("user-%d-optimized-%d.pdf", user.getId(), timestamp);
         byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
 
-        optimization.setPdfUrl(pdfUploadResult.getUrl());
-        optimization.setFileUrl(pdfUploadResult.getUrl()); // Backward compatibility
+        optimization.setFileUrl(pdfUploadResult.getUrl());
         return optimization;
     }
 

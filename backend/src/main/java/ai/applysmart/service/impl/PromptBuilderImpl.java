@@ -5,10 +5,6 @@ import ai.applysmart.util.TextUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-/**
- * Implementation of prompt building service.
- * Centralizes all AI prompt construction logic.
- */
 @Slf4j
 @Service
 public class PromptBuilderImpl implements PromptBuilder {
@@ -65,18 +61,14 @@ public class PromptBuilderImpl implements PromptBuilder {
         return prompt.toString();
     }
 
-    /**
-     * Build detailed analysis instructions.
-     */
     private String buildAnalysisInstructions() {
         return """
                 Please provide your analysis in the following JSON format:
                 {
-                  "overallScore": <number 0-100>,
-                  "atsScore": <number 0-100>,
+                  "score": <number 0-100>,
+                  "atsCompatibility": <number 0-100>,
                   "strengths": ["<strength 1>", "<strength 2>", ...],
-                  "weaknesses": ["<weakness 1>", "<weakness 2>", ...],
-                  "suggestions": ["<suggestion 1>", "<suggestion 2>", ...],
+                  "improvements": ["<improvement 1>", "<improvement 2>", ...],
                   "keywords": ["<keyword 1>", "<keyword 2>", ...]
                 }
 
@@ -90,17 +82,14 @@ public class PromptBuilderImpl implements PromptBuilder {
                 """;
     }
 
-    /**
-     * Build optimization instructions.
-     */
     private String buildOptimizationInstructions() {
         return """
                 Return a JSON object with the following format:
                 {
-                  "optimizedContent": "<complete optimized resume text>",
+                  "originalScore": <number 0-100 representing the original resume score>,
+                  "optimizedScore": <number 0-100 representing the optimized resume score>,
                   "changes": ["<change 1>", "<change 2>", ...],
-                  "keywords": ["<keyword 1>", "<keyword 2>", ...],
-                  "atsScore": <number 0-100>
+                  "content": "<complete optimized resume text>"
                 }
 
                 Requirements:
@@ -110,12 +99,10 @@ public class PromptBuilderImpl implements PromptBuilder {
                 - Quantify achievements where possible
                 - Ensure ATS-friendly formatting
                 - Keep the same overall length (±10%)
+                - IMPORTANT: Limit each experience entry to a maximum of 5 bullet points. If there are more than 5, consolidate or remove the least impactful ones.
                 """;
     }
 
-    /**
-     * Build cover letter instructions based on tone.
-     */
     private String buildCoverLetterInstructions(String tone) {
         String toneInstruction = getToneInstruction(tone);
 
@@ -138,9 +125,6 @@ public class PromptBuilderImpl implements PromptBuilder {
                 """, toneInstruction);
     }
 
-    /**
-     * Get tone-specific instructions.
-     */
     private String getToneInstruction(String tone) {
         if (TextUtils.isBlank(tone)) {
             return "Use a professional, enthusiastic tone";
@@ -155,9 +139,6 @@ public class PromptBuilderImpl implements PromptBuilder {
         };
     }
 
-    /**
-     * Append section to prompt if value is present.
-     */
     private void appendIfPresent(StringBuilder prompt, String label, String value) {
         if (TextUtils.isNotBlank(value)) {
             prompt.append(label).append(":\n").append(value).append("\n\n");

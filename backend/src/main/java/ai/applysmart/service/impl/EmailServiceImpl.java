@@ -61,7 +61,6 @@ public class EmailServiceImpl implements EmailService {
             helper.setSubject(subject);
             helper.setText(htmlContent, true);
 
-            // Attach logo as inline image
             ClassPathResource logo = new ClassPathResource("static/logo.svg");
             if (logo.exists()) {
                 helper.addInline("logo", logo, "image/svg+xml");

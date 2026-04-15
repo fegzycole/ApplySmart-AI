@@ -47,12 +47,13 @@ public class FileStorageServiceImpl implements FileStorageService {
     @Override
     public FileUploadResult uploadFileBytes(byte[] fileBytes, String filename) {
         try {
-            // Use full filename including extension for better file identification
+            String filenameWithoutExtension = filename.replaceAll("\\.pdf$", "");
+
             Map uploadResult = cloudinary.uploader().upload(fileBytes,
                     ObjectUtils.asMap(
                             "folder", "applysmart/optimized-resumes",
                             "resource_type", "auto",
-                            "public_id", filename,
+                            "public_id", filenameWithoutExtension,
                             "use_filename", true,
                             "unique_filename", false
                     ));

@@ -12,8 +12,5 @@ public class ResumeOptimizationDto {
     private Integer optimizedScore;
     private List<String> changes;
     private String content;
-    private String pdfUrl;
-
-    @Deprecated
-    private String fileUrl; // Deprecated - use pdfUrl instead
+    private String fileUrl;
 }
