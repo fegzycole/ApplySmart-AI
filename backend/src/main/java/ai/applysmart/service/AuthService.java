@@ -5,7 +5,7 @@ import ai.applysmart.entity.User;
 
 public interface AuthService {
 
-    AuthResponse signup(SignupRequest signupRequest);
+    SignupResponse signup(SignupRequest signupRequest);
 
     AuthResponse login(LoginRequest loginRequest);
 

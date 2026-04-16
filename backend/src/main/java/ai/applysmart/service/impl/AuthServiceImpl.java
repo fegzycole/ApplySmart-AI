@@ -41,7 +41,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public AuthResponse signup(SignupRequest signupRequest) {
+    public SignupResponse signup(SignupRequest signupRequest) {
         log.info("Attempting to register new user with email: {}", signupRequest.getEmail());
 
         if (userRepository.existsByEmail(signupRequest.getEmail())) {
@@ -67,13 +67,9 @@ public class AuthServiceImpl implements AuthService {
         String code = verificationService.generateAndSaveCode(user.getEmail(), VerificationCode.CodeType.EMAIL_VERIFICATION);
         emailService.sendVerificationEmail(user.getEmail(), user.getFullName(), code);
 
-        String accessToken = tokenProvider.generateTokenFromUser(user);
-        String refreshToken = tokenProvider.generateRefreshToken(user);
-
-        return AuthResponse.builder()
-                .token(accessToken)
-                .refreshToken(refreshToken)
-                .tokenType("Bearer")
+        return SignupResponse.builder()
+                .success(true)
+                .message("Account created successfully. Please check your email for verification code.")
                 .user(convertToDto(user))
                 .build();
     }

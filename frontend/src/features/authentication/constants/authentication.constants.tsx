@@ -20,7 +20,8 @@ export const AUTH_NAV_STYLES = {
     wrapper: "size-8 rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center",
     icon: "size-5 text-white"
   },
-  logoText: "text-xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent"
+  logoText: "text-xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent",
+  themeToggle: "p-2 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors cursor-pointer"
 } as const;
 
 export const AUTH_CARD_STYLES = {
@@ -47,7 +48,7 @@ export const FORM_FIELD_STYLES = {
 export const FORM_STYLES = {
   form: "space-y-6",
   formCompact: "space-y-5",
-  submitButton: "w-full h-12 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-semibold rounded-xl shadow-lg shadow-violet-500/50 dark:shadow-violet-900/50 transform hover:scale-[1.02] transition-all duration-300"
+  submitButton: "w-full h-12 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-semibold rounded-xl shadow-lg shadow-violet-500/50 dark:shadow-violet-900/50 transform hover:scale-[1.02] transition-all duration-300 cursor-pointer"
 } as const;
 
 export const OAUTH_STYLES = {
@@ -61,7 +62,7 @@ export const OAUTH_STYLES = {
   },
   buttons: {
     container: "mt-6 grid grid-cols-2 gap-4",
-    button: "h-12 border-2 border-zinc-200 dark:border-zinc-800 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-950/30 rounded-xl transition-all duration-300",
+    button: "h-12 border-2 border-zinc-200 dark:border-zinc-800 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-950/30 rounded-xl transition-all duration-300 cursor-pointer",
     icon: "size-5 mr-2"
   }
 } as const;
@@ -74,7 +75,7 @@ export const TERMS_CHECKBOX_STYLES = {
 } as const;
 
 export const LINK_TEXT_STYLES = {
-  wrapper: "text-center text-sm text-zinc-600 dark:text-zinc-400",
+  wrapper: "text-center text-sm text-zinc-600 dark:text-zinc-400 mt-4",
   link: "bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent hover:from-violet-700 hover:to-fuchsia-700 font-semibold"
 } as const;
 
@@ -84,7 +85,8 @@ export const LOGIN_FIELDS: FormFieldConfig[] = [
 ] as const;
 
 export const SIGNUP_FIELDS: FormFieldConfig[] = [
-  { id: "name", label: "Full Name", type: "text", placeholder: "John Doe" },
+  { id: "firstName", label: "First Name", type: "text", placeholder: "John" },
+  { id: "lastName", label: "Last Name", type: "text", placeholder: "Doe" },
   { id: "email", label: "Email", type: "email", placeholder: "you@example.com" },
   { id: "password", label: "Password", type: "password", placeholder: "Create a strong password" }
 ] as const;
@@ -92,6 +94,13 @@ export const SIGNUP_FIELDS: FormFieldConfig[] = [
 export const PASSWORD_RESET_FIELDS: FormFieldConfig[] = [
   { id: "email", label: "Email", type: "email", placeholder: "you@example.com" }
 ] as const;
+
+export const VERIFY_EMAIL_FIELD: FormFieldConfig = {
+  id: "code",
+  label: "Verification Code",
+  type: "text",
+  placeholder: "Enter 6-digit code"
+} as const;
 
 export const AUTH_CONTENT = {
   login: {
@@ -115,6 +124,15 @@ export const AUTH_CONTENT = {
     description: "Enter your email and we'll send you a reset link",
     submitButton: "Send Reset Link",
     footer: "Remember your password?",
+    footerLink: "Sign in",
+    footerLinkPath: "/login"
+  },
+  verifyEmail: {
+    title: "Verify your email",
+    description: "We've sent a verification code to your email",
+    submitButton: "Verify Email",
+    resendButton: "Resend Code",
+    footer: "Back to",
     footerLink: "Sign in",
     footerLinkPath: "/login"
   },

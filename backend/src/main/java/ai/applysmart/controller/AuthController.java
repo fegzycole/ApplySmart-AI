@@ -25,9 +25,9 @@ public class AuthController {
 
     @PostMapping("/signup")
     @Operation(summary = "Register a new user")
-    public ResponseEntity<AuthResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
+    public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupRequest signupRequest) {
         log.info("Signup request received for email: {}", signupRequest.getEmail());
-        AuthResponse response = authService.signup(signupRequest);
+        SignupResponse response = authService.signup(signupRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

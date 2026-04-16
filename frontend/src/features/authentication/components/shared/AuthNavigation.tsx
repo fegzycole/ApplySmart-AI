@@ -1,8 +1,11 @@
 import { Link } from "react-router";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Moon, Sun } from "lucide-react";
+import { useTheme } from "next-themes";
 import { AUTH_NAV_STYLES } from "../../constants/authentication.constants";
 
 export function AuthNavigation() {
+  const { theme, setTheme } = useTheme();
+
   return (
     <nav className={AUTH_NAV_STYLES.nav}>
       <div className={AUTH_NAV_STYLES.wrapper}>
@@ -13,6 +16,16 @@ export function AuthNavigation() {
             </div>
             <span className={AUTH_NAV_STYLES.logoText}>ApplySmart AI</span>
           </Link>
+          <button
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            className={AUTH_NAV_STYLES.themeToggle}
+          >
+            {theme === "dark" ? (
+              <Sun className="size-5 text-violet-400" />
+            ) : (
+              <Moon className="size-5 text-violet-600" />
+            )}
+          </button>
         </div>
       </div>
     </nav>

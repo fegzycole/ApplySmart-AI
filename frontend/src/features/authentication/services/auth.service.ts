@@ -1,9 +1,13 @@
 import { apiClient } from '@/shared/services/api-client';
+import { tokenStorage } from '@/shared/utils/token-storage';
 import type {
   LoginCredentials,
   SignupData,
   PasswordResetRequest,
   AuthResponse,
+  SignupResponse,
+  VerifyEmailRequest,
+  ApiResponse,
   User
 } from '../types/auth.types';
 
@@ -14,6 +18,8 @@ const ENDPOINTS = {
   RESET_PASSWORD: '/auth/reset-password',
   CURRENT_USER: '/auth/me',
   REFRESH_TOKEN: '/auth/refresh',
+  VERIFY_EMAIL: '/auth/verify-email',
+  RESEND_VERIFICATION: '/auth/resend-verification',
 };
 
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
@@ -24,21 +30,21 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
 
   if (response.token) {
     apiClient.setAuthToken(response.token);
+    if (response.refreshToken) {
+      tokenStorage.setRefreshToken(response.refreshToken);
+    }
   }
 
   return response;
 };
 
-export const signup = async (data: SignupData): Promise<AuthResponse> => {
-  const response = await apiClient.post<AuthResponse, SignupData>(
+export const signup = async (data: SignupData): Promise<SignupResponse> => {
+  const response = await apiClient.post<SignupResponse, SignupData>(
     ENDPOINTS.SIGNUP,
     data
   );
 
-  if (response.token) {
-    apiClient.setAuthToken(response.token);
-  }
-
+  // Don't set auth token - user must verify email and login
   return response;
 };
 
@@ -60,11 +66,32 @@ export const getCurrentUser = async (): Promise<User> => {
 };
 
 export const refreshToken = async (): Promise<AuthResponse> => {
-  const response = await apiClient.post<AuthResponse>(ENDPOINTS.REFRESH_TOKEN);
+  const refreshToken = tokenStorage.getRefreshToken();
+  const response = await apiClient.post<AuthResponse, { refreshToken: string }>(
+    ENDPOINTS.REFRESH_TOKEN,
+    { refreshToken: refreshToken || '' }
+  );
 
   if (response.token) {
     apiClient.setAuthToken(response.token);
+    if (response.refreshToken) {
+      tokenStorage.setRefreshToken(response.refreshToken);
+    }
   }
 
   return response;
+};
+
+export const verifyEmail = async (data: VerifyEmailRequest): Promise<ApiResponse<void>> => {
+  return apiClient.post<ApiResponse<void>, VerifyEmailRequest>(
+    ENDPOINTS.VERIFY_EMAIL,
+    data
+  );
+};
+
+export const resendVerificationCode = async (email: string): Promise<ApiResponse<void>> => {
+  return apiClient.post<ApiResponse<void>, { email: string }>(
+    ENDPOINTS.RESEND_VERIFICATION,
+    { email }
+  );
 };

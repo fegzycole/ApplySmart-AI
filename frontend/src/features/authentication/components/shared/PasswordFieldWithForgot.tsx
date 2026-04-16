@@ -6,9 +6,11 @@ import { FORM_FIELD_STYLES, LINK_TEXT_STYLES } from "../../constants/authenticat
 interface PasswordFieldWithForgotProps {
   id: string;
   placeholder: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function PasswordFieldWithForgot({ id, placeholder }: PasswordFieldWithForgotProps) {
+export function PasswordFieldWithForgot({ id, placeholder, value, onChange }: PasswordFieldWithForgotProps) {
   return (
     <div className={FORM_FIELD_STYLES.wrapper}>
       <div className="flex justify-between items-center mb-2">
@@ -24,6 +26,8 @@ export function PasswordFieldWithForgot({ id, placeholder }: PasswordFieldWithFo
           id={id}
           type="password"
           placeholder={placeholder}
+          value={value}
+          onChange={onChange}
           className={FORM_FIELD_STYLES.input}
         />
         <div className={FORM_FIELD_STYLES.focusGlow} />

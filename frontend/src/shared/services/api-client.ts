@@ -1,4 +1,5 @@
 import { API_ENDPOINTS } from '../constants/api-endpoints';
+import { tokenStorage } from '../utils/token-storage';
 
 /**
  * Base API configuration
@@ -45,8 +46,14 @@ export class ApiClient {
 
   constructor(config = API_CONFIG) {
     this.baseURL = config.baseURL;
-    this.headers = config.headers;
+    this.headers = { ...config.headers };
     this.timeout = config.timeout;
+
+    // Load token from storage on initialization
+    const token = tokenStorage.getToken();
+    if (token) {
+      this.headers['Authorization'] = `Bearer ${token}`;
+    }
   }
 
   /**
@@ -167,6 +174,7 @@ export class ApiClient {
    */
   setAuthToken(token: string) {
     this.headers['Authorization'] = `Bearer ${token}`;
+    tokenStorage.setToken(token);
   }
 
   /**
@@ -174,6 +182,7 @@ export class ApiClient {
    */
   clearAuthToken() {
     delete this.headers['Authorization'];
+    tokenStorage.clearTokens();
   }
 
   /**

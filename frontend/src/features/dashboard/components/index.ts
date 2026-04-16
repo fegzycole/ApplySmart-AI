@@ -1,7 +1,16 @@
-export { DashboardLayout } from './DashboardLayout';
-export { StatCard } from './StatCard';
-export { SuccessMetricsChart } from './SuccessMetricsChart';
-export { ApplicationFunnel } from './ApplicationFunnel';
-export { ApplicationVelocityChart } from './ApplicationVelocityChart';
-export { RecentApplicationsSection } from './RecentApplicationsSection';
-export { QuickActionsCard } from './QuickActionsCard';
+// Layout components
+export { DashboardLayout } from './layout';
+
+// Stats components
+export { StatCard } from './stats';
+
+// Charts components
+export { SuccessMetricsChart } from './charts';
+export { ApplicationVelocityChart } from './charts';
+export { ApplicationFunnel } from './charts';
+
+// Quick actions components
+export { QuickActionsCard } from './quick-actions';
+
+// Recent applications components
+export { RecentApplicationsSection } from './recent-applications';
