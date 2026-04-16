@@ -126,7 +126,9 @@ public class SecurityConfig {
                 "http://localhost:3000",
                 "https://applysmart-ai.vercel.app",
                 "https://applysmart-ai.org",
-                "http://applysmart-ai.org"
+                "http://applysmart-ai.org",
+                "https://www.applysmart-ai.org",
+                "http://www.applysmart-ai.org"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
