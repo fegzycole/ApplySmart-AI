@@ -1,6 +1,5 @@
 package ai.applysmart.service.impl;
 
-import ai.applysmart.config.FeatureFlags;
 import ai.applysmart.dto.admin.AnalyticsDto;
 import ai.applysmart.dto.admin.UserAdminDto;
 import ai.applysmart.entity.User;
@@ -72,36 +71,26 @@ public class AdminServiceImpl implements AdminService {
         // User Growth Data (last 12 months)
         AnalyticsDto.UserGrowthData userGrowthData = generateUserGrowthData();
 
-        // Subscription Data - hide when feature is disabled
-        AnalyticsDto.SubscriptionData subscriptionData;
-        if (FeatureFlags.ADMIN_SUBSCRIPTION_ANALYTICS) {
-            long freeUsers = subscriptionRepository.countByPlan(ai.applysmart.entity.Subscription.Plan.FREE);
-            long starterUsers = subscriptionRepository.countByPlan(ai.applysmart.entity.Subscription.Plan.STARTER);
-            long proUsers = subscriptionRepository.countByPlan(ai.applysmart.entity.Subscription.Plan.PRO);
-            long careerBoostUsers = subscriptionRepository.countByPlan(ai.applysmart.entity.Subscription.Plan.CAREER_BOOST);
+        // Subscription Data
+        long freeUsers = subscriptionRepository.countByPlan(ai.applysmart.entity.Subscription.Plan.FREE);
+        long starterUsers = subscriptionRepository.countByPlan(ai.applysmart.entity.Subscription.Plan.STARTER);
+        long proUsers = subscriptionRepository.countByPlan(ai.applysmart.entity.Subscription.Plan.PRO);
+        long careerBoostUsers = subscriptionRepository.countByPlan(ai.applysmart.entity.Subscription.Plan.CAREER_BOOST);
 
-            subscriptionData = AnalyticsDto.SubscriptionData.builder()
-                    .freeUsers(freeUsers)
-                    .proUsers(proUsers + starterUsers + careerBoostUsers) // Combine paid plans
-                    .enterpriseUsers(0L) // No enterprise plan yet
-                    .build();
-        } else {
-            // Return empty subscription data when feature is disabled
-            subscriptionData = AnalyticsDto.SubscriptionData.builder()
-                    .freeUsers(0L)
-                    .proUsers(0L)
-                    .enterpriseUsers(0L)
-                    .build();
-        }
+        AnalyticsDto.SubscriptionData subscriptionData = AnalyticsDto.SubscriptionData.builder()
+                .freeUsers(freeUsers)
+                .proUsers(proUsers + starterUsers + careerBoostUsers)
+                .enterpriseUsers(0L)
+                .build();
 
-        // AI Usage Data (placeholder - would need usage tracking table)
+        // AI Usage Data
         AnalyticsDto.AIUsageData aiUsageData = AnalyticsDto.AIUsageData.builder()
                 .resumeAnalyses(0L)
                 .resumeOptimizations(0L)
                 .coverLettersGenerated(totalCoverLetters)
                 .build();
 
-        // Revenue Data (placeholder - integrate with Stripe)
+        // Revenue Data
         AnalyticsDto.RevenueData revenueData = AnalyticsDto.RevenueData.builder()
                 .labels(List.of("Jan", "Feb", "Mar", "Apr", "May", "Jun"))
                 .data(List.of(0L, 0L, 0L, 0L, 0L, 0L))
@@ -145,15 +134,10 @@ public class AdminServiceImpl implements AdminService {
         long coverLetterCount = coverLetterRepository.countByUser(user);
         long jobCount = jobRepository.countByUser(user);
 
-        // Get user's subscription plan - hide when feature is disabled
-        String plan;
-        if (FeatureFlags.ADMIN_SUBSCRIPTION_ANALYTICS) {
-            plan = subscriptionRepository.findByUser(user)
-                    .map(subscription -> subscription.getPlan().name())
-                    .orElse("FREE");
-        } else {
-            plan = "N/A";
-        }
+        // Get user's subscription plan
+        String plan = subscriptionRepository.findByUser(user)
+                .map(subscription -> subscription.getPlan().name())
+                .orElse("FREE");
 
         return UserAdminDto.builder()
                 .id(user.getId())

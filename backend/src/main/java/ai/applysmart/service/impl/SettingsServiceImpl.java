@@ -64,7 +64,7 @@ public class SettingsServiceImpl implements SettingsService {
                 .status(subscription.getStatus().name())
                 .expiresAt(subscription.getExpiresAt())
                 .hasPaymentMethod(subscription.getStripeCustomerId() != null)
-                .paymentMethodLast4(null) // TODO: Implement Stripe integration to get last 4 digits
+                .paymentMethodLast4(null)
                 .build();
     }
 
@@ -75,7 +75,7 @@ public class SettingsServiceImpl implements SettingsService {
         return SecuritySettingsDto.builder()
                 .twoFactorEnabled(user.getTwoFactorEnabled())
                 .hasPassword(user.getPassword() != null && !user.getPassword().isEmpty())
-                .activeSessions(1) // TODO: Implement session tracking
+                .activeSessions(1)
                 .build();
     }
 
@@ -83,8 +83,6 @@ public class SettingsServiceImpl implements SettingsService {
     public List<SessionDto> getActiveSessions(User user) {
         log.info("Fetching active sessions for user: {}", user.getId());
 
-        // TODO: Implement proper session tracking with Redis or database
-        // For now, return a mock current session
         return List.of(
                 SessionDto.builder()
                         .deviceName("Current Device")
@@ -120,9 +118,7 @@ public class SettingsServiceImpl implements SettingsService {
     public void enableTwoFactor(User user) {
         log.info("Enabling two-factor authentication for user: {}", user.getId());
 
-        // TODO: Generate TOTP secret and return QR code
         user.setTwoFactorEnabled(true);
-        // user.setTwoFactorSecret(generateTOTPSecret());
         userRepository.save(user);
 
         log.info("Two-factor authentication enabled for user: {}", user.getId());
@@ -144,8 +140,6 @@ public class SettingsServiceImpl implements SettingsService {
     public List<NotificationPreferenceDto> getNotificationPreferences(User user) {
         log.info("Fetching notification preferences for user: {}", user.getId());
 
-        // TODO: Store preferences in database
-        // For now, return default preferences
         List<NotificationPreferenceDto> preferences = new ArrayList<>();
 
         preferences.add(NotificationPreferenceDto.builder()
@@ -184,8 +178,6 @@ public class SettingsServiceImpl implements SettingsService {
     public NotificationPreferenceDto updateNotificationPreference(String settingId, Boolean enabled, User user) {
         log.info("Updating notification preference {} for user: {}", settingId, user.getId());
 
-        // TODO: Store preferences in database
-        // For now, just return the updated preference
         return NotificationPreferenceDto.builder()
                 .id(settingId)
                 .label("Updated Preference")

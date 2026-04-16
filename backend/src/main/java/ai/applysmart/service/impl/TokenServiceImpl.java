@@ -74,9 +74,10 @@ public class TokenServiceImpl implements TokenService {
             redisTemplate.opsForValue().set(blacklistKey, true, remainingTTL);
 
             String tokenKey = ACTIVE_TOKEN_PREFIX + jti;
-            Object userId = redisTemplate.opsForValue().get(tokenKey);
+            Object userIdObj = redisTemplate.opsForValue().get(tokenKey);
 
-            if (userId != null) {
+            if (userIdObj != null) {
+                Long userId = (userIdObj instanceof Long) ? (Long) userIdObj : Long.valueOf(userIdObj.toString());
                 String userTokensKey = USER_TOKENS_PREFIX + userId;
                 redisTemplate.opsForSet().remove(userTokensKey, jti);
             }
@@ -93,21 +94,21 @@ public class TokenServiceImpl implements TokenService {
     public void revokeAllUserTokens(Long userId) {
         try {
             String userTokensKey = USER_TOKENS_PREFIX + userId;
-            Set<Object> userTokens = redisTemplate.opsForSet().members(userTokensKey);
+            Set<Object> userTokensObj = redisTemplate.opsForSet().members(userTokensKey);
 
-            if (userTokens == null || userTokens.isEmpty()) {
+            if (userTokensObj == null || userTokensObj.isEmpty()) {
                 log.debug("No active tokens found for user: {}", userId);
                 return;
             }
 
             int revokedCount = 0;
-            for (Object jti : userTokens) {
-                String jtiStr = jti.toString();
+            for (Object jtiObj : userTokensObj) {
+                String jti = jtiObj instanceof String ? (String) jtiObj : jtiObj.toString();
 
-                String blacklistKey = BLACKLIST_TOKEN_PREFIX + jtiStr;
+                String blacklistKey = BLACKLIST_TOKEN_PREFIX + jti;
                 redisTemplate.opsForValue().set(blacklistKey, true, 7, TimeUnit.DAYS);
 
-                String tokenKey = ACTIVE_TOKEN_PREFIX + jtiStr;
+                String tokenKey = ACTIVE_TOKEN_PREFIX + jti;
                 redisTemplate.delete(tokenKey);
 
                 revokedCount++;
@@ -125,8 +126,11 @@ public class TokenServiceImpl implements TokenService {
     public Long getUserIdFromToken(String jti) {
         try {
             String tokenKey = ACTIVE_TOKEN_PREFIX + jti;
-            Object userId = redisTemplate.opsForValue().get(tokenKey);
-            return userId != null ? Long.valueOf(userId.toString()) : null;
+            Object userIdObj = redisTemplate.opsForValue().get(tokenKey);
+            if (userIdObj == null) {
+                return null;
+            }
+            return (userIdObj instanceof Long) ? (Long) userIdObj : Long.valueOf(userIdObj.toString());
         } catch (Exception e) {
             log.error("Failed to get user ID from token: {}", jti, e);
             return null;

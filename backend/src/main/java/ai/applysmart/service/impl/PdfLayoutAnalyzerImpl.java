@@ -22,17 +22,12 @@ import java.util.stream.Collectors;
 public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
 
     @Override
-    public ResumeLayoutInfo analyzeLayout(MultipartFile file) {
-        try {
-            return analyzeLayout(file.getBytes());
-        } catch (IOException e) {
-            log.error("Error analyzing PDF layout from MultipartFile", e);
-            return getDefaultLayout();
-        }
+    public ResumeLayoutInfo analyzeLayout(MultipartFile file) throws IOException {
+        return analyzeLayout(file.getBytes());
     }
 
     @Override
-    public ResumeLayoutInfo analyzeLayout(byte[] pdfBytes) {
+    public ResumeLayoutInfo analyzeLayout(byte[] pdfBytes) throws IOException {
         Map<String, Integer> fontCounts = new HashMap<>();
         List<Float> fontSizes = new ArrayList<>();
         Set<String> detectedFonts = new HashSet<>();
@@ -79,10 +74,6 @@ public class PdfLayoutAnalyzerImpl implements PdfLayoutAnalyzer {
             log.info("Font usage: {}", fontCounts);
 
             return buildLayoutInfo(fontCounts, fontSizes, detectedFonts, yPositions);
-
-        } catch (IOException e) {
-            log.error("Error analyzing PDF layout", e);
-            return getDefaultLayout();
         }
     }
 

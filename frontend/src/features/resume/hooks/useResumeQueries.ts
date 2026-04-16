@@ -2,9 +2,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as resumeService from '../services/resume.service';
 import type { Resume } from '../services/resume.service';
 
-/**
- * Query keys for resume
- */
 export const RESUME_KEYS = {
   all: ['resumes'] as const,
   lists: () => [...RESUME_KEYS.all, 'list'] as const,
@@ -13,9 +10,6 @@ export const RESUME_KEYS = {
   analysis: (id: number) => [...RESUME_KEYS.all, 'analysis', id] as const,
 };
 
-/**
- * Fetch all resumes
- */
 export const useResumes = () => {
   return useQuery({
     queryKey: RESUME_KEYS.lists(),
@@ -23,9 +17,6 @@ export const useResumes = () => {
   });
 };
 
-/**
- * Fetch resume by ID
- */
 export const useResume = (id: number) => {
   return useQuery({
     queryKey: RESUME_KEYS.detail(id),
@@ -34,9 +25,6 @@ export const useResume = (id: number) => {
   });
 };
 
-/**
- * Create new resume
- */
 export const useCreateResume = () => {
   const queryClient = useQueryClient();
 
@@ -48,9 +36,6 @@ export const useCreateResume = () => {
   });
 };
 
-/**
- * Update resume
- */
 export const useUpdateResume = () => {
   const queryClient = useQueryClient();
 
@@ -64,9 +49,6 @@ export const useUpdateResume = () => {
   });
 };
 
-/**
- * Delete resume
- */
 export const useDeleteResume = () => {
   const queryClient = useQueryClient();
 
@@ -79,9 +61,6 @@ export const useDeleteResume = () => {
   });
 };
 
-/**
- * Analyze resume with AI
- */
 export const useAnalyzeResume = () => {
   const queryClient = useQueryClient();
 
@@ -94,9 +73,6 @@ export const useAnalyzeResume = () => {
   });
 };
 
-/**
- * Optimize resume for job description
- */
 export const useOptimizeResume = () => {
   const queryClient = useQueryClient();
 
@@ -110,9 +86,6 @@ export const useOptimizeResume = () => {
   });
 };
 
-/**
- * Upload resume file
- */
 export const useUploadResume = () => {
   const queryClient = useQueryClient();
 
