@@ -3,13 +3,13 @@ import { UserRow } from "./UserRow";
 import { TableWrapper } from "./TableWrapper";
 import { CHART_TITLES, TABLE_HEADERS } from "../../constants/admin.constants";
 import { useAdminUsers } from "../../hooks";
-import type { UserAdminDto } from "../../types/admin.types";
+import type { AdminUsersResponse, UserAdminDto } from "../../types/admin.types";
 import { FEATURE_FLAGS } from "@/shared/config/feature-flags";
 
 export function RecentUsersTable() {
   const { data, isLoading, isError } = useAdminUsers({ page: 0, size: 10 });
 
-  const users = Array.isArray(data) ? data : (data as any)?.content || [];
+  const users = Array.isArray(data) ? data : (data as AdminUsersResponse)?.content || [];
   const recentUsers = [...users]
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 10);

@@ -15,15 +15,9 @@ import java.io.ByteArrayOutputStream;
 public class HtmlPdfGeneratorImpl implements HtmlPdfGenerator {
 
     @Override
-    public byte[] generateStyledPdf(String markdownContent, ResumeLayoutInfo layoutInfo) {
-        try {
-            String html = markdownToHtml(markdownContent, layoutInfo);
-
-            return htmlToPdf(html);
-        } catch (Exception e) {
-            log.error("Error generating styled PDF", e);
-            throw new RuntimeException("Failed to generate styled PDF", e);
-        }
+    public byte[] generateStyledPdf(String markdownContent, ResumeLayoutInfo layoutInfo) throws Exception {
+        String html = markdownToHtml(markdownContent, layoutInfo);
+        return htmlToPdf(html);
     }
 
     private String markdownToHtml(String markdown, ResumeLayoutInfo layout) {

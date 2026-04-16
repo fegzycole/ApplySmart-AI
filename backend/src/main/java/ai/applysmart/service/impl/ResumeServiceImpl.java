@@ -72,7 +72,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .content(request.getContent())
                 .score(0)
                 .status(Resume.Status.DRAFT)
-                .wordCount(calculateWordCount(request.getContent()))
+                .wordCount(TextUtils.calculateWordCount(request.getContent()))
                 .build();
 
         resume = resumeRepository.save(resume);
@@ -95,7 +95,7 @@ public class ResumeServiceImpl implements ResumeService {
 
         if (request.getContent() != null) {
             resume.setContent(request.getContent());
-            resume.setWordCount(calculateWordCount(request.getContent()));
+            resume.setWordCount(TextUtils.calculateWordCount(request.getContent()));
         }
 
         if (request.getStatus() != null) {
@@ -196,7 +196,7 @@ public class ResumeServiceImpl implements ResumeService {
         resume.setContent(optimization.getContent());
         resume.setScore(optimization.getOptimizedScore());
         resume.setStatus(Resume.Status.OPTIMIZED);
-        resume.setWordCount(calculateWordCount(optimization.getContent()));
+        resume.setWordCount(TextUtils.calculateWordCount(optimization.getContent()));
         resume.setFileUrl(pdfUploadResult.getUrl());
         resume.setCloudinaryPublicId(pdfUploadResult.getPublicId());
         resumeRepository.save(resume);
@@ -244,7 +244,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .cloudinaryPublicId(uploadResult.getPublicId())
                 .score(0)
                 .status(Resume.Status.DRAFT)
-                .wordCount(calculateWordCount(content))
+                .wordCount(TextUtils.calculateWordCount(content))
                 .build();
 
         resume = resumeRepository.save(resume);
@@ -253,12 +253,6 @@ public class ResumeServiceImpl implements ResumeService {
         return convertToDto(resume);
     }
 
-    private Integer calculateWordCount(String content) {
-        if (content == null || content.isBlank()) {
-            return 0;
-        }
-        return content.trim().split("\\s+").length;
-    }
 
     @Override
     @Transactional

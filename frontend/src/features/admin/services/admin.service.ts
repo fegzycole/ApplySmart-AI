@@ -32,15 +32,6 @@ export const fetchAllUsers = async (params?: { page?: number; size?: number }): 
   return apiClient.get<UserAdminDto[] | AdminUsersResponse>(ENDPOINTS.USERS, queryParams);
 };
 
-/**
- * Fetch admin analytics dashboard data
- * Returns comprehensive analytics including:
- * - Overview stats (total users, active users, resumes, cover letters, jobs)
- * - User growth data (12-month trend)
- * - Subscription distribution
- * - AI usage statistics
- * - Revenue data
- */
 export const fetchAdminAnalytics = async (): Promise<AdminAnalyticsResponse> => {
   return apiClient.get<AdminAnalyticsResponse>(ENDPOINTS.ANALYTICS);
 };

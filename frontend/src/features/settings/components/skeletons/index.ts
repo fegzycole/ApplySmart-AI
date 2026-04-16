@@ -1,1 +1,0 @@
-export { SettingsSkeleton } from './SettingsSkeleton';

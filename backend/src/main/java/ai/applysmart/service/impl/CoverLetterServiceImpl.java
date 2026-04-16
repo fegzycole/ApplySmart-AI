@@ -79,7 +79,7 @@ public class CoverLetterServiceImpl implements CoverLetterService {
         byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(coverLetterContent, layoutInfo);
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
 
-        Integer wordCount = calculateWordCount(coverLetterContent);
+        Integer wordCount = TextUtils.calculateWordCount(coverLetterContent);
 
         CoverLetter coverLetter = CoverLetter.builder()
                 .user(user)
@@ -174,7 +174,7 @@ public class CoverLetterServiceImpl implements CoverLetterService {
 
         if (request.getContent() != null) {
             coverLetter.setContent(request.getContent());
-            coverLetter.setWordCount(calculateWordCount(request.getContent()));
+            coverLetter.setWordCount(TextUtils.calculateWordCount(request.getContent()));
         }
 
         if (request.getTone() != null) {
@@ -212,12 +212,6 @@ public class CoverLetterServiceImpl implements CoverLetterService {
         return generateCoverLetter(request, user);
     }
 
-    private Integer calculateWordCount(String content) {
-        if (content == null || content.isBlank()) {
-            return 0;
-        }
-        return content.trim().split("\\s+").length;
-    }
 
     private CoverLetterResponseDto convertToDto(CoverLetter coverLetter, String pdfUrl) {
         return CoverLetterResponseDto.builder()

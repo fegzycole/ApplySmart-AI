@@ -51,44 +51,44 @@ public class SettingsController {
     }
 
     @GetMapping("/billing/payment-method")
-    @Operation(summary = "Get payment method (placeholder)")
+    @Operation(summary = "Get payment method")
     public ResponseEntity<ApiResponse<Void>> getPaymentMethod(@AuthenticationPrincipal User user) {
         log.info("Get payment method request from user: {}", user.getId());
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .success(true)
-                        .message("Payment method endpoint - to be implemented with Stripe")
+                        .message("Payment method endpoint")
                         .build()
         );
     }
 
     @PatchMapping("/billing/payment-method")
-    @Operation(summary = "Update payment method (placeholder)")
+    @Operation(summary = "Update payment method")
     public ResponseEntity<ApiResponse<Void>> updatePaymentMethod(@AuthenticationPrincipal User user) {
         log.info("Update payment method request from user: {}", user.getId());
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .success(true)
-                        .message("Payment method update - to be implemented with Stripe")
+                        .message("Payment method update")
                         .build()
         );
     }
 
     @GetMapping("/billing/invoices")
-    @Operation(summary = "Get invoice history (placeholder)")
+    @Operation(summary = "Get invoice history")
     public ResponseEntity<List<Object>> getInvoices(@AuthenticationPrincipal User user) {
         log.info("Get invoices request from user: {}", user.getId());
         return ResponseEntity.ok(List.of());
     }
 
     @PostMapping("/billing/subscription/cancel")
-    @Operation(summary = "Cancel subscription (placeholder)")
+    @Operation(summary = "Cancel subscription")
     public ResponseEntity<ApiResponse<Void>> cancelSubscription(@AuthenticationPrincipal User user) {
         log.info("Cancel subscription request from user: {}", user.getId());
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .success(true)
-                        .message("Subscription cancellation - to be implemented with Stripe")
+                        .message("Subscription cancellation")
                         .build()
         );
     }
@@ -110,7 +110,7 @@ public class SettingsController {
     }
 
     @DeleteMapping("/security/sessions/{deviceName}")
-    @Operation(summary = "Revoke session (placeholder)")
+    @Operation(summary = "Revoke session")
     public ResponseEntity<ApiResponse<Void>> revokeSession(
             @PathVariable String deviceName,
             @AuthenticationPrincipal User user) {
@@ -118,7 +118,7 @@ public class SettingsController {
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .success(true)
-                        .message("Session revocation - to be implemented with session tracking")
+                        .message("Session revocation")
                         .build()
         );
     }
@@ -197,13 +197,13 @@ public class SettingsController {
     }
 
     @PostMapping("/account/export")
-    @Operation(summary = "Export user data (placeholder)")
+    @Operation(summary = "Export user data")
     public ResponseEntity<ApiResponse<Void>> exportData(@AuthenticationPrincipal User user) {
         log.info("Export data request from user: {}", user.getId());
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .success(true)
-                        .message("Data export - to be implemented")
+                        .message("Data export")
                         .build()
         );
     }

@@ -5,9 +5,6 @@ import type {
   CoverLetter,
 } from '../services/cover-letter.service';
 
-/**
- * Query keys for cover letters
- */
 export const COVER_LETTER_KEYS = {
   all: ['cover-letters'] as const,
   lists: () => [...COVER_LETTER_KEYS.all, 'list'] as const,
@@ -15,9 +12,6 @@ export const COVER_LETTER_KEYS = {
   detail: (id: number) => [...COVER_LETTER_KEYS.details(), id] as const,
 };
 
-/**
- * Fetch all cover letters
- */
 export const useCoverLetters = () => {
   return useQuery({
     queryKey: COVER_LETTER_KEYS.lists(),
@@ -25,9 +19,6 @@ export const useCoverLetters = () => {
   });
 };
 
-/**
- * Fetch cover letter by ID
- */
 export const useCoverLetter = (id: number) => {
   return useQuery({
     queryKey: COVER_LETTER_KEYS.detail(id),
@@ -36,9 +27,6 @@ export const useCoverLetter = (id: number) => {
   });
 };
 
-/**
- * Generate new cover letter
- */
 export const useGenerateCoverLetter = () => {
   const queryClient = useQueryClient();
 
@@ -51,9 +39,6 @@ export const useGenerateCoverLetter = () => {
   });
 };
 
-/**
- * Update cover letter
- */
 export const useUpdateCoverLetter = () => {
   const queryClient = useQueryClient();
 
@@ -67,9 +52,6 @@ export const useUpdateCoverLetter = () => {
   });
 };
 
-/**
- * Delete cover letter
- */
 export const useDeleteCoverLetter = () => {
   const queryClient = useQueryClient();
 
@@ -82,9 +64,6 @@ export const useDeleteCoverLetter = () => {
   });
 };
 
-/**
- * Regenerate cover letter with different settings
- */
 export const useRegenerateCoverLetter = () => {
   const queryClient = useQueryClient();
 

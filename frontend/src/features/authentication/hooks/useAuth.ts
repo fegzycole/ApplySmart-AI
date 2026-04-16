@@ -13,30 +13,18 @@ export function useAuth() {
   const logoutMutation = useLogout();
 
   const login = async (credentials: LoginCredentials) => {
-    try {
-      await loginMutation.mutateAsync(credentials);
-      navigate(ROUTES.DASHBOARD.HOME);
-    } catch (err) {
-      throw new Error('Login failed. Please try again.');
-    }
+    await loginMutation.mutateAsync(credentials);
+    navigate(ROUTES.DASHBOARD.HOME);
   };
 
   const signup = async (data: SignupData) => {
-    try {
-      await signupMutation.mutateAsync(data);
-      navigate(ROUTES.DASHBOARD.HOME);
-    } catch (err) {
-      throw new Error('Signup failed. Please try again.');
-    }
+    await signupMutation.mutateAsync(data);
+    navigate(ROUTES.DASHBOARD.HOME);
   };
 
   const logout = async () => {
-    try {
-      await logoutMutation.mutateAsync();
-      navigate(ROUTES.HOME);
-    } catch (err) {
-      throw new Error('Logout failed.');
-    }
+    await logoutMutation.mutateAsync();
+    navigate(ROUTES.HOME);
   };
 
   return {
