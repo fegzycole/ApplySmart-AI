@@ -30,7 +30,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendVerificationEmail(String to, String name, String code) {
-        Map<String, String> variables = new HashMap<>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("name", name);
         variables.put("code", code);
 
@@ -39,14 +39,14 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendPasswordResetEmail(String to, String name, String code) {
-        Map<String, String> variables = new HashMap<>();
+        Map<String, Object> variables = new HashMap<>();
         variables.put("name", name);
         variables.put("code", code);
 
         sendTemplatedEmail(to, "Reset Your Password - ApplySmart AI", "password-reset", variables);
     }
 
-    private void sendTemplatedEmail(String to, String subject, String templateName, Map<String, String> variables) {
+    private void sendTemplatedEmail(String to, String subject, String templateName, Map<String, Object> variables) {
         try {
             Context context = new Context();
             context.setVariables(variables);

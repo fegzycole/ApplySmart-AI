@@ -12,6 +12,7 @@ public interface HtmlPdfGenerator {
      * @param markdownContent the resume content in markdown format
      * @param layoutInfo the layout information extracted from original PDF
      * @return PDF as byte array
+     * @throws Exception if PDF generation fails
      */
-    byte[] generateStyledPdf(String markdownContent, ResumeLayoutInfo layoutInfo);
+    byte[] generateStyledPdf(String markdownContent, ResumeLayoutInfo layoutInfo) throws Exception;
 }

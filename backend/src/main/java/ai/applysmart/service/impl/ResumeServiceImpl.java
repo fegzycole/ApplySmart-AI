@@ -186,7 +186,15 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         String pdfFilename = String.format("resume-%d-optimized-%d.pdf", id, timestamp);
-        byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
+
+        byte[] pdfBytes;
+        try {
+            pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
+        } catch (Exception e) {
+            log.error("Failed to generate PDF for optimized resume", e);
+            throw new RuntimeException("Failed to generate PDF", e);
+        }
+
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
 
         if (resume.getCloudinaryPublicId() != null) {
@@ -267,9 +275,15 @@ public class ResumeServiceImpl implements ResumeService {
             throw new BadRequestException("Job description is required");
         }
 
-        ai.applysmart.dto.resume.ResumeLayoutInfo layoutInfo = pdfLayoutAnalyzer.analyzeLayout(file);
-        log.info("Extracted layout info - Primary font: {}, Accent color: {}",
-                 layoutInfo.getPrimaryFont(), layoutInfo.getAccentColor());
+        ai.applysmart.dto.resume.ResumeLayoutInfo layoutInfo;
+        try {
+            layoutInfo = pdfLayoutAnalyzer.analyzeLayout(file);
+            log.info("Extracted layout info - Primary font: {}, Accent color: {}",
+                     layoutInfo.getPrimaryFont(), layoutInfo.getAccentColor());
+        } catch (java.io.IOException e) {
+            log.warn("Failed to analyze PDF layout, using default: {}", e.getMessage());
+            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
+        }
 
         String originalContent = fileParserService.extractTextFromFile(file);
 
@@ -278,7 +292,15 @@ public class ResumeServiceImpl implements ResumeService {
         long timestamp = System.currentTimeMillis();
 
         String pdfFilename = String.format("user-%d-optimized-%d.pdf", user.getId(), timestamp);
-        byte[] pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
+
+        byte[] pdfBytes;
+        try {
+            pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
+        } catch (Exception e) {
+            log.error("Failed to generate PDF for optimized resume", e);
+            throw new RuntimeException("Failed to generate PDF", e);
+        }
+
         ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
 
         optimization.setFileUrl(pdfUploadResult.getUrl());
