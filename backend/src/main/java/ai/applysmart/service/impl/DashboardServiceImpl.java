@@ -2,22 +2,24 @@ package ai.applysmart.service.impl;
 
 import ai.applysmart.dto.dashboard.*;
 import ai.applysmart.entity.Job;
-import ai.applysmart.entity.Resume;
 import ai.applysmart.entity.User;
-import ai.applysmart.repository.CoverLetterRepository;
+import ai.applysmart.mapper.DashboardDtoMapper;
 import ai.applysmart.repository.JobRepository;
-import ai.applysmart.repository.ResumeRepository;
 import ai.applysmart.service.DashboardService;
+import ai.applysmart.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.time.temporal.WeekFields;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -25,8 +27,7 @@ import java.util.stream.Collectors;
 public class DashboardServiceImpl implements DashboardService {
 
     private final JobRepository jobRepository;
-    private final ResumeRepository resumeRepository;
-    private final CoverLetterRepository coverLetterRepository;
+    private final DashboardDtoMapper dtoMapper;
 
     @Override
     public DashboardDataDto getDashboardData(User user) {
@@ -45,59 +46,44 @@ public class DashboardServiceImpl implements DashboardService {
         log.info("Calculating stats for user: {}", user.getId());
 
         List<Job> allJobs = jobRepository.findByUserOrderByUpdatedAtDesc(user);
-        List<Resume> allResumes = resumeRepository.findByUserOrderByUpdatedAtDesc(user);
 
         long totalApplications = allJobs.size();
-        long activeApplications = allJobs.stream()
+        long activeApplications = countActiveApplications(allJobs);
+        long interviews = countInterviews(allJobs);
+        long offers = countOffers(allJobs);
+        long recentApplications = countRecentApplications(allJobs, 30);
+
+        return List.of(
+                dtoMapper.createTotalApplicationsStat(totalApplications, recentApplications),
+                dtoMapper.createActiveApplicationsStat(activeApplications, totalApplications),
+                dtoMapper.createInterviewsStat(interviews, totalApplications),
+                dtoMapper.createOffersStat(offers, totalApplications)
+        );
+    }
+
+    private long countActiveApplications(List<Job> jobs) {
+        return jobs.stream()
                 .filter(job -> job.getStatus() == Job.Status.APPLIED || job.getStatus() == Job.Status.INTERVIEW)
                 .count();
-        long interviews = allJobs.stream()
+    }
+
+    private long countInterviews(List<Job> jobs) {
+        return jobs.stream()
                 .filter(job -> job.getStatus() == Job.Status.INTERVIEW)
                 .count();
-        long offers = allJobs.stream()
+    }
+
+    private long countOffers(List<Job> jobs) {
+        return jobs.stream()
                 .filter(job -> job.getStatus() == Job.Status.OFFER)
                 .count();
+    }
 
-        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minus(30, ChronoUnit.DAYS);
-        long recentApplications = allJobs.stream()
-                .filter(job -> job.getCreatedAt().isAfter(thirtyDaysAgo))
+    private long countRecentApplications(List<Job> jobs, int daysAgo) {
+        LocalDateTime cutoffDate = LocalDateTime.now().minus(daysAgo, ChronoUnit.DAYS);
+        return jobs.stream()
+                .filter(job -> job.getCreatedAt().isAfter(cutoffDate))
                 .count();
-
-        List<StatCardDto> stats = new ArrayList<>();
-
-        stats.add(StatCardDto.builder()
-                .title("Total Applications")
-                .value(String.valueOf(totalApplications))
-                .change(recentApplications > 0 ? "+" + recentApplications + " this month" : "No change")
-                .trend(recentApplications > 0 ? "up" : "neutral")
-                .icon("briefcase")
-                .build());
-
-        stats.add(StatCardDto.builder()
-                .title("Active Applications")
-                .value(String.valueOf(activeApplications))
-                .change(String.format("%.0f%% of total", totalApplications > 0 ? (activeApplications * 100.0 / totalApplications) : 0))
-                .trend("neutral")
-                .icon("clock")
-                .build());
-
-        stats.add(StatCardDto.builder()
-                .title("Interviews")
-                .value(String.valueOf(interviews))
-                .change(String.format("%.0f%% interview rate", totalApplications > 0 ? (interviews * 100.0 / totalApplications) : 0))
-                .trend(interviews > 0 ? "up" : "neutral")
-                .icon("users")
-                .build());
-
-        stats.add(StatCardDto.builder()
-                .title("Offers")
-                .value(String.valueOf(offers))
-                .change(String.format("%.0f%% offer rate", totalApplications > 0 ? (offers * 100.0 / totalApplications) : 0))
-                .trend(offers > 0 ? "up" : "neutral")
-                .icon("check-circle")
-                .build());
-
-        return stats;
     }
 
     @Override
@@ -106,13 +92,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         return jobRepository.findByUserOrderByUpdatedAtDesc(user).stream()
                 .limit(5)
-                .map(job -> RecentApplicationDto.builder()
-                        .id(job.getId())
-                        .company(job.getCompany())
-                        .role(job.getRole())
-                        .status(job.getStatus().name())
-                        .appliedAt(job.getCreatedAt())
-                        .build())
+                .map(dtoMapper::mapToRecentApplicationDto)
                 .collect(Collectors.toList());
     }
 
@@ -124,32 +104,34 @@ public class DashboardServiceImpl implements DashboardService {
         int totalJobs = allJobs.size();
 
         if (totalJobs == 0) {
-            return List.of(
-                    createFunnelStage("Saved", 0, 0.0),
-                    createFunnelStage("Applied", 0, 0.0),
-                    createFunnelStage("Interview", 0, 0.0),
-                    createFunnelStage("Offer", 0, 0.0)
-            );
+            return createEmptyFunnelStages();
         }
 
         Map<Job.Status, Long> statusCounts = allJobs.stream()
                 .collect(Collectors.groupingBy(Job::getStatus, Collectors.counting()));
 
-        List<FunnelStageDto> funnel = new ArrayList<>();
-        funnel.add(createFunnelStage("Saved",
-                statusCounts.getOrDefault(Job.Status.SAVED, 0L).intValue(),
-                statusCounts.getOrDefault(Job.Status.SAVED, 0L) * 100.0 / totalJobs));
-        funnel.add(createFunnelStage("Applied",
-                statusCounts.getOrDefault(Job.Status.APPLIED, 0L).intValue(),
-                statusCounts.getOrDefault(Job.Status.APPLIED, 0L) * 100.0 / totalJobs));
-        funnel.add(createFunnelStage("Interview",
-                statusCounts.getOrDefault(Job.Status.INTERVIEW, 0L).intValue(),
-                statusCounts.getOrDefault(Job.Status.INTERVIEW, 0L) * 100.0 / totalJobs));
-        funnel.add(createFunnelStage("Offer",
-                statusCounts.getOrDefault(Job.Status.OFFER, 0L).intValue(),
-                statusCounts.getOrDefault(Job.Status.OFFER, 0L) * 100.0 / totalJobs));
+        return List.of(
+                createFunnelStageForStatus("Saved", Job.Status.SAVED, "violet", statusCounts, totalJobs),
+                createFunnelStageForStatus("Applied", Job.Status.APPLIED, "fuchsia", statusCounts, totalJobs),
+                createFunnelStageForStatus("Interview", Job.Status.INTERVIEW, "cyan", statusCounts, totalJobs),
+                createFunnelStageForStatus("Offer", Job.Status.OFFER, "emerald", statusCounts, totalJobs)
+        );
+    }
 
-        return funnel;
+    private List<FunnelStageDto> createEmptyFunnelStages() {
+        return List.of(
+                dtoMapper.createFunnelStage("Saved", 0, "violet", 0.0),
+                dtoMapper.createFunnelStage("Applied", 0, "fuchsia", 0.0),
+                dtoMapper.createFunnelStage("Interview", 0, "cyan", 0.0),
+                dtoMapper.createFunnelStage("Offer", 0, "emerald", 0.0)
+        );
+    }
+
+    private FunnelStageDto createFunnelStageForStatus(String name, Job.Status status, String color,
+                                                       Map<Job.Status, Long> statusCounts, int totalJobs) {
+        long count = statusCounts.getOrDefault(status, 0L);
+        double percentage = DateUtils.calculatePercentage(count, totalJobs);
+        return dtoMapper.createFunnelStage(name, (int) count, color, percentage);
     }
 
     @Override
@@ -157,50 +139,106 @@ public class DashboardServiceImpl implements DashboardService {
         log.info("Calculating conversion metrics for user: {}", user.getId());
 
         List<Job> allJobs = jobRepository.findByUserOrderByUpdatedAtDesc(user);
-        int totalJobs = allJobs.size();
 
-        if (totalJobs == 0) {
-            return List.of(
-                    createMetric("Application to Interview", 0.0, "percentage"),
-                    createMetric("Interview to Offer", 0.0, "percentage"),
-                    createMetric("Overall Success Rate", 0.0, "percentage")
-            );
-        }
+        long applied = countAppliedJobs(allJobs);
+        long interviews = countInterviewsAndOffers(allJobs);
+        long offers = countOffers(allJobs);
 
-        long applied = allJobs.stream()
-                .filter(job -> job.getStatus() != Job.Status.SAVED)
-                .count();
-        long interviews = allJobs.stream()
-                .filter(job -> job.getStatus() == Job.Status.INTERVIEW || job.getStatus() == Job.Status.OFFER)
-                .count();
-        long offers = allJobs.stream()
-                .filter(job -> job.getStatus() == Job.Status.OFFER)
-                .count();
-
-        double appToInterview = applied > 0 ? (interviews * 100.0 / applied) : 0.0;
-        double interviewToOffer = interviews > 0 ? (offers * 100.0 / interviews) : 0.0;
-        double overallSuccess = applied > 0 ? (offers * 100.0 / applied) : 0.0;
+        double appToInterview = DateUtils.calculatePercentage(interviews, applied);
+        double interviewToOffer = DateUtils.calculatePercentage(offers, interviews);
 
         return List.of(
-                createMetric("Application to Interview", appToInterview, "percentage"),
-                createMetric("Interview to Offer", interviewToOffer, "percentage"),
-                createMetric("Overall Success Rate", overallSuccess, "percentage")
+                dtoMapper.createConversionMetric("Application to Interview", appToInterview),
+                dtoMapper.createConversionMetric("Interview to Offer", interviewToOffer)
         );
     }
 
-    private FunnelStageDto createFunnelStage(String stage, Integer count, Double percentage) {
-        return FunnelStageDto.builder()
-                .stage(stage)
-                .count(count)
-                .percentage(percentage)
+    private long countAppliedJobs(List<Job> jobs) {
+        return jobs.stream()
+                .filter(job -> job.getStatus() != Job.Status.SAVED)
+                .count();
+    }
+
+    private long countInterviewsAndOffers(List<Job> jobs) {
+        return jobs.stream()
+                .filter(job -> job.getStatus() == Job.Status.INTERVIEW || job.getStatus() == Job.Status.OFFER)
+                .count();
+    }
+
+    @Override
+    public List<SuccessMetricDto> getSuccessMetrics(User user) {
+        log.info("Calculating success metrics for user: {}", user.getId());
+
+        List<Job> allJobs = jobRepository.findByUserOrderByUpdatedAtDesc(user);
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter monthFormatter = DateTimeFormatter.ofPattern("MMM");
+
+        return IntStream.range(0, 6)
+                .mapToObj(i -> calculateSuccessMetricForMonth(allJobs, now, i, monthFormatter))
+                .collect(Collectors.toList());
+    }
+
+    private SuccessMetricDto calculateSuccessMetricForMonth(List<Job> allJobs, LocalDateTime now,
+                                                             int monthsBack, DateTimeFormatter formatter) {
+        LocalDateTime monthStart = now.minusMonths(5 - monthsBack)
+                .withDayOfMonth(1)
+                .withHour(0)
+                .withMinute(0)
+                .withSecond(0);
+        LocalDateTime monthEnd = monthStart.plusMonths(1).minusSeconds(1);
+
+        List<Job> monthJobs = filterJobsByDateRange(allJobs, monthStart, monthEnd);
+
+        long totalApplied = countAppliedJobs(monthJobs);
+        long interviews = countInterviewsAndOffers(monthJobs);
+        long offers = countOffers(monthJobs);
+
+        return SuccessMetricDto.builder()
+                .month(formatter.format(monthStart))
+                .responseRate(DateUtils.calculatePercentage(interviews, totalApplied))
+                .interviewRate(DateUtils.calculatePercentage(interviews, totalApplied))
+                .offerRate(DateUtils.calculatePercentage(offers, totalApplied))
                 .build();
     }
 
-    private ConversionMetricDto createMetric(String metric, Double value, String unit) {
-        return ConversionMetricDto.builder()
-                .metric(metric)
-                .value(value)
-                .unit(unit)
+    private List<Job> filterJobsByDateRange(List<Job> jobs, LocalDateTime start, LocalDateTime end) {
+        return jobs.stream()
+                .filter(job -> !job.getCreatedAt().isBefore(start) && !job.getCreatedAt().isAfter(end))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ApplicationVelocityDto> getApplicationVelocity(User user) {
+        log.info("Calculating application velocity for user: {}", user.getId());
+
+        List<Job> allJobs = jobRepository.findByUserOrderByUpdatedAtDesc(user);
+        LocalDateTime now = LocalDateTime.now();
+        WeekFields weekFields = WeekFields.of(Locale.getDefault());
+
+        return IntStream.range(0, 12)
+                .mapToObj(i -> calculateVelocityForWeek(allJobs, now, i, weekFields))
+                .collect(Collectors.toList());
+    }
+
+    private ApplicationVelocityDto calculateVelocityForWeek(List<Job> allJobs, LocalDateTime now,
+                                                             int weeksBack, WeekFields weekFields) {
+        LocalDateTime weekStart = now.minusWeeks(11 - weeksBack).with(weekFields.dayOfWeek(), 1);
+        LocalDateTime weekEnd = weekStart.plusWeeks(1);
+
+        int weekNumber = weekStart.get(weekFields.weekOfWeekBasedYear());
+        long weekApplications = countJobsInWeek(allJobs, weekStart, weekEnd);
+
+        return ApplicationVelocityDto.builder()
+                .week("W" + weekNumber)
+                .fullWeek("Week " + weekNumber)
+                .applications((int) weekApplications)
+                .target(5)
                 .build();
+    }
+
+    private long countJobsInWeek(List<Job> jobs, LocalDateTime weekStart, LocalDateTime weekEnd) {
+        return jobs.stream()
+                .filter(job -> !job.getCreatedAt().isBefore(weekStart) && job.getCreatedAt().isBefore(weekEnd))
+                .count();
     }
 }

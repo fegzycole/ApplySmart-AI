@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @Builder
 public class ConversionMetricDto {
-    private String metric;
-    private Double value;
-    private String unit; // percentage, count, etc
+    private String label;
+    private String value;
+    private String gradient;
 }

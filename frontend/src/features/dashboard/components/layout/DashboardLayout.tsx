@@ -20,8 +20,9 @@ import {
 import { useTheme } from "next-themes";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useLogout } from "@/features/authentication/hooks/useAuthQueries";
+import { useLogout, useCurrentUser } from "@/features/authentication/hooks/useAuthQueries";
 import { FEATURE_FLAGS } from "@/shared/config/feature-flags";
+import { getInitials, getFullName } from "@/shared/utils/user.utils";
 
 const navigation = [
   { name: "Dashboard", href: "/app", icon: LayoutDashboard },
@@ -38,7 +39,11 @@ export function DashboardLayout() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { data: user } = useCurrentUser();
   const logoutMutation = useLogout();
+
+  const userInitials = user ? getInitials(user.firstName, user.lastName) : 'U';
+  const userFullName = user ? getFullName(user.firstName, user.lastName) : 'User';
 
   const isActive = (href: string) => {
     if (href === "/app") {
@@ -137,11 +142,11 @@ export function DashboardLayout() {
           <div className="p-4 border-t border-violet-200/50 dark:border-violet-800/50 space-y-3">
             <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-violet-50 to-fuchsia-50 dark:from-violet-950/30 dark:to-fuchsia-950/30">
               <div className="size-10 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-lg">
-                <span className="text-white font-semibold text-sm">JD</span>
+                <span className="text-white font-semibold text-sm">{userInitials}</span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-zinc-900 dark:text-white truncate">
-                  John Doe
+                  {userFullName}
                 </p>
                 {FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED && (
                   <p className="text-xs bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent font-semibold truncate">

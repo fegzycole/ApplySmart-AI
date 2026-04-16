@@ -4,7 +4,9 @@ import type {
   FunnelStage,
   ConversionMetric,
   StatCardData,
-  DashboardData
+  DashboardData,
+  SuccessMetric,
+  ApplicationVelocity
 } from '../types/dashboard.types';
 
 /**
@@ -17,6 +19,8 @@ const ENDPOINTS = {
   RECENT_APPLICATIONS: '/dashboard/recent-applications',
   FUNNEL: '/dashboard/funnel',
   METRICS: '/dashboard/metrics',
+  SUCCESS_METRICS: '/dashboard/success-metrics',
+  APPLICATION_VELOCITY: '/dashboard/application-velocity',
   ALL_DATA: '/dashboard',
 };
 
@@ -47,6 +51,20 @@ export const fetchApplicationFunnel = async (): Promise<FunnelStage[]> => {
  */
 export const fetchConversionMetrics = async (): Promise<ConversionMetric[]> => {
   return apiClient.get<ConversionMetric[]>(ENDPOINTS.METRICS);
+};
+
+/**
+ * Fetch success metrics trend data
+ */
+export const fetchSuccessMetrics = async (): Promise<SuccessMetric[]> => {
+  return apiClient.get<SuccessMetric[]>(ENDPOINTS.SUCCESS_METRICS);
+};
+
+/**
+ * Fetch application velocity data
+ */
+export const fetchApplicationVelocity = async (): Promise<ApplicationVelocity[]> => {
+  return apiClient.get<ApplicationVelocity[]>(ENDPOINTS.APPLICATION_VELOCITY);
 };
 
 /**

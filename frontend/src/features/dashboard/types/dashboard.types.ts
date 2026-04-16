@@ -1,8 +1,9 @@
 import type { LucideIcon } from "lucide-react";
 
-export type ApplicationStatus = "interview" | "applied" | "rejected";
+export type ApplicationStatus = "saved" | "applied" | "interview" | "offer" | "rejected";
 
 export interface Application {
+  id: number;
   company: string;
   role: string;
   status: ApplicationStatus;
@@ -11,7 +12,7 @@ export interface Application {
 
 export interface StatCardData {
   title: string;
-  value: number;
+  value: string | number;
   trend: {
     value: string;
     isPositive: boolean;
@@ -33,13 +34,34 @@ export interface QuickAction {
 export interface FunnelStage {
   name: string;
   value: number;
-  icon: LucideIcon;
   color: string;
   percentage: number;
+  icon?: LucideIcon;
 }
 
 export interface ConversionMetric {
   label: string;
   value: string;
   gradient: string;
+}
+
+export interface SuccessMetric {
+  month: string;
+  responseRate: number;
+  interviewRate: number;
+  offerRate: number;
+}
+
+export interface ApplicationVelocity {
+  week: string;
+  fullWeek: string;
+  applications: number;
+  target: number;
+}
+
+export interface DashboardData {
+  stats: StatCardData[];
+  recentApplications: Application[];
+  funnel: FunnelStage[];
+  metrics: ConversionMetric[];
 }

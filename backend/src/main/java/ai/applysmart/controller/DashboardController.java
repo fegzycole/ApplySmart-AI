@@ -63,4 +63,20 @@ public class DashboardController {
         List<ConversionMetricDto> metrics = dashboardService.getMetrics(user);
         return ResponseEntity.ok(metrics);
     }
+
+    @GetMapping("/success-metrics")
+    @Operation(summary = "Get success metrics trend data")
+    public ResponseEntity<List<SuccessMetricDto>> getSuccessMetrics(@AuthenticationPrincipal User user) {
+        log.info("Get success metrics request from user: {}", user.getId());
+        List<SuccessMetricDto> metrics = dashboardService.getSuccessMetrics(user);
+        return ResponseEntity.ok(metrics);
+    }
+
+    @GetMapping("/application-velocity")
+    @Operation(summary = "Get application velocity data")
+    public ResponseEntity<List<ApplicationVelocityDto>> getApplicationVelocity(@AuthenticationPrincipal User user) {
+        log.info("Get application velocity request from user: {}", user.getId());
+        List<ApplicationVelocityDto> velocity = dashboardService.getApplicationVelocity(user);
+        return ResponseEntity.ok(velocity);
+    }
 }

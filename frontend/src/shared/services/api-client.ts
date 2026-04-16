@@ -1,9 +1,6 @@
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { tokenStorage } from '../utils/token-storage';
 
-/**
- * Base API configuration
- */
 export const API_CONFIG = {
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
   timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10),
@@ -12,18 +9,12 @@ export const API_CONFIG = {
   },
 };
 
-/**
- * API Response type
- */
 export interface ApiResponse<T> {
   data: T;
   status: number;
   message?: string;
 }
 
-/**
- * API Error class
- */
 export class ApiError extends Error {
   status: number;
   data?: unknown;
@@ -36,9 +27,6 @@ export class ApiError extends Error {
   }
 }
 
-/**
- * API Client class for making HTTP requests
- */
 export class ApiClient {
   private baseURL: string;
   private headers: Record<string, string>;
@@ -49,16 +37,12 @@ export class ApiClient {
     this.headers = { ...config.headers };
     this.timeout = config.timeout;
 
-    // Load token from storage on initialization
     const token = tokenStorage.getToken();
     if (token) {
       this.headers['Authorization'] = `Bearer ${token}`;
     }
   }
 
-  /**
-   * Handle API response
-   */
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
@@ -72,9 +56,6 @@ export class ApiClient {
     return response.json();
   }
 
-  /**
-   * Create fetch request with timeout
-   */
   private async fetchWithTimeout(
     url: string,
     options: RequestInit
@@ -98,19 +79,18 @@ export class ApiClient {
     }
   }
 
-  /**
-   * GET request
-   */
   async get<T>(endpoint: string, params?: Record<string, string>): Promise<T> {
-    const url = new URL(`${this.baseURL}${endpoint}`);
+    let urlString = `${this.baseURL}${endpoint}`;
 
     if (params) {
+      const searchParams = new URLSearchParams();
       Object.entries(params).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
+        searchParams.append(key, value);
       });
+      urlString += `?${searchParams.toString()}`;
     }
 
-    const response = await this.fetchWithTimeout(url.toString(), {
+    const response = await this.fetchWithTimeout(urlString, {
       method: 'GET',
       headers: this.headers,
     });
@@ -118,9 +98,6 @@ export class ApiClient {
     return this.handleResponse<T>(response);
   }
 
-  /**
-   * POST request
-   */
   async post<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
     const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
       method: 'POST',
@@ -131,9 +108,6 @@ export class ApiClient {
     return this.handleResponse<T>(response);
   }
 
-  /**
-   * PUT request
-   */
   async put<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
     const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
       method: 'PUT',
@@ -144,9 +118,6 @@ export class ApiClient {
     return this.handleResponse<T>(response);
   }
 
-  /**
-   * PATCH request
-   */
   async patch<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
     const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
       method: 'PATCH',
@@ -157,9 +128,6 @@ export class ApiClient {
     return this.handleResponse<T>(response);
   }
 
-  /**
-   * DELETE request
-   */
   async delete<T>(endpoint: string): Promise<T> {
     const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
       method: 'DELETE',
@@ -169,39 +137,25 @@ export class ApiClient {
     return this.handleResponse<T>(response);
   }
 
-  /**
-   * Set authorization token
-   */
   setAuthToken(token: string) {
     this.headers['Authorization'] = `Bearer ${token}`;
     tokenStorage.setToken(token);
   }
 
-  /**
-   * Clear authorization token
-   */
   clearAuthToken() {
     delete this.headers['Authorization'];
     tokenStorage.clearTokens();
   }
 
-  /**
-   * Update headers
-   */
   setHeader(key: string, value: string) {
     this.headers[key] = value;
   }
 
-  /**
-   * Remove header
-   */
   removeHeader(key: string) {
     delete this.headers[key];
   }
 }
 
-// Export singleton instance
 export const apiClient = new ApiClient();
 
-// Export endpoints for easy access
 export { API_ENDPOINTS };

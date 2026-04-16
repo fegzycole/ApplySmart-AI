@@ -6,7 +6,8 @@ import lombok.Data;
 @Data
 @Builder
 public class FunnelStageDto {
-    private String stage;
-    private Integer count;
+    private String name;
+    private Integer value;
+    private String color;
     private Double percentage;
 }

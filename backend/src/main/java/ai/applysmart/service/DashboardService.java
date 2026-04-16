@@ -11,4 +11,6 @@ public interface DashboardService {
     List<RecentApplicationDto> getRecentApplications(User user);
     List<FunnelStageDto> getFunnelData(User user);
     List<ConversionMetricDto> getMetrics(User user);
+    List<SuccessMetricDto> getSuccessMetrics(User user);
+    List<ApplicationVelocityDto> getApplicationVelocity(User user);
 }
