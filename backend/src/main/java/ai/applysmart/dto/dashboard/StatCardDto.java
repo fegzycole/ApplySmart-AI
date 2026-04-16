@@ -8,7 +8,21 @@ import lombok.Data;
 public class StatCardDto {
     private String title;
     private String value;
-    private String change;
-    private String trend; // up, down, neutral
-    private String icon;
+    private TrendDto trend;
+    private GradientDto gradient;
+    private String shadowColor;
+
+    @Data
+    @Builder
+    public static class TrendDto {
+        private String value;
+        private Boolean isPositive;
+    }
+
+    @Data
+    @Builder
+    public static class GradientDto {
+        private String from;
+        private String to;
+    }
 }

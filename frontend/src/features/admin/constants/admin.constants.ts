@@ -67,7 +67,7 @@ export const CHART_COLORS = {
   primary: "#6366f1",
   secondary: "#10b981",
   tertiary: "#8b5cf6",
-  gridStroke: "#e4e4e7",
+  gridStroke: "#d4d4d8",
   axisStroke: "#71717a"
 } as const;
 

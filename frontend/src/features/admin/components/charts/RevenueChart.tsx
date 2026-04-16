@@ -13,13 +13,18 @@ export function RevenueChart() {
       }))
     : [];
 
+  const getChartState = () => {
+    if (isLoading) return "loading";
+    if (isError) return "error";
+    if (chartData.length === 0) return "empty";
+    return "success";
+  };
+
   return (
     <ChartWrapper
       title={CHART_TITLES.revenue.title}
       description={CHART_TITLES.revenue.description}
-      isLoading={isLoading}
-      isError={isError}
-      hasData={chartData.length > 0}
+      state={getChartState()}
       emptyMessage="No data available (Stripe integration pending)"
     >
       <ResponsiveContainer width="100%" height="100%">

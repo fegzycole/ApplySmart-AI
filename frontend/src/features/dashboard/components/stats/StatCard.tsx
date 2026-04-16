@@ -16,11 +16,19 @@ interface StatCardProps {
 }
 
 export function StatCard({ title, value, trend, gradient, shadowColor }: StatCardProps) {
+  const getTextColorClass = () => {
+    if (gradient.from.includes('violet')) return 'text-violet-700 dark:text-violet-400';
+    if (gradient.from.includes('fuchsia')) return 'text-fuchsia-700 dark:text-fuchsia-400';
+    if (gradient.from.includes('cyan')) return 'text-cyan-700 dark:text-cyan-400';
+    if (gradient.from.includes('emerald')) return 'text-emerald-700 dark:text-emerald-400';
+    return 'text-zinc-900 dark:text-white';
+  };
+
   return (
     <Card className={`border-0 bg-gradient-to-br from-white ${gradient.to} dark:from-zinc-900 ${gradient.to.replace('to-', 'dark:to-').replace('/30', '/30')} shadow-xl ${shadowColor} backdrop-blur-sm hover:shadow-2xl ${shadowColor.replace('shadow-', 'hover:shadow-').replace('/10', '/20')} transition-all duration-300`}>
       <CardHeader className="pb-3">
         <CardDescription className="text-xs">{title}</CardDescription>
-        <CardTitle className={`text-3xl sm:text-4xl bg-gradient-to-r ${gradient.from} ${gradient.to.replace('to-', 'to-').replace('-50', '-600').replace('/30', '')} bg-clip-text text-transparent`}>
+        <CardTitle className={`text-3xl sm:text-4xl font-bold ${getTextColorClass()}`}>
           {value}
         </CardTitle>
       </CardHeader>

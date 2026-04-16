@@ -14,13 +14,18 @@ export function AIUsageChart() {
       ]
     : [];
 
+  const getChartState = () => {
+    if (isLoading) return "loading";
+    if (isError) return "error";
+    if (chartData.length === 0) return "empty";
+    return "success";
+  };
+
   return (
     <ChartWrapper
       title={CHART_TITLES.aiUsage.title}
       description={CHART_TITLES.aiUsage.description}
-      isLoading={isLoading}
-      isError={isError}
-      hasData={chartData.length > 0}
+      state={getChartState()}
     >
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={chartData} layout="vertical">

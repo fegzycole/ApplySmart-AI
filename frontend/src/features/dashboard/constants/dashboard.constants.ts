@@ -1,3 +1,12 @@
+import { Bookmark, Send, Users, CheckCircle } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+
+export const STAGE_ICON_MAP: Record<string, LucideIcon> = {
+  "Saved": Bookmark,
+  "Applied": Send,
+  "Interview": Users,
+  "Offer": CheckCircle,
+} as const;
 
 export const DASHBOARD_PAGE_STYLES = {
   container: "p-4 sm:p-6 lg:p-8 overflow-x-hidden",

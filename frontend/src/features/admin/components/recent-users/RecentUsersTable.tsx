@@ -14,13 +14,18 @@ export function RecentUsersTable() {
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 10);
 
+  const getTableState = () => {
+    if (isLoading) return "loading";
+    if (isError) return "error";
+    if (recentUsers.length === 0) return "empty";
+    return "success";
+  };
+
   return (
     <TableWrapper
       title={CHART_TITLES.recentUsers.title}
       description={CHART_TITLES.recentUsers.description}
-      isLoading={isLoading}
-      isError={isError}
-      isEmpty={recentUsers.length === 0}
+      state={getTableState()}
       emptyMessage="No recent users"
     >
       <Table>

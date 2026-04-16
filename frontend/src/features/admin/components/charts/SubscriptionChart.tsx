@@ -23,13 +23,18 @@ export function SubscriptionChart() {
       ].filter(item => item.value > 0)
     : [];
 
+  const getChartState = () => {
+    if (isLoading) return "loading";
+    if (isError) return "error";
+    if (chartData.length === 0) return "empty";
+    return "success";
+  };
+
   return (
     <ChartWrapper
       title={CHART_TITLES.subscriptions.title}
       description={CHART_TITLES.subscriptions.description}
-      isLoading={isLoading}
-      isError={isError}
-      hasData={chartData.length > 0}
+      state={getChartState()}
     >
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>

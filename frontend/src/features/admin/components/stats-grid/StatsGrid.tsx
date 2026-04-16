@@ -1,5 +1,6 @@
-import { Users, UserCheck, FileText, Mail, Briefcase, DollarSign } from "lucide-react";
+import { Users, UserCheck, FileText, Mail } from "lucide-react";
 import { StatCard } from "./StatCard";
+import { EmptyState } from "@/shared/components/EmptyState";
 import { STATS_GRID_STYLES } from "../../constants/admin.constants";
 import { useAdminAnalytics } from "../../hooks";
 import type { StatCardData } from "../../types/admin.types";
@@ -9,18 +10,19 @@ export function StatsGrid() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-32 text-zinc-500 mb-8">
-        Loading statistics...
+      <div className={STATS_GRID_STYLES.grid}>
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="h-32 animate-pulse bg-gradient-to-r from-zinc-200/50 via-zinc-100/50 to-zinc-200/50 dark:from-zinc-800/50 dark:via-zinc-700/50 dark:to-zinc-800/50 rounded-lg"
+          />
+        ))}
       </div>
     );
   }
 
   if (isError || !analytics) {
-    return (
-      <div className="flex items-center justify-center h-32 text-zinc-500 mb-8">
-        Failed to load statistics
-      </div>
-    );
+    return <EmptyState message="Failed to load statistics" />;
   }
 
   const { overviewStats } = analytics;
