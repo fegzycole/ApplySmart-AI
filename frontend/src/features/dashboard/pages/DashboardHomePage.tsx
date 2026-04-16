@@ -4,10 +4,9 @@ import {
   ApplicationFunnel,
   ApplicationVelocityChart,
   RecentApplicationsSection,
-  QuickActionsCard
+  QuickActionsCard,
 } from "../components";
 import { DashboardPageHeader } from "../components/dashboard-header";
-import { DashboardSkeleton } from "../components/skeletons";
 import { DASHBOARD_PAGE_STYLES } from "../constants/dashboard.constants";
 import { useDashboardStats } from "../hooks";
 
@@ -20,22 +19,24 @@ export function DashboardHomePage() {
         <DashboardPageHeader />
 
         <div className={DASHBOARD_PAGE_STYLES.statsGrid}>
-          {isLoading ? (
-            Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="h-32 animate-pulse bg-gradient-to-r from-zinc-200/50 via-zinc-100/50 to-zinc-200/50 dark:from-zinc-800/50 dark:via-zinc-700/50 dark:to-zinc-800/50 rounded-lg" />
-            ))
-          ) : (
-            stats && stats.map((stat, index) => (
-              <StatCard
-                key={index}
-                title={stat.title}
-                value={stat.value}
-                trend={stat.trend}
-                gradient={stat.gradient}
-                shadowColor={stat.shadowColor}
-              />
-            ))
-          )}
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-32 animate-pulse bg-gradient-to-r from-zinc-200/50 via-zinc-100/50 to-zinc-200/50 dark:from-zinc-800/50 dark:via-zinc-700/50 dark:to-zinc-800/50 rounded-lg"
+                />
+              ))
+            : stats &&
+              stats.map((stat, index) => (
+                <StatCard
+                  key={index}
+                  title={stat.title}
+                  value={stat.value}
+                  trend={stat.trend}
+                  gradient={stat.gradient}
+                  shadowColor={stat.shadowColor}
+                />
+              ))}
         </div>
 
         <div className={DASHBOARD_PAGE_STYLES.mainContentGrid}>
