@@ -1,8 +1,10 @@
 export interface User {
   id: string;
   email: string;
-  name: string;
-  role: 'user' | 'admin';
+  firstName: string;
+  lastName: string;
+  role: 'USER' | 'ADMIN';
+  emailVerified: boolean;
 }
 
 export interface LoginCredentials {
@@ -11,7 +13,8 @@ export interface LoginCredentials {
 }
 
 export interface SignupData {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
 }
@@ -23,4 +26,23 @@ export interface PasswordResetRequest {
 export interface AuthResponse {
   user: User;
   token: string;
+  refreshToken: string;
+  tokenType: string;
+}
+
+export interface SignupResponse {
+  success: boolean;
+  message: string;
+  user: User;
+}
+
+export interface VerifyEmailRequest {
+  email: string;
+  code: string;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data?: T;
 }

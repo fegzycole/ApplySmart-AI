@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
-import { RECENT_APPLICATIONS_STYLES } from "../constants/dashboard.constants";
-import { ApplicationItem, ApplicationsHeader } from "./recent-applications";
-import { useRecentApplications } from "../hooks";
+import { RECENT_APPLICATIONS_STYLES } from "../../constants/dashboard.constants";
+import { ApplicationItem, ApplicationsHeader } from ".";
+import { useRecentApplications } from "../../hooks";
 
 export function RecentApplicationsSection() {
   const { data: applications, isLoading } = useRecentApplications(5);

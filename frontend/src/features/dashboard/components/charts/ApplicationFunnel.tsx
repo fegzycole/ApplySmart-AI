@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
-import { APPLICATION_FUNNEL_STYLES } from "../constants/dashboard.constants";
-import { FunnelHeader, FunnelStageItem, ConversionMetricsSection } from "./application-funnel";
-import { useApplicationFunnel } from "../hooks";
+import { APPLICATION_FUNNEL_STYLES } from "../../constants/dashboard.constants";
+import { FunnelHeader, FunnelStageItem, ConversionMetricsSection } from "../application-funnel";
+import { useApplicationFunnel } from "../../hooks";
 
 export function ApplicationFunnel() {
   const { data: funnelData, isLoading } = useApplicationFunnel();

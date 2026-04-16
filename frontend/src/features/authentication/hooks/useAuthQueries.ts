@@ -4,6 +4,7 @@ import type {
   LoginCredentials,
   SignupData,
   PasswordResetRequest,
+  VerifyEmailRequest,
 } from '../types/auth.types';
 
 export const AUTH_KEYS = {
@@ -32,13 +33,8 @@ export const useLogin = () => {
 };
 
 export const useSignup = () => {
-  const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (data: SignupData) => authService.signup(data),
-    onSuccess: (data) => {
-      queryClient.setQueryData(AUTH_KEYS.currentUser(), data.user);
-    },
   });
 };
 
@@ -67,5 +63,17 @@ export const useRefreshToken = () => {
     onSuccess: (data) => {
       queryClient.setQueryData(AUTH_KEYS.currentUser(), data.user);
     },
+  });
+};
+
+export const useVerifyEmail = () => {
+  return useMutation({
+    mutationFn: (data: VerifyEmailRequest) => authService.verifyEmail(data),
+  });
+};
+
+export const useResendVerification = () => {
+  return useMutation({
+    mutationFn: (email: string) => authService.resendVerificationCode(email),
   });
 };

@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { QUICK_ACTIONS_STYLES, QUICK_ACTIONS } from "../constants/dashboard.constants";
-import { QuickActionButton } from "./quick-actions";
+import { QUICK_ACTIONS_STYLES, QUICK_ACTIONS } from "../../constants/dashboard.constants";
+import { QuickActionButton } from "./QuickActionButton";
 import { PlusCircle, FileCheck, FileText } from "lucide-react";
-import type { QuickAction } from "../types/dashboard.types";
+import type { QuickAction } from "../../types/dashboard.types";
 
 const QUICK_ACTIONS_DATA: QuickAction[] = [
   {

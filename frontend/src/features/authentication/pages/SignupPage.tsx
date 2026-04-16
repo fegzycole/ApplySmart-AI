@@ -1,8 +1,7 @@
-import { Link } from "react-router";
-import { Button } from "@/shared/components/ui/button";
+import { SignupForm } from "../components/signup";
 import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
-import { DecorativeBackground, AuthNavigation, AuthCardHeader, FormField, OAuthButtons, LinkText } from "../components/shared";
-import { AUTH_PAGE_STYLES, AUTH_CARD_STYLES, FORM_STYLES, SIGNUP_FIELDS, AUTH_CONTENT } from "@/features/authentication/constants";
+import { DecorativeBackground, AuthNavigation, AuthCardHeader, OAuthButtons, LinkText } from "../components/shared";
+import { AUTH_PAGE_STYLES, AUTH_CARD_STYLES, AUTH_CONTENT } from "@/features/authentication/constants";
 
 export function SignupPage() {
   return (
@@ -19,16 +18,7 @@ export function SignupPage() {
             />
           </CardHeader>
           <CardContent>
-            <form className={FORM_STYLES.form}>
-              {SIGNUP_FIELDS.map((field) => (
-                <FormField key={field.id} {...field} />
-              ))}
-              <Link to="/app">
-                <Button className={FORM_STYLES.submitButton}>
-                  {AUTH_CONTENT.signup.submitButton}
-                </Button>
-              </Link>
-            </form>
+            <SignupForm />
 
             <OAuthButtons />
 

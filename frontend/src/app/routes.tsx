@@ -1,11 +1,13 @@
 import { createBrowserRouter } from "react-router";
 import { ErrorBoundary } from "@/shared/components";
+import { ProtectedRoute, PublicRoute } from "@/shared/components/guards";
 
 import {
   LandingPage,
   LoginPage,
   SignupPage,
-  PasswordResetPage
+  PasswordResetPage,
+  VerifyEmailPage
 } from "@/features/authentication";
 
 import { DashboardLayout, DashboardHomePage } from "@/features/dashboard";
@@ -25,22 +27,39 @@ import { AdminDashboardPage } from "@/features/admin";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <LandingPage />,
+    element: (
+      <PublicRoute>
+        <LandingPage />
+      </PublicRoute>
+    ),
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/login",
-    element: <LoginPage />,
+    element: (
+      <PublicRoute>
+        <LoginPage />
+      </PublicRoute>
+    ),
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/signup",
-    element: <SignupPage />,
+    element: (
+      <PublicRoute>
+        <SignupPage />
+      </PublicRoute>
+    ),
     errorElement: <ErrorBoundary />,
   },
   {
     path: "/password-reset",
     element: <PasswordResetPage />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: "/verify-email",
+    element: <VerifyEmailPage />,
     errorElement: <ErrorBoundary />,
   },
   {
@@ -50,7 +69,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/app",
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     errorElement: <ErrorBoundary />,
     children: [
       { index: true, element: <DashboardHomePage /> },
@@ -65,7 +88,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminDashboardPage />,
+    element: (
+      <ProtectedRoute>
+        <AdminDashboardPage />
+      </ProtectedRoute>
+    ),
     errorElement: <ErrorBoundary />,
   },
 ]);
