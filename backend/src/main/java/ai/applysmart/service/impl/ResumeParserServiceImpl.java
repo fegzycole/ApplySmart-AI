@@ -99,6 +99,7 @@ public class ResumeParserServiceImpl implements ResumeParserService {
                       "degree": "Bachelor of Science",
                       "field": "Computer Science",
                       "location": "City, State",
+                      "startDate": "Aug 2016",
                       "graduationDate": "May 2020",
                       "gpa": "3.8/4.0"
                     }

@@ -59,6 +59,7 @@ public class ParsedResumeDto {
         private String degree;
         private String field;
         private String location;
+        private String startDate;
         private String graduationDate;
         private String gpa;
     }

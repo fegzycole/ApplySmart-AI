@@ -122,28 +122,40 @@ public class ResumeTemplateServiceImpl implements ResumeTemplateService {
             result = result.replace("{{has_skills}}", "false");
         }
 
-        // Certifications
+        // Certifications - render full section or hide completely
         if (data.getCertifications() != null && !data.getCertifications().isEmpty()) {
             String certsHtml = data.getCertifications().stream()
                     .map(this::renderCertification)
                     .collect(Collectors.joining("\n"));
-            result = result.replace("{{certifications}}", certsHtml);
-            result = result.replace("{{has_certifications}}", "true");
+            String certsSection = """
+                    <!-- Certifications -->
+                    <div class="section">
+                        <h2 class="section-title">Certifications</h2>
+                        %s
+                    </div>
+                    """.formatted(certsHtml);
+            result = result.replace("{{certifications_section}}", certsSection);
         } else {
-            result = result.replace("{{certifications}}", "");
-            result = result.replace("{{has_certifications}}", "false");
+            result = result.replace("{{certifications_section}}", "");
         }
 
-        // Projects
+        // Projects - render full section or hide completely
+        // Determine section title based on template (Professional uses "Notable Projects")
+        String projectsSectionTitle = template.contains("Professional") ? "Notable Projects" : "Projects";
         if (data.getProjects() != null && !data.getProjects().isEmpty()) {
             String projectsHtml = data.getProjects().stream()
                     .map(this::renderProject)
                     .collect(Collectors.joining("\n"));
-            result = result.replace("{{projects}}", projectsHtml);
-            result = result.replace("{{has_projects}}", "true");
+            String projectsSection = """
+                    <!-- Projects -->
+                    <div class="section">
+                        <h2 class="section-title">%s</h2>
+                        %s
+                    </div>
+                    """.formatted(projectsSectionTitle, projectsHtml);
+            result = result.replace("{{projects_section}}", projectsSection);
         } else {
-            result = result.replace("{{projects}}", "");
-            result = result.replace("{{has_projects}}", "false");
+            result = result.replace("{{projects_section}}", "");
         }
 
         return result;
@@ -190,7 +202,12 @@ public class ResumeTemplateServiceImpl implements ResumeTemplateService {
         html.append("      <div class=\"institution\">").append(orEmpty(edu.getInstitution())).append("</div>\n");
         html.append("    </div>\n");
         html.append("    <div class=\"education-meta\">\n");
-        html.append("      <div class=\"date\">").append(orEmpty(edu.getGraduationDate())).append("</div>\n");
+        // Show both start and end dates if available
+        html.append("      <div class=\"date\">");
+        if (edu.getStartDate() != null && !edu.getStartDate().isEmpty()) {
+            html.append(escapeHtml(edu.getStartDate())).append(" - ");
+        }
+        html.append(orEmpty(edu.getGraduationDate())).append("</div>\n");
         if (edu.getLocation() != null && !edu.getLocation().isEmpty()) {
             html.append("      <div class=\"location\">").append(escapeHtml(edu.getLocation())).append("</div>\n");
         }

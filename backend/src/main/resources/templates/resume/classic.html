@@ -21,14 +21,14 @@
         .container {
             max-width: 8.5in;
             margin: 0 auto;
-            padding: 0.5in 0.75in;
+            padding: 0.3in 0.3in;
         }
 
         /* Header Section */
         .header {
             text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
+            margin-bottom: 18px;
+            padding-bottom: 8px;
         }
 
         .header h1 {
@@ -55,7 +55,11 @@
 
         /* Section Styles */
         .section {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
         }
 
         .section-title {
@@ -83,6 +87,8 @@
         }
 
         .experience-header {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 4px;
         }
 
@@ -90,6 +96,7 @@
             font-size: 11.5pt;
             font-weight: 700;
             color: #000;
+            margin-bottom: 2px;
         }
 
         .company {
@@ -99,9 +106,9 @@
         }
 
         .experience-meta {
+            text-align: right;
             font-size: 10pt;
             color: #000;
-            margin-bottom: 4px;
         }
 
         .date {
@@ -109,7 +116,8 @@
         }
 
         .location {
-            margin-left: 10px;
+            font-size: 9.5pt;
+            margin-top: 1px;
         }
 
         .responsibilities {
@@ -131,6 +139,8 @@
         }
 
         .education-header {
+            display: flex;
+            justify-content: space-between;
             margin-bottom: 3px;
         }
 
@@ -138,6 +148,7 @@
             font-size: 11.5pt;
             font-weight: 700;
             color: #000;
+            margin-bottom: 2px;
         }
 
         .institution {
@@ -147,6 +158,7 @@
         }
 
         .education-meta {
+            text-align: right;
             font-size: 10pt;
             color: #000;
         }
@@ -269,17 +281,9 @@
         </div>
     </div>
 
-    <!-- Certifications -->
-    <div class="section">
-        <h2 class="section-title">Certifications</h2>
-        {{certifications}}
-    </div>
+    {{certifications_section}}
 
-    <!-- Projects -->
-    <div class="section">
-        <h2 class="section-title">Projects</h2>
-        {{projects}}
-    </div>
+    {{projects_section}}
 </div>
 </body>
 </html>
