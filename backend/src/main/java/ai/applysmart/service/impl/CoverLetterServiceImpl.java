@@ -3,7 +3,6 @@ package ai.applysmart.service.impl;
 import ai.applysmart.dto.coverletter.CoverLetterRequest;
 import ai.applysmart.dto.coverletter.CoverLetterResponseDto;
 import ai.applysmart.dto.coverletter.UpdateCoverLetterRequest;
-import ai.applysmart.dto.resume.ResumeLayoutInfo;
 import ai.applysmart.entity.CoverLetter;
 import ai.applysmart.entity.Resume;
 import ai.applysmart.entity.User;
@@ -12,7 +11,6 @@ import ai.applysmart.exception.ResourceNotFoundException;
 import ai.applysmart.repository.CoverLetterRepository;
 import ai.applysmart.repository.ResumeRepository;
 import ai.applysmart.service.*;
-import ai.applysmart.util.LayoutUtils;
 import ai.applysmart.util.TextUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +30,6 @@ public class CoverLetterServiceImpl implements CoverLetterService {
     private final CoverLetterRepository coverLetterRepository;
     private final ResumeRepository resumeRepository;
     private final ClaudeService claudeService;
-    private final HtmlPdfGenerator htmlPdfGenerator;
-    private final FileStorageService fileStorageService;
-    private final PdfLayoutAnalyzer pdfLayoutAnalyzer;
     private final FileParserService fileParserService;
 
     @Override
@@ -48,16 +43,11 @@ public class CoverLetterServiceImpl implements CoverLetterService {
         }
 
         String resumeContent = null;
-        ResumeLayoutInfo layoutInfo = null;
 
         if (request.getResumeId() != null) {
             Resume resume = resumeRepository.findByIdAndUser(request.getResumeId(), user)
                     .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
             resumeContent = resume.getContent();
-
-            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
-        } else {
-            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
         }
 
         String coverLetterContent = claudeService.generateCoverLetter(
@@ -68,24 +58,6 @@ public class CoverLetterServiceImpl implements CoverLetterService {
                 request.getTone() != null ? request.getTone() : "professional",
                 request.getHighlights()
         );
-
-        long timestamp = System.currentTimeMillis();
-
-        String pdfFilename = String.format("user-%d-cover-letter-%s-%s-%d.pdf",
-                user.getId(),
-                request.getCompany().replaceAll("[^a-zA-Z0-9]", "-"),
-                request.getPosition().replaceAll("[^a-zA-Z0-9]", "-"),
-                timestamp);
-
-        byte[] pdfBytes;
-        try {
-            pdfBytes = htmlPdfGenerator.generateStyledPdf(coverLetterContent, layoutInfo);
-        } catch (Exception e) {
-            log.error("Failed to generate PDF for cover letter", e);
-            throw new RuntimeException("Failed to generate PDF", e);
-        }
-
-        ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
 
         Integer wordCount = TextUtils.calculateWordCount(coverLetterContent);
 
@@ -103,7 +75,7 @@ public class CoverLetterServiceImpl implements CoverLetterService {
         coverLetter = coverLetterRepository.save(coverLetter);
         log.info("Created cover letter with ID: {}", coverLetter.getId());
 
-        return convertToDto(coverLetter, pdfUploadResult.getUrl());
+        return convertToDto(coverLetter, null);
     }
 
     @Override
@@ -119,41 +91,17 @@ public class CoverLetterServiceImpl implements CoverLetterService {
         }
 
         String resumeContent = null;
-        ResumeLayoutInfo layoutInfo = null;
 
         if (resumeFile != null && !resumeFile.isEmpty()) {
             resumeContent = fileParserService.extractTextFromFile(resumeFile);
-            try {
-                layoutInfo = pdfLayoutAnalyzer.analyzeLayout(resumeFile);
-                log.info("Extracted resume - Primary font: {}", layoutInfo.getPrimaryFont());
-            } catch (java.io.IOException e) {
-                log.warn("Failed to analyze PDF layout, using default: {}", e.getMessage());
-                layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
-            }
-        } else {
-            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
         }
 
         String coverLetterContent = claudeService.generateCoverLetter(
                 resumeContent, jobDescription, companyName, positionTitle, tone, keyAchievements);
 
-        long timestamp = System.currentTimeMillis();
-
-        String pdfFilename = String.format("user-%d-cover-letter-%d.pdf", user.getId(), timestamp);
-
-        byte[] pdfBytes;
-        try {
-            pdfBytes = htmlPdfGenerator.generateStyledPdf(coverLetterContent, layoutInfo);
-        } catch (Exception e) {
-            log.error("Failed to generate PDF for cover letter", e);
-            throw new RuntimeException("Failed to generate PDF", e);
-        }
-
-        ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
-
         return ai.applysmart.dto.resume.CoverLetterDto.builder()
                 .content(coverLetterContent)
-                .pdfUrl(pdfUploadResult.getUrl())
+                .pdfUrl(null) // PDF generation will be handled by frontend
                 .build();
     }
 
@@ -243,7 +191,7 @@ public class CoverLetterServiceImpl implements CoverLetterService {
                 .tone(coverLetter.getTone())
                 .wordCount(coverLetter.getWordCount())
                 .linkedResumeId(coverLetter.getLinkedResumeId())
-                .pdfUrl(pdfUrl) // PDF URL is only available during generation
+                .pdfUrl(pdfUrl)
                 .createdAt(coverLetter.getCreatedAt())
                 .lastModified(coverLetter.getUpdatedAt())
                 .build();

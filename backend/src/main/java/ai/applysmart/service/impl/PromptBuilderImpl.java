@@ -1,13 +1,19 @@
 package ai.applysmart.service.impl;
 
+import ai.applysmart.dto.resume.ParsedResumeDto;
 import ai.applysmart.service.PromptBuilder;
 import ai.applysmart.util.TextUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PromptBuilderImpl implements PromptBuilder {
+
+    private final ObjectMapper objectMapper;
 
     @Override
     public String buildAnalysisPrompt(String resumeContent, String jobDescription) {
@@ -38,6 +44,26 @@ public class PromptBuilderImpl implements PromptBuilder {
         prompt.append(buildOptimizationInstructions());
 
         return prompt.toString();
+    }
+
+    @Override
+    public String buildStructuredOptimizationPrompt(ParsedResumeDto resumeData, String jobDescription) {
+        StringBuilder prompt = new StringBuilder();
+
+        try {
+            String resumeJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(resumeData);
+
+            prompt.append("You are an expert resume writer and ATS optimization specialist. ");
+            prompt.append("Optimize the following structured resume data for the job description provided.\n\n");
+            prompt.append("ORIGINAL RESUME DATA (JSON):\n").append(resumeJson).append("\n\n");
+            prompt.append("TARGET JOB DESCRIPTION:\n").append(jobDescription).append("\n\n");
+            prompt.append(buildStructuredOptimizationInstructions());
+
+            return prompt.toString();
+        } catch (Exception e) {
+            log.error("Failed to serialize resume data for prompt", e);
+            throw new RuntimeException("Failed to build structured optimization prompt", e);
+        }
     }
 
     @Override
@@ -100,6 +126,68 @@ public class PromptBuilderImpl implements PromptBuilder {
                 - Ensure ATS-friendly formatting
                 - Keep the same overall length (±10%)
                 - IMPORTANT: Limit each experience entry to a maximum of 5 bullet points. If there are more than 5, consolidate or remove the least impactful ones.
+                """;
+    }
+
+    private String buildStructuredOptimizationInstructions() {
+        return """
+                Return ONLY a JSON object matching the EXACT structure of the input resume data.
+                You must return a ParsedResumeDto with the same nested structure:
+
+                {
+                  "personalInfo": {
+                    "name": "...",
+                    "email": "...",
+                    "phone": "...",
+                    "location": "...",
+                    "linkedin": "...",
+                    "github": "...",
+                    "website": "..."
+                  },
+                  "summary": "optimized professional summary...",
+                  "workExperience": [
+                    {
+                      "company": "...",
+                      "position": "...",
+                      "location": "...",
+                      "startDate": "...",
+                      "endDate": "...",
+                      "responsibilities": ["optimized bullet 1", "optimized bullet 2", ...]
+                    }
+                  ],
+                  "education": [...],
+                  "skills": ["skill1", "skill2", ...],
+                  "certifications": [...],
+                  "projects": [...]
+                }
+
+                Optimization Requirements:
+                1. Enhance work experience responsibilities with:
+                   - Stronger action verbs
+                   - Quantifiable achievements where possible
+                   - Keywords from the job description (naturally integrated)
+                   - LIMIT to maximum 5 bullet points per experience
+
+                2. Optimize the summary section:
+                   - Align with job requirements
+                   - Highlight most relevant skills and experience
+                   - Keep concise (3-5 sentences)
+
+                3. Skills section:
+                   - Add relevant skills from job description
+                   - Prioritize most important skills first
+                   - Remove irrelevant skills
+
+                4. Projects (if present):
+                   - Enhance descriptions with impact and results
+                   - Highlight technologies matching job description
+
+                5. Maintain all original data:
+                   - Keep all contact information unchanged
+                   - Preserve company names, dates, locations
+                   - Maintain education details
+
+                6. Return ONLY the JSON object, no markdown formatting, no explanations.
                 """;
     }
 

@@ -7,7 +7,7 @@ import ai.applysmart.exception.BadRequestException;
 import ai.applysmart.exception.ResourceNotFoundException;
 import ai.applysmart.repository.ResumeRepository;
 import ai.applysmart.service.*;
-import ai.applysmart.util.LayoutUtils;
+import ai.applysmart.service.PdfManipulationService;
 import ai.applysmart.util.TextUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,13 +29,13 @@ public class ResumeServiceImpl implements ResumeService {
     private final ClaudeService claudeService;
     private final FileParserService fileParserService;
     private final FileStorageService fileStorageService;
-    private final PdfLayoutAnalyzer pdfLayoutAnalyzer;
-    private final HtmlPdfGenerator htmlPdfGenerator;
+    private final PdfManipulationService pdfManipulationService;
+    private final ResumeParserService resumeParserService;
+    private final ResumeTemplateService resumeTemplateService;
 
     @Override
     public List<ResumeDto> getAllResumes(User user) {
         log.info("Fetching all resumes for user: {}", user.getId());
-
         return resumeRepository.findByUserOrderByUpdatedAtDesc(user).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
@@ -46,7 +45,6 @@ public class ResumeServiceImpl implements ResumeService {
     public Page<ResumeDto> getAllResumes(User user, Pageable pageable) {
         log.info("Fetching paginated resumes for user: {} (page: {}, size: {})",
                 user.getId(), pageable.getPageNumber(), pageable.getPageSize());
-
         return resumeRepository.findByUserOrderByUpdatedAtDesc(user, pageable)
                 .map(this::convertToDto);
     }
@@ -54,10 +52,8 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public ResumeDto getResumeById(Long id, User user) {
         log.info("Fetching resume {} for user: {}", id, user.getId());
-
         Resume resume = resumeRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
-
         return convertToDto(resume);
     }
 
@@ -65,7 +61,6 @@ public class ResumeServiceImpl implements ResumeService {
     @Transactional
     public ResumeDto createResume(CreateResumeRequest request, User user) {
         log.info("Creating resume for user: {}", user.getId());
-
         Resume resume = Resume.builder()
                 .user(user)
                 .name(request.getName())
@@ -74,10 +69,8 @@ public class ResumeServiceImpl implements ResumeService {
                 .status(Resume.Status.DRAFT)
                 .wordCount(TextUtils.calculateWordCount(request.getContent()))
                 .build();
-
         resume = resumeRepository.save(resume);
         log.info("Created resume with ID: {}", resume.getId());
-
         return convertToDto(resume);
     }
 
@@ -85,19 +78,16 @@ public class ResumeServiceImpl implements ResumeService {
     @Transactional
     public ResumeDto updateResume(Long id, UpdateResumeRequest request, User user) {
         log.info("Updating resume {} for user: {}", id, user.getId());
-
         Resume resume = resumeRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
 
         if (request.getName() != null) {
             resume.setName(request.getName());
         }
-
         if (request.getContent() != null) {
             resume.setContent(request.getContent());
             resume.setWordCount(TextUtils.calculateWordCount(request.getContent()));
         }
-
         if (request.getStatus() != null) {
             try {
                 resume.setStatus(Resume.Status.valueOf(request.getStatus().toUpperCase()));
@@ -108,7 +98,6 @@ public class ResumeServiceImpl implements ResumeService {
 
         resume = resumeRepository.save(resume);
         log.info("Updated resume with ID: {}", resume.getId());
-
         return convertToDto(resume);
     }
 
@@ -116,7 +105,6 @@ public class ResumeServiceImpl implements ResumeService {
     @Transactional
     public void deleteResume(Long id, User user) {
         log.info("Deleting resume {} for user: {}", id, user.getId());
-
         Resume resume = resumeRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
 
@@ -131,7 +119,6 @@ public class ResumeServiceImpl implements ResumeService {
     @Override
     public ResumeAnalysisDto analyzeResume(Long id, String jobDescription, User user) {
         log.info("Analyzing resume {} for user: {}", id, user.getId());
-
         Resume resume = resumeRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
 
@@ -140,7 +127,6 @@ public class ResumeServiceImpl implements ResumeService {
         }
 
         ResumeAnalysisDto analysis = claudeService.analyzeResume(resume.getContent(), jobDescription);
-
         resume.setScore(analysis.getScore());
         resume.setAtsScore(analysis.getAtsCompatibility());
         resumeRepository.save(resume);
@@ -152,7 +138,6 @@ public class ResumeServiceImpl implements ResumeService {
     @Transactional
     public ResumeOptimizationDto optimizeResume(Long id, OptimizeResumeRequest request, User user) {
         log.info("Optimizing resume {} for user: {}", id, user.getId());
-
         Resume resume = resumeRepository.findByIdAndUser(id, user)
                 .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
 
@@ -160,71 +145,20 @@ public class ResumeServiceImpl implements ResumeService {
             throw new BadRequestException("Resume content is empty");
         }
 
+        // AI optimization - returns structured text data only
         ResumeOptimizationDto optimization = claudeService.optimizeResume(
                 resume.getContent(),
                 request.getJobDescription()
         );
 
-        long timestamp = System.currentTimeMillis();
-
-        ai.applysmart.dto.resume.ResumeLayoutInfo layoutInfo = null;
-        if (resume.getFileUrl() != null && resume.getName() != null && resume.getName().toLowerCase().endsWith(".pdf")) {
-            try {
-                log.info("Analyzing layout from original PDF: {}", resume.getFileUrl());
-                byte[] originalPdfBytes = downloadFileFromUrl(resume.getFileUrl());
-                layoutInfo = pdfLayoutAnalyzer.analyzeLayout(originalPdfBytes);
-                log.info("Successfully analyzed layout - Primary font: {}, Accent color: {}",
-                         layoutInfo.getPrimaryFont(), layoutInfo.getAccentColor());
-            } catch (Exception e) {
-                log.warn("Failed to analyze original PDF layout, using default: {}", e.getMessage());
-            }
-        }
-
-        if (layoutInfo == null) {
-            log.info("Using default professional layout");
-            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
-        }
-
-        String pdfFilename = String.format("resume-%d-optimized-%d.pdf", id, timestamp);
-
-        byte[] pdfBytes;
-        try {
-            pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
-        } catch (Exception e) {
-            log.error("Failed to generate PDF for optimized resume", e);
-            throw new RuntimeException("Failed to generate PDF", e);
-        }
-
-        ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
-
-        if (resume.getCloudinaryPublicId() != null) {
-            fileStorageService.deleteFile(resume.getCloudinaryPublicId());
-        }
-
+        // Update resume with optimized content (PDF generation will happen on frontend)
         resume.setContent(optimization.getContent());
         resume.setScore(optimization.getOptimizedScore());
         resume.setStatus(Resume.Status.OPTIMIZED);
         resume.setWordCount(TextUtils.calculateWordCount(optimization.getContent()));
-        resume.setFileUrl(pdfUploadResult.getUrl());
-        resume.setCloudinaryPublicId(pdfUploadResult.getPublicId());
         resumeRepository.save(resume);
 
-        optimization.setFileUrl(pdfUploadResult.getUrl());
         return optimization;
-    }
-
-    private byte[] downloadFileFromUrl(String fileUrl) throws IOException {
-        log.debug("Downloading file from URL: {}", fileUrl);
-        java.net.URL url = new java.net.URL(fileUrl);
-        try (java.io.InputStream in = url.openStream();
-             java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream()) {
-            byte[] buffer = new byte[8192];
-            int bytesRead;
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-            return out.toByteArray();
-        }
     }
 
     @Override
@@ -241,7 +175,10 @@ public class ResumeServiceImpl implements ResumeService {
             throw new BadRequestException("Invalid file name");
         }
 
+        // Extract text for AI processing
         String content = fileParserService.extractTextFromFile(file);
+        
+        // Store original PDF
         ai.applysmart.dto.FileUploadResult uploadResult = fileStorageService.uploadFile(file);
 
         Resume resume = Resume.builder()
@@ -261,11 +198,10 @@ public class ResumeServiceImpl implements ResumeService {
         return convertToDto(resume);
     }
 
-
     @Override
     @Transactional
-    public ResumeOptimizationDto optimizeUploadedFile(MultipartFile file, String jobDescription, User user) {
-        log.info("Optimizing uploaded file for user: {}", user.getId());
+    public ResumeOptimizationDto optimizeUploadedFile(MultipartFile file, String jobDescription, String template, User user) {
+        log.info("Optimizing uploaded file for user: {} with template: {}", user.getId(), template);
 
         if (file.isEmpty()) {
             throw new BadRequestException("File is empty");
@@ -275,36 +211,62 @@ public class ResumeServiceImpl implements ResumeService {
             throw new BadRequestException("Job description is required");
         }
 
-        ai.applysmart.dto.resume.ResumeLayoutInfo layoutInfo;
         try {
-            layoutInfo = pdfLayoutAnalyzer.analyzeLayout(file);
-            log.info("Extracted layout info - Primary font: {}, Accent color: {}",
-                     layoutInfo.getPrimaryFont(), layoutInfo.getAccentColor());
-        } catch (java.io.IOException e) {
-            log.warn("Failed to analyze PDF layout, using default: {}", e.getMessage());
-            layoutInfo = LayoutUtils.createDefaultProfessionalLayout();
-        }
+            // Step 1: Parse PDF into structured data
+            log.info("Parsing resume PDF: {}", file.getOriginalFilename());
+            ParsedResumeDto parsedResume = resumeParserService.parseResume(file);
+            log.info("Successfully parsed resume for: {}",
+                    parsedResume.getPersonalInfo() != null ? parsedResume.getPersonalInfo().getName() : "Unknown");
 
-        String originalContent = fileParserService.extractTextFromFile(file);
+            // Step 2: Optimize structured data with AI
+            log.info("Optimizing structured resume data with AI...");
+            ParsedResumeDto optimizedResume = claudeService.optimizeStructuredResume(parsedResume, jobDescription);
+            log.info("AI optimization completed successfully");
 
-        ResumeOptimizationDto optimization = claudeService.optimizeResume(originalContent, jobDescription);
+            // Step 3: Select template (default to MODERN if not provided or invalid)
+            ResumeTemplate selectedTemplate;
+            try {
+                selectedTemplate = template != null ? ResumeTemplate.valueOf(template.toUpperCase()) : ResumeTemplate.MODERN;
+            } catch (IllegalArgumentException e) {
+                log.warn("Invalid template '{}', using MODERN as default", template);
+                selectedTemplate = ResumeTemplate.MODERN;
+            }
 
-        long timestamp = System.currentTimeMillis();
+            // Step 4: Generate PDF from optimized data using selected template
+            log.info("Generating PDF using template: {}", selectedTemplate.getDisplayName());
+            byte[] optimizedPdfBytes = resumeTemplateService.generatePdf(optimizedResume, selectedTemplate);
+            log.info("PDF generation completed. Size: {} bytes", optimizedPdfBytes.length);
 
-        String pdfFilename = String.format("user-%d-optimized-%d.pdf", user.getId(), timestamp);
+            // Step 5: Upload optimized PDF to storage
+            log.info("Uploading optimized PDF to storage...");
+            String originalFilename = file.getOriginalFilename();
+            String optimizedFilename = originalFilename != null ?
+                    originalFilename.replace(".pdf", "-optimized.pdf") : "resume-optimized.pdf";
 
-        byte[] pdfBytes;
-        try {
-            pdfBytes = htmlPdfGenerator.generateStyledPdf(optimization.getContent(), layoutInfo);
+            ai.applysmart.dto.FileUploadResult uploadResult = fileStorageService.uploadFileBytes(
+                    optimizedPdfBytes, optimizedFilename);
+            log.info("Optimized PDF uploaded successfully. URL: {}", uploadResult.getUrl());
+
+            // Step 6: Build optimization result
+            // TODO: Calculate scores from parsed vs optimized data
+            ResumeOptimizationDto result = ResumeOptimizationDto.builder()
+                    .originalScore(75) // Placeholder - would calculate from parsedResume
+                    .optimizedScore(90) // Placeholder - would calculate from optimizedResume
+                    .changes(List.of(
+                            "Enhanced work experience bullet points with stronger action verbs",
+                            "Added relevant keywords from job description",
+                            "Optimized professional summary for target role"
+                    )) // Placeholder - would compare parsedResume and optimizedResume
+                    .content("") // Not needed for template-based approach
+                    .fileUrl(uploadResult.getUrl())
+                    .build();
+
+            log.info("Optimization process completed successfully");
+            return result;
         } catch (Exception e) {
-            log.error("Failed to generate PDF for optimized resume", e);
-            throw new RuntimeException("Failed to generate PDF", e);
+            log.error("Error during optimization process for user {}", user.getId(), e);
+            throw e;
         }
-
-        ai.applysmart.dto.FileUploadResult pdfUploadResult = fileStorageService.uploadFileBytes(pdfBytes, pdfFilename);
-
-        optimization.setFileUrl(pdfUploadResult.getUrl());
-        return optimization;
     }
 
     private ResumeDto convertToDto(Resume resume) {

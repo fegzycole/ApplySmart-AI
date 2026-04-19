@@ -99,10 +99,24 @@ export class ApiClient {
   }
 
   async post<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
+    // Check if data is FormData - if so, don't stringify and don't set Content-Type
+    const isFormData = data instanceof FormData;
+
+    // For FormData, create headers without Content-Type (browser will set it with boundary)
+    // For other data, use regular headers with Content-Type: application/json
+    const headers: Record<string, string> = {};
+    Object.keys(this.headers).forEach(key => {
+      if (isFormData && key === 'Content-Type') {
+        // Skip Content-Type for FormData
+        return;
+      }
+      headers[key] = this.headers[key];
+    });
+
     const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
       method: 'POST',
-      headers: this.headers,
-      body: data ? JSON.stringify(data) : undefined,
+      headers,
+      body: isFormData ? (data as FormData) : (data ? JSON.stringify(data) : undefined),
     });
 
     return this.handleResponse<T>(response);

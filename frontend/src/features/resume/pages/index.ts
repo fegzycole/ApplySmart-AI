@@ -1,3 +1,3 @@
 export { ResumeBuilderPage } from './ResumeBuilderPage';
-export { ResumeOptimizerPage } from './ResumeOptimizerPage';
+export { ResumeOptimizerPage } from '../../resume-optimizer';
 export { ResumesPage } from './ResumesPage';

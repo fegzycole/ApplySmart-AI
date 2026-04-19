@@ -20,6 +20,16 @@ export default defineConfig({
   // File types to support raw imports. Never add .css, .tsx, or .ts files to this.
   assetsInclude: ['**/*.svg', '**/*.csv'],
 
+  // Optimization for PDF.js
+  optimizeDeps: {
+    include: ['pdfjs-dist'],
+  },
+
+  // Worker configuration for PDF.js
+  worker: {
+    format: 'es',
+  },
+
   // Development server configuration
   server: {
     port: 5173,
