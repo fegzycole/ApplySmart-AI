@@ -1,28 +1,50 @@
 import { useState } from "react";
-import {
-  OptimizerHeader,
-  JobDescriptionCard,
-  ResumeUploadCard,
-  HowItWorksCard,
-  AIAnalysisCard,
-  ScoreHeader,
-  StrengthsCard,
-  ImprovementsCard,
-  KeywordAnalysisCard,
-  ActionButtons
-} from "../components/optimizer";
+import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import { OptimizerHeader } from "../components/optimizer/OptimizerHeader";
+import { OptimizationUploadView } from "../components/optimizer/OptimizationUploadView";
+import { OptimizationResultView } from "../components/optimizer/OptimizationResultView";
+import { uploadAndOptimizeResume } from "../services/resume.service";
+
+interface OptimizationResult {
+  originalScore: number;
+  optimizedScore: number;
+  changes: string[];
+  fileUrl: string;
+}
 
 export function ResumeOptimizerPage() {
-  const [optimized, setOptimized] = useState(false);
-  const [analyzing, setAnalyzing] = useState(false);
-  const [uploadedFile, setUploadedFile] = useState<string | null>(null);
+  const [view, setView] = useState<"upload" | "result">("upload");
+  const [optimizing, setOptimizing] = useState(false);
+  const [result, setResult] = useState<OptimizationResult | null>(null);
 
-  const handleOptimize = () => {
-    setAnalyzing(true);
-    setTimeout(() => {
-      setAnalyzing(false);
-      setOptimized(true);
-    }, 2000);
+  const handleOptimize = async (file: File, jobDescription: string, template: 'MODERN' | 'PROFESSIONAL' | 'CLASSIC' | 'CREATIVE' = 'MODERN') => {
+    setOptimizing(true);
+
+    try {
+      // Upload and optimize in one step
+      const optimizationResult = await uploadAndOptimizeResume(file, jobDescription, template);
+
+      setResult({
+        originalScore: optimizationResult.originalScore,
+        optimizedScore: optimizationResult.optimizedScore,
+        changes: optimizationResult.changes,
+        fileUrl: optimizationResult.fileUrl,
+      });
+
+      setView("result");
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "Failed to optimize resume. Please try again."
+      );
+    } finally {
+      setOptimizing(false);
+    }
+  };
+
+  const handleStartOver = () => {
+    setView("upload");
+    setResult(null);
   };
 
   return (
@@ -30,38 +52,35 @@ export function ResumeOptimizerPage() {
       <div className="max-w-7xl mx-auto">
         <OptimizerHeader />
 
-        {!optimized ? (
-          <div className="grid lg:grid-cols-5 gap-6">
-            <div className="lg:col-span-3 space-y-6">
-              <JobDescriptionCard />
-              <ResumeUploadCard
-                uploadedFile={uploadedFile}
-                analyzing={analyzing}
-                onFileSelect={() => setUploadedFile("resume.pdf")}
-                onFileRemove={() => setUploadedFile(null)}
+        <AnimatePresence mode="wait">
+          {view === "upload" ? (
+            <motion.div
+              key="upload"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <OptimizationUploadView
                 onOptimize={handleOptimize}
+                optimizing={optimizing}
               />
-            </div>
-
-            <div className="lg:col-span-2 space-y-6">
-              <HowItWorksCard />
-              <AIAnalysisCard />
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            <ScoreHeader />
-
-            <div className="grid lg:grid-cols-2 gap-6">
-              <StrengthsCard />
-              <ImprovementsCard />
-            </div>
-
-            <KeywordAnalysisCard />
-
-            <ActionButtons onOptimizeAnother={() => setOptimized(false)} />
-          </div>
-        )}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="result"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <OptimizationResultView
+                result={result!}
+                onStartOver={handleStartOver}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

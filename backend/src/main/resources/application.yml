@@ -81,6 +81,12 @@ spring:
       max-request-size: 10MB
       enabled: true
 
+server:
+  tomcat:
+    connection-timeout: 300000  # 5 minutes for long-running AI operations
+  connection-timeout: 300000    # 5 minutes
+  max-http-header-size: 16KB
+
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -159,7 +165,7 @@ anthropic:
   model: claude-sonnet-4-6
   max-tokens: 4096
   temperature: 0.7
-  timeout: 60000
+  timeout: 180000  # 3 minutes for AI optimization operations
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}

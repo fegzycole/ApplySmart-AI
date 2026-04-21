@@ -32,6 +32,8 @@ public class ResumeServiceImpl implements ResumeService {
     private final PdfManipulationService pdfManipulationService;
     private final ResumeParserService resumeParserService;
     private final ResumeTemplateService resumeTemplateService;
+    private final ResumeMatchScorer matchScorer;
+    private final ResumeChangeDetector changeDetector;
 
     @Override
     public List<ResumeDto> getAllResumes(User user) {
@@ -203,70 +205,87 @@ public class ResumeServiceImpl implements ResumeService {
     public ResumeOptimizationDto optimizeUploadedFile(MultipartFile file, String jobDescription, String template, User user) {
         log.info("Optimizing uploaded file for user: {} with template: {}", user.getId(), template);
 
-        if (file.isEmpty()) {
-            throw new BadRequestException("File is empty");
-        }
-
-        if (jobDescription == null || jobDescription.isBlank()) {
-            throw new BadRequestException("Job description is required");
-        }
+        validateOptimizationInput(file, jobDescription);
 
         try {
-            // Step 1: Parse PDF into structured data
-            log.info("Parsing resume PDF: {}", file.getOriginalFilename());
-            ParsedResumeDto parsedResume = resumeParserService.parseResume(file);
-            log.info("Successfully parsed resume for: {}",
-                    parsedResume.getPersonalInfo() != null ? parsedResume.getPersonalInfo().getName() : "Unknown");
+            ParsedResumeDto parsedResume = parseResume(file);
+            ParsedResumeDto optimizedResume = optimizeResume(parsedResume, jobDescription);
+            ResumeTemplate selectedTemplate = selectTemplate(template);
+            String fileUrl = generateAndUploadPdf(optimizedResume, selectedTemplate, file.getOriginalFilename());
 
-            // Step 2: Optimize structured data with AI
-            log.info("Optimizing structured resume data with AI...");
-            ParsedResumeDto optimizedResume = claudeService.optimizeStructuredResume(parsedResume, jobDescription);
-            log.info("AI optimization completed successfully");
-
-            // Step 3: Select template (default to MODERN if not provided or invalid)
-            ResumeTemplate selectedTemplate;
-            try {
-                selectedTemplate = template != null ? ResumeTemplate.valueOf(template.toUpperCase()) : ResumeTemplate.MODERN;
-            } catch (IllegalArgumentException e) {
-                log.warn("Invalid template '{}', using MODERN as default", template);
-                selectedTemplate = ResumeTemplate.MODERN;
-            }
-
-            // Step 4: Generate PDF from optimized data using selected template
-            log.info("Generating PDF using template: {}", selectedTemplate.getDisplayName());
-            byte[] optimizedPdfBytes = resumeTemplateService.generatePdf(optimizedResume, selectedTemplate);
-            log.info("PDF generation completed. Size: {} bytes", optimizedPdfBytes.length);
-
-            // Step 5: Upload optimized PDF to storage
-            log.info("Uploading optimized PDF to storage...");
-            String originalFilename = file.getOriginalFilename();
-            String optimizedFilename = originalFilename != null ?
-                    originalFilename.replace(".pdf", "-optimized.pdf") : "resume-optimized.pdf";
-
-            ai.applysmart.dto.FileUploadResult uploadResult = fileStorageService.uploadFileBytes(
-                    optimizedPdfBytes, optimizedFilename);
-            log.info("Optimized PDF uploaded successfully. URL: {}", uploadResult.getUrl());
-
-            // Step 6: Build optimization result
-            // TODO: Calculate scores from parsed vs optimized data
-            ResumeOptimizationDto result = ResumeOptimizationDto.builder()
-                    .originalScore(75) // Placeholder - would calculate from parsedResume
-                    .optimizedScore(90) // Placeholder - would calculate from optimizedResume
-                    .changes(List.of(
-                            "Enhanced work experience bullet points with stronger action verbs",
-                            "Added relevant keywords from job description",
-                            "Optimized professional summary for target role"
-                    )) // Placeholder - would compare parsedResume and optimizedResume
-                    .content("") // Not needed for template-based approach
-                    .fileUrl(uploadResult.getUrl())
-                    .build();
-
-            log.info("Optimization process completed successfully");
-            return result;
+            return buildOptimizationResult(parsedResume, optimizedResume, jobDescription, fileUrl);
         } catch (Exception e) {
             log.error("Error during optimization process for user {}", user.getId(), e);
             throw e;
         }
+    }
+
+    private void validateOptimizationInput(MultipartFile file, String jobDescription) {
+        if (file.isEmpty()) {
+            throw new BadRequestException("File is empty");
+        }
+        if (jobDescription == null || jobDescription.isBlank()) {
+            throw new BadRequestException("Job description is required");
+        }
+    }
+
+    private ParsedResumeDto parseResume(MultipartFile file) {
+        log.info("Parsing resume PDF: {}", file.getOriginalFilename());
+        ParsedResumeDto parsed = resumeParserService.parseResume(file);
+        log.info("Successfully parsed resume for: {}",
+                parsed.getPersonalInfo() != null ? parsed.getPersonalInfo().getName() : "Unknown");
+        return parsed;
+    }
+
+    private ParsedResumeDto optimizeResume(ParsedResumeDto resume, String jobDescription) {
+        log.info("Optimizing structured resume data with AI...");
+        ParsedResumeDto optimized = claudeService.optimizeStructuredResume(resume, jobDescription);
+        log.info("AI optimization completed successfully");
+        return optimized;
+    }
+
+    private ResumeTemplate selectTemplate(String template) {
+        try {
+            return template != null ? ResumeTemplate.valueOf(template.toUpperCase()) : ResumeTemplate.MODERN;
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid template '{}', using MODERN as default", template);
+            return ResumeTemplate.MODERN;
+        }
+    }
+
+    private String generateAndUploadPdf(ParsedResumeDto resume, ResumeTemplate template, String originalFilename) {
+        log.info("Generating PDF using template: {}", template.getDisplayName());
+        byte[] pdfBytes = resumeTemplateService.generatePdf(resume, template);
+        log.info("PDF generation completed. Size: {} bytes", pdfBytes.length);
+
+        String filename = createOptimizedFilename(originalFilename);
+        ai.applysmart.dto.FileUploadResult uploadResult = fileStorageService.uploadFileBytes(pdfBytes, filename);
+        log.info("Optimized PDF uploaded successfully. URL: {}", uploadResult.getUrl());
+
+        return uploadResult.getUrl();
+    }
+
+    private String createOptimizedFilename(String originalFilename) {
+        if (originalFilename != null) {
+            return originalFilename.replace(".pdf", "-optimized.pdf");
+        }
+        return "resume-optimized.pdf";
+    }
+
+    private ResumeOptimizationDto buildOptimizationResult(ParsedResumeDto original, ParsedResumeDto optimized,
+                                                          String jobDescription, String fileUrl) {
+        List<String> changes = changeDetector.detectChanges(original, optimized);
+        int originalScore = matchScorer.calculateScore(original, jobDescription);
+        int optimizedScore = matchScorer.calculateScore(optimized, jobDescription);
+        int cappedScore = matchScorer.capScoreImprovement(originalScore, optimizedScore);
+
+        return ResumeOptimizationDto.builder()
+                .originalScore(originalScore)
+                .optimizedScore(cappedScore)
+                .changes(changes)
+                .content("")
+                .fileUrl(fileUrl)
+                .build();
     }
 
     private ResumeDto convertToDto(Resume resume) {

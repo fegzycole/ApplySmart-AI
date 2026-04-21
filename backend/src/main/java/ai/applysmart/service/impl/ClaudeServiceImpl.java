@@ -39,6 +39,9 @@ public class ClaudeServiceImpl implements ClaudeService {
     @Value("${anthropic.model:claude-3-5-sonnet-20241022}")
     private String model;
 
+    @Value("${anthropic.timeout:180000}")
+    private int timeout;
+
     @Override
     public ResumeAnalysisDto analyzeResume(String resumeContent, String jobDescription) {
         log.info("Analyzing resume with Claude AI");
@@ -99,7 +102,7 @@ public class ClaudeServiceImpl implements ClaudeService {
                     .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(String.class)
-                    .block();
+                    .block(java.time.Duration.ofMillis(timeout));
 
             JsonNode root = objectMapper.readTree(responseJson);
             JsonNode contentArray = root.get("content");

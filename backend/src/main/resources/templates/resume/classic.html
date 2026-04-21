@@ -178,10 +178,12 @@
 
         .skill {
             display: inline;
+            white-space: nowrap;
         }
 
         .skill::after {
             content: ", ";
+            margin-right: 4px;
         }
 
         .skill:last-child::after {
