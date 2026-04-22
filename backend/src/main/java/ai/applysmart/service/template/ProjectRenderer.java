@@ -34,7 +34,7 @@ public class ProjectRenderer implements SectionRenderer<Project> {
     private void appendTechnologies(StringBuilder html, Project project) {
         if (project.getTechnologies() != null && !project.getTechnologies().isEmpty()) {
             String techList = project.getTechnologies().stream()
-                    .map(HtmlEscaper::escape)
+                    .map(tech -> escape(tech))
                     .collect(Collectors.joining(", "));
             html.append("  <div class=\"technologies\"><strong>Technologies:</strong> ")
                     .append(techList)
