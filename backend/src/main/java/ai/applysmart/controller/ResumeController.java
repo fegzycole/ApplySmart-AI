@@ -127,13 +127,23 @@ public class ResumeController {
     }
 
     @PostMapping(value = "/optimize-upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Upload and optimize resume file for job description")
+    @Operation(summary = "Upload and optimize resume file for job description with template selection")
     public ResponseEntity<ResumeOptimizationDto> optimizeUploadedFile(
             @RequestPart("file") MultipartFile file,
             @RequestPart("jobDescription") String jobDescription,
+            @RequestParam(required = false, defaultValue = "MODERN") String template,
             @AuthenticationPrincipal User user) {
-        log.info("Optimize uploaded file request from user: {}", user.getId());
-        ResumeOptimizationDto optimization = resumeService.optimizeUploadedFile(file, jobDescription, user);
-        return ResponseEntity.ok(optimization);
+        log.info("Optimize uploaded file request from user: {} - File: {}, Job desc length: {}, Template: {}",
+                user.getId(), file.getOriginalFilename(), jobDescription.length(), template);
+
+        try {
+            ResumeOptimizationDto optimization = resumeService.optimizeUploadedFile(file, jobDescription, template, user);
+            log.info("Successfully completed optimization for user: {}. Returning response with {} changes",
+                    user.getId(), optimization.getChanges().size());
+            return ResponseEntity.ok(optimization);
+        } catch (Exception e) {
+            log.error("Error during optimization for user: {}", user.getId(), e);
+            throw e;
+        }
     }
 }

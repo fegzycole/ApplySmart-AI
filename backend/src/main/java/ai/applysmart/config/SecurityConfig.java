@@ -8,6 +8,8 @@ import ai.applysmart.security.oauth2.CustomOAuth2UserService;
 import ai.applysmart.security.oauth2.OAuth2AuthenticationFailureHandler;
 import ai.applysmart.security.oauth2.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +23,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -32,8 +35,9 @@ import java.util.List;
 
 /**
  * Security configuration for the application.
- * Configures JWT authentication, OAuth2 login, and authorization rules.
+ * Configures JWT authentication, OAuth2 login (optional), and authorization rules.
  */
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -44,9 +48,19 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
-    private final CustomOAuth2UserService customOAuth2UserService;
-    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
-    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+
+    // OAuth2 components are optional - only used when OAuth2 is configured
+    @Autowired(required = false)
+    private CustomOAuth2UserService customOAuth2UserService;
+
+    @Autowired(required = false)
+    private OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+
+    @Autowired(required = false)
+    private OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+
+    @Autowired(required = false)
+    private ClientRegistrationRepository clientRegistrationRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -79,21 +93,29 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(customAccessDeniedHandler)
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .authorizationEndpoint(authorization -> authorization
-                                .baseUri("/oauth2/authorize")
-                        )
-                        .redirectionEndpoint(redirection -> redirection
-                                .baseUri("/oauth2/callback/*")
-                        )
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(customOAuth2UserService)
-                        )
-                        .successHandler(oAuth2AuthenticationSuccessHandler)
-                        .failureHandler(oAuth2AuthenticationFailureHandler)
-                )
-                .authenticationProvider(authenticationProvider())
+                );
+
+        // Configure OAuth2 login only if ClientRegistrationRepository is available
+        if (clientRegistrationRepository != null && customOAuth2UserService != null) {
+            log.info("OAuth2 configuration detected - enabling OAuth2 login");
+            http.oauth2Login(oauth2 -> oauth2
+                    .authorizationEndpoint(authorization -> authorization
+                            .baseUri("/oauth2/authorize")
+                    )
+                    .redirectionEndpoint(redirection -> redirection
+                            .baseUri("/oauth2/callback/*")
+                    )
+                    .userInfoEndpoint(userInfo -> userInfo
+                            .userService(customOAuth2UserService)
+                    )
+                    .successHandler(oAuth2AuthenticationSuccessHandler)
+                    .failureHandler(oAuth2AuthenticationFailureHandler)
+            );
+        } else {
+            log.warn("OAuth2 not configured - OAuth2 login will be disabled. JWT authentication only.");
+        }
+
+        http.authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

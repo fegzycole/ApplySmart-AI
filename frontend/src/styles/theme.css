@@ -128,6 +128,22 @@
     @apply bg-background text-foreground;
   }
 
+  /* Custom animations for resume optimizer */
+  @keyframes gradient {
+    0%, 100% {
+      background-size: 200% 200%;
+      background-position: 0% 50%;
+    }
+    50% {
+      background-size: 200% 200%;
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-gradient {
+    animation: gradient 3s ease infinite;
+  }
+
   /**
   * Default typography styles for HTML elements (h1-h4, p, label, button, input).
   * These are in @layer base, so Tailwind utility classes (like text-sm, text-lg) automatically override them.

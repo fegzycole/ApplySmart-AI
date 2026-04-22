@@ -1,5 +1,5 @@
 // Layout components
-export { DashboardLayout } from './layout';
+export { DashboardLayout, TopNavLayout } from './layout';
 
 // Stats components
 export { StatCard } from './stats';

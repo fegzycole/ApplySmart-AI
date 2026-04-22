@@ -36,6 +36,7 @@ export interface ResumeOptimization {
   optimizedScore: number;
   changes: string[];
   content: string;
+  fileUrl: string;
 }
 
 export interface UploadedFile {
@@ -122,4 +123,25 @@ export const uploadResumeFile = async (file: File): Promise<UploadedFile> => {
   };
 
   return apiClient.post<UploadedFile>(ENDPOINTS.UPLOAD, formData);
+};
+
+/**
+ * Upload and optimize resume file for job description
+ * Uses extended timeout (3 minutes) for AI processing
+ */
+export const uploadAndOptimizeResume = async (
+  file: File,
+  jobDescription: string,
+  template: 'MODERN' | 'PROFESSIONAL' | 'CLASSIC' | 'CREATIVE' = 'MODERN'
+): Promise<ResumeOptimization> => {
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('jobDescription', jobDescription);
+
+  // Use 3 minute timeout for AI optimization
+  return apiClient.post<ResumeOptimization>(
+    `/resumes/optimize-upload?template=${template}`,
+    formData,
+    180000 // 3 minutes timeout
+  );
 };

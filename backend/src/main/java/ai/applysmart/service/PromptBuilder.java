@@ -1,5 +1,7 @@
 package ai.applysmart.service;
 
+import ai.applysmart.dto.resume.ParsedResumeDto;
+
 /**
  * Service for building AI prompts for various resume operations.
  * Separates prompt construction logic from API communication.
@@ -23,6 +25,15 @@ public interface PromptBuilder {
      * @return formatted optimization prompt
      */
     String buildOptimizationPrompt(String resumeContent, String jobDescription);
+
+    /**
+     * Build prompt for structured resume optimization.
+     *
+     * @param resumeData structured resume data
+     * @param jobDescription job description to optimize for
+     * @return formatted optimization prompt for structured data
+     */
+    String buildStructuredOptimizationPrompt(ParsedResumeDto resumeData, String jobDescription);
 
     /**
      * Build prompt for cover letter generation.

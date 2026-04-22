@@ -226,6 +226,46 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle API communication exceptions (Claude AI errors)
+     */
+    @ExceptionHandler(ApiCommunicationException.class)
+    public ResponseEntity<ErrorResponse> handleApiCommunicationException(
+            ApiCommunicationException ex,
+            WebRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.SERVICE_UNAVAILABLE.value())
+                .error("AI Service Error")
+                .message(ex.getMessage())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        log.error("AI service communication error: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    /**
+     * Handle file processing exceptions
+     */
+    @ExceptionHandler(FileProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleFileProcessingException(
+            FileProcessingException ex,
+            WebRequest request) {
+
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.UNPROCESSABLE_ENTITY.value())
+                .error("File Processing Error")
+                .message(ex.getMessage())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+
+        log.error("File processing error: {}", ex.getMessage(), ex);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    /**
      * Handle all other exceptions
      */
     @ExceptionHandler(Exception.class)
@@ -237,7 +277,7 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .error("Internal Server Error")
-                .message("An unexpected error occurred")
+                .message("An unexpected error occurred: " + ex.getMessage())
                 .path(request.getDescription(false).replace("uri=", ""))
                 .build();
 

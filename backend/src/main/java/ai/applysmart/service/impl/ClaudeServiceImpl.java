@@ -1,5 +1,6 @@
 package ai.applysmart.service.impl;
 
+import ai.applysmart.dto.resume.ParsedResumeDto;
 import ai.applysmart.dto.resume.ResumeAnalysisDto;
 import ai.applysmart.dto.resume.ResumeOptimizationDto;
 import ai.applysmart.exception.ApiCommunicationException;
@@ -38,6 +39,9 @@ public class ClaudeServiceImpl implements ClaudeService {
     @Value("${anthropic.model:claude-3-5-sonnet-20241022}")
     private String model;
 
+    @Value("${anthropic.timeout:180000}")
+    private int timeout;
+
     @Override
     public ResumeAnalysisDto analyzeResume(String resumeContent, String jobDescription) {
         log.info("Analyzing resume with Claude AI");
@@ -56,6 +60,24 @@ public class ClaudeServiceImpl implements ClaudeService {
         String response = callClaudeAPI(prompt);
 
         return parseOptimizationResponse(response, resumeContent);
+    }
+
+    @Override
+    public ParsedResumeDto optimizeStructuredResume(ParsedResumeDto resumeData, String jobDescription) {
+        log.info("Optimizing structured resume with Claude AI for: {}",
+                resumeData.getPersonalInfo() != null ? resumeData.getPersonalInfo().getName() : "Unknown");
+
+        String prompt = promptBuilder.buildStructuredOptimizationPrompt(resumeData, jobDescription);
+        String response = callClaudeAPI(prompt);
+
+        try {
+            ParsedResumeDto optimized = objectMapper.readValue(response, ParsedResumeDto.class);
+            log.info("Successfully optimized structured resume");
+            return optimized;
+        } catch (Exception e) {
+            log.error("Failed to parse optimized resume data", e);
+            throw new ApiCommunicationException("Failed to parse optimized resume data", e);
+        }
     }
 
     private String callClaudeAPI(String prompt) {
@@ -80,7 +102,7 @@ public class ClaudeServiceImpl implements ClaudeService {
                     .bodyValue(requestBody)
                     .retrieve()
                     .bodyToMono(String.class)
-                    .block();
+                    .block(java.time.Duration.ofMillis(timeout));
 
             JsonNode root = objectMapper.readTree(responseJson);
             JsonNode contentArray = root.get("content");
@@ -143,17 +165,25 @@ public class ClaudeServiceImpl implements ClaudeService {
 
     private ResumeOptimizationDto parseOptimizationResponse(String response, String originalContent) {
         try {
+            log.info("Parsing Claude optimization response. Response length: {} characters", response.length());
+            log.debug("Claude response: {}", response);
+
             JsonNode json = objectMapper.readTree(response);
 
-            return ResumeOptimizationDto.builder()
+            ResumeOptimizationDto result = ResumeOptimizationDto.builder()
                     .originalScore(json.get("originalScore").asInt())
                     .optimizedScore(json.get("optimizedScore").asInt())
                     .changes(parseJsonArray(json.get("changes")))
                     .content(json.get("content").asText())
                     .build();
 
+            log.info("Successfully parsed optimization response. Original: {}, Optimized: {}, Changes: {}",
+                    result.getOriginalScore(), result.getOptimizedScore(), result.getChanges().size());
+
+            return result;
+
         } catch (Exception e) {
-            log.error("Error parsing Claude optimization response", e);
+            log.error("Error parsing Claude optimization response. Response: {}", response, e);
             throw new ApiCommunicationException("Failed to parse AI optimization response", e);
         }
     }

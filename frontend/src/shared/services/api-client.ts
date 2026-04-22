@@ -46,6 +46,20 @@ export class ApiClient {
   private async handleResponse<T>(response: Response): Promise<T> {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
+
+      // Handle 401 Unauthorized - clear tokens and redirect to login
+      if (response.status === 401) {
+        this.clearAuthToken();
+
+        // Only redirect if we're not already on login/signup pages
+        const currentPath = window.location.pathname;
+        const publicPaths = ['/login', '/signup', '/verify-email', '/password-reset', '/'];
+
+        if (!publicPaths.includes(currentPath)) {
+          window.location.href = '/login';
+        }
+      }
+
       throw new ApiError(
         error.message || `HTTP Error ${response.status}`,
         response.status,
@@ -58,10 +72,12 @@ export class ApiClient {
 
   private async fetchWithTimeout(
     url: string,
-    options: RequestInit
+    options: RequestInit,
+    customTimeout?: number
   ): Promise<Response> {
+    const timeout = customTimeout || this.timeout;
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.timeout);
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
       const response = await fetch(url, {
@@ -98,12 +114,30 @@ export class ApiClient {
     return this.handleResponse<T>(response);
   }
 
-  async post<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
-    const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
-      method: 'POST',
-      headers: this.headers,
-      body: data ? JSON.stringify(data) : undefined,
+  async post<T, D = unknown>(endpoint: string, data?: D, customTimeout?: number): Promise<T> {
+    // Check if data is FormData - if so, don't stringify and don't set Content-Type
+    const isFormData = data instanceof FormData;
+
+    // For FormData, create headers without Content-Type (browser will set it with boundary)
+    // For other data, use regular headers with Content-Type: application/json
+    const headers: Record<string, string> = {};
+    Object.keys(this.headers).forEach(key => {
+      if (isFormData && key === 'Content-Type') {
+        // Skip Content-Type for FormData
+        return;
+      }
+      headers[key] = this.headers[key];
     });
+
+    const response = await this.fetchWithTimeout(
+      `${this.baseURL}${endpoint}`,
+      {
+        method: 'POST',
+        headers,
+        body: isFormData ? (data as FormData) : (data ? JSON.stringify(data) : undefined),
+      },
+      customTimeout
+    );
 
     return this.handleResponse<T>(response);
   }

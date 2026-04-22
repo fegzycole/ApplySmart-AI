@@ -10,7 +10,7 @@ import {
   VerifyEmailPage
 } from "@/features/authentication";
 
-import { DashboardLayout, DashboardHomePage } from "@/features/dashboard";
+import { TopNavLayout, DashboardHomePage } from "@/features/dashboard";
 
 import {
   ResumeOptimizerPage,
@@ -71,7 +71,7 @@ export const router = createBrowserRouter([
     path: "/app",
     element: (
       <ProtectedRoute>
-        <DashboardLayout />
+        <TopNavLayout />
       </ProtectedRoute>
     ),
     errorElement: <ErrorBoundary />,

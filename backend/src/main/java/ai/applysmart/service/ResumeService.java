@@ -18,5 +18,5 @@ public interface ResumeService {
     ResumeAnalysisDto analyzeResume(Long id, String jobDescription, User user);
     ResumeOptimizationDto optimizeResume(Long id, OptimizeResumeRequest request, User user);
     ResumeDto uploadResumeFile(MultipartFile file, User user);
-    ResumeOptimizationDto optimizeUploadedFile(MultipartFile file, String jobDescription, User user);
+    ResumeOptimizationDto optimizeUploadedFile(MultipartFile file, String jobDescription, String template, User user);
 }
