@@ -4,8 +4,7 @@ import { ProgressSteps } from "./ProgressSteps";
 import { StepOne } from "./steps/StepOne";
 import { StepTwo } from "./steps/StepTwo";
 import { StepThree } from "./steps/StepThree";
-
-type ResumeTemplate = 'MODERN' | 'PROFESSIONAL' | 'CLASSIC' | 'CREATIVE';
+import type { ResumeTemplate } from "../../types/resume-builder.types";
 
 interface OptimizationUploadViewProps {
   onOptimize: (file: File, jobDescription: string, template: ResumeTemplate) => void;
@@ -16,7 +15,7 @@ export function OptimizationUploadView({ onOptimize, optimizing }: OptimizationU
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState("");
-  const [template, setTemplate] = useState<ResumeTemplate>('MODERN');
+  const [template, setTemplate] = useState<ResumeTemplate>("MODERN");
 
   const handleFileSelect = (selectedFile: File) => {
     setFile(selectedFile);

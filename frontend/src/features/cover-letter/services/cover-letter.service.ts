@@ -1,18 +1,8 @@
 import { apiClient } from '@/shared/services/api-client';
+import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
 
-/**
- * Cover Letter API Service
- * Makes real API calls to backend endpoints
- */
+const ENDPOINTS = API_ENDPOINTS.COVER_LETTERS;
 
-const ENDPOINTS = {
-  GENERATE: '/cover-letters/generate',
-  COVER_LETTERS: '/cover-letters',
-  COVER_LETTER_BY_ID: (id: number) => `/cover-letters/${id}`,
-  REGENERATE: (id: number) => `/cover-letters/${id}/regenerate`,
-};
-
-// Types
 export interface CoverLetterRequest {
   company: string;
   position: string;
@@ -41,9 +31,6 @@ export interface GeneratedCoverLetter {
   createdAt: string;
 }
 
-/**
- * Generate a new cover letter
- */
 export const generateCoverLetter = async (
   request: CoverLetterRequest
 ): Promise<GeneratedCoverLetter> => {
@@ -53,43 +40,28 @@ export const generateCoverLetter = async (
   );
 };
 
-/**
- * Fetch all cover letters
- */
 export const fetchCoverLetters = async (): Promise<CoverLetter[]> => {
-  return apiClient.get<CoverLetter[]>(ENDPOINTS.COVER_LETTERS);
+  return apiClient.get<CoverLetter[]>(ENDPOINTS.LIST);
 };
 
-/**
- * Fetch cover letter by ID
- */
 export const fetchCoverLetterById = async (id: number): Promise<CoverLetter> => {
-  return apiClient.get<CoverLetter>(ENDPOINTS.COVER_LETTER_BY_ID(id));
+  return apiClient.get<CoverLetter>(ENDPOINTS.GET(id));
 };
 
-/**
- * Update cover letter
- */
 export const updateCoverLetter = async (
   id: number,
   updates: Partial<CoverLetter>
 ): Promise<CoverLetter> => {
   return apiClient.patch<CoverLetter, Partial<CoverLetter>>(
-    ENDPOINTS.COVER_LETTER_BY_ID(id),
+    ENDPOINTS.UPDATE(id),
     updates
   );
 };
 
-/**
- * Delete cover letter
- */
 export const deleteCoverLetter = async (id: number): Promise<{ success: boolean }> => {
-  return apiClient.delete(ENDPOINTS.COVER_LETTER_BY_ID(id));
+  return apiClient.delete(ENDPOINTS.DELETE(id));
 };
 
-/**
- * Regenerate cover letter with different tone or content
- */
 export const regenerateCoverLetter = async (
   id: number,
   updates: Partial<CoverLetterRequest>

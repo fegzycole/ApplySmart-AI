@@ -2,7 +2,7 @@ package ai.applysmart.config;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.protocol.ProtocolVersion;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -13,23 +13,23 @@ import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactor
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.util.StringUtils;
 
 @Configuration
+@RequiredArgsConstructor
 public class RedisConfig {
-    @Value("${spring.data.redis.host:localhost}")
-    private String host;
 
-    @Value("${spring.data.redis.port:6379}")
-    private int port;
-
-    @Value("${spring.data.redis.password:}")
-    private String password;
+    private final AppRedisProperties redisProperties;
 
     @Bean
     public LettuceConnectionFactory redisConnectionFactory() {
-        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
-        if (password != null && !password.isEmpty()) {
-            config.setPassword(RedisPassword.of(password));
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(
+                redisProperties.getHost(),
+                redisProperties.getPort()
+        );
+
+        if (StringUtils.hasText(redisProperties.getPassword())) {
+            config.setPassword(RedisPassword.of(redisProperties.getPassword()));
         }
 
         ClientOptions clientOptions = ClientOptions.builder()

@@ -20,10 +20,12 @@ public class Subscription extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    @Builder.Default
     private Plan plan = Plan.FREE;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    @Builder.Default
     private SubscriptionStatus status = SubscriptionStatus.ACTIVE;
 
     @Column(name = "expires_at")

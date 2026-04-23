@@ -6,10 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO for signup response containing user information and verification status.
- * Does not include authentication tokens - users must verify email and login.
- */
 @Data
 @Builder
 @NoArgsConstructor

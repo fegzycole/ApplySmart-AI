@@ -3,14 +3,14 @@ package ai.applysmart.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "cover_letters", indexes = {
     @Index(name = "idx_user_company", columnList = "user_id,company"),
     @Index(name = "idx_created_at", columnList = "created_at")
 })
-@Where(clause = "deleted = false")
+@SQLRestriction("deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor

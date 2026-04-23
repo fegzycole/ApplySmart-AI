@@ -8,10 +8,6 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-/**
- * DTO for user information exposed in API responses.
- * Follows security best practice of not exposing sensitive data.
- */
 @Data
 @Builder
 @NoArgsConstructor

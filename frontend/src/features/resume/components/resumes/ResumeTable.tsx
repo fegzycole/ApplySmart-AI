@@ -5,11 +5,10 @@ import type { Resume } from "../../services/resume.service";
 
 interface ResumeTableProps {
   resumes: Resume[];
-  onToggleFavorite: (id: number) => void;
   onDelete: (resume: Resume) => void;
 }
 
-export function ResumeTable({ resumes, onToggleFavorite, onDelete }: ResumeTableProps) {
+export function ResumeTable({ resumes, onDelete }: ResumeTableProps) {
   return (
     <div className="hidden lg:block">
       <Card className={RESUMES_PAGE_STYLES.tableCardClassName}>
@@ -29,7 +28,6 @@ export function ResumeTable({ resumes, onToggleFavorite, onDelete }: ResumeTable
                 <ResumeTableRow
                   key={resume.id}
                   resume={resume}
-                  onToggleFavorite={onToggleFavorite}
                   onDelete={() => onDelete(resume)}
                 />
               ))}

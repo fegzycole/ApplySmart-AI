@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
     @Index(name = "idx_user_status", columnList = "user_id,status"),
     @Index(name = "idx_updated_at", columnList = "updated_at")
 })
-@Where(clause = "deleted = false")
+@SQLRestriction("deleted = false")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -40,6 +40,7 @@ public class Job extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
+    @Builder.Default
     private Status status = Status.SAVED;
 
     @Column(columnDefinition = "TEXT")

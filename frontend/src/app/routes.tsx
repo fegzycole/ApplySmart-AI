@@ -1,20 +1,22 @@
 import { createBrowserRouter } from "react-router";
 import { ErrorBoundary } from "@/shared/components";
 import { ProtectedRoute, PublicRoute } from "@/shared/components/guards";
+import { ROUTES } from "@/shared/constants";
 
 import {
   LandingPage,
   LoginPage,
+  OAuthCallbackPage,
   SignupPage,
   PasswordResetPage,
   VerifyEmailPage
 } from "@/features/authentication";
 
-import { TopNavLayout, DashboardHomePage } from "@/features/dashboard";
+import { AppLayout, DashboardHomePage } from "@/features/dashboard";
 
 import {
   ResumeOptimizerPage,
-  ResumeBuilderPage,
+  ResumeBuilderPageV2,
   ResumesPage
 } from "@/features/resume";
 
@@ -41,6 +43,11 @@ export const router = createBrowserRouter([
         <LoginPage />
       </PublicRoute>
     ),
+    errorElement: <ErrorBoundary />,
+  },
+  {
+    path: ROUTES.OAUTH_CALLBACK,
+    element: <OAuthCallbackPage />,
     errorElement: <ErrorBoundary />,
   },
   {
@@ -71,14 +78,14 @@ export const router = createBrowserRouter([
     path: "/app",
     element: (
       <ProtectedRoute>
-        <TopNavLayout />
+        <AppLayout />
       </ProtectedRoute>
     ),
     errorElement: <ErrorBoundary />,
     children: [
       { index: true, element: <DashboardHomePage /> },
       { path: "resume-optimizer", element: <ResumeOptimizerPage /> },
-      { path: "resume-builder", element: <ResumeBuilderPage /> },
+      { path: "resume-builder", element: <ResumeBuilderPageV2 /> },
       { path: "resumes", element: <ResumesPage /> },
       { path: "cover-letter", element: <CoverLetterGeneratorPage /> },
       { path: "job-tracker", element: <JobTrackerPage /> },

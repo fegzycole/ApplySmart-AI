@@ -6,23 +6,19 @@ import ai.applysmart.dto.coverletter.CoverLetterResponseDto;
 import ai.applysmart.dto.coverletter.UpdateCoverLetterRequest;
 import ai.applysmart.dto.resume.CoverLetterDto;
 import ai.applysmart.entity.User;
-import ai.applysmart.service.CoverLetterService;
-import ai.applysmart.util.PaginationUtils;
+import ai.applysmart.service.coverletter.CoverLetterService;
+import ai.applysmart.util.ControllerUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -67,15 +63,12 @@ public class CoverLetterController {
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         log.info("Get all cover letters request from user: {} (page: {}, size: {})", user.getId(), page, size);
-
-        if (PaginationUtils.isPaginationRequested(page, size)) {
-            Pageable pageable = PaginationUtils.createPageable(page, size);
-            Page<CoverLetterResponseDto> coverLetterPage = coverLetterService.getAllCoverLetters(user, pageable);
-            return ResponseEntity.ok(coverLetterPage);
-        }
-
-        List<CoverLetterResponseDto> coverLetters = coverLetterService.getAllCoverLetters(user);
-        return ResponseEntity.ok(coverLetters);
+        return ControllerUtils.handlePaginatedRequest(
+                page,
+                size,
+                pageable -> coverLetterService.getAllCoverLetters(user, pageable),
+                () -> coverLetterService.getAllCoverLetters(user)
+        );
     }
 
     @GetMapping("/{id}")
@@ -106,12 +99,7 @@ public class CoverLetterController {
             @AuthenticationPrincipal User user) {
         log.info("Delete cover letter {} request from user: {}", id, user.getId());
         coverLetterService.deleteCoverLetter(id, user);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("Cover letter deleted successfully")
-                        .build()
-        );
+        return ResponseEntity.ok(ControllerUtils.successResponse("Cover letter deleted successfully"));
     }
 
     @PostMapping("/{id}/regenerate")

@@ -12,7 +12,6 @@ const ALL_TABS: SettingsTab[] = [
   { id: "security", label: "Security", icon: Shield },
 ];
 
-// Filter out billing tab when subscriptions are disabled
 export const SETTINGS_TABS: SettingsTab[] = ALL_TABS.filter(
   tab => tab.id !== "billing" || FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED
 );

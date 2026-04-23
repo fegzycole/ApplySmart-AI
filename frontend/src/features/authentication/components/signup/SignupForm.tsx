@@ -1,41 +1,36 @@
-import { useState, FormEvent } from "react";
+import { FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { Button } from "@/shared/components/ui/button";
+import { useFormState } from "@/shared/hooks/useFormState";
 import { ControlledFormField } from "../shared";
 import { FORM_STYLES, SIGNUP_FIELDS } from "../../constants";
 import { useSignup } from "../../hooks/useAuthQueries";
 
+const initialValues = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+};
+
 export function SignupForm() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-  });
-
+  const { values, handleChange, hasEmptyRequiredFields } = useFormState(initialValues);
   const signupMutation = useSignup();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.id]: e.target.value,
-    }));
-  };
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.firstName || !formData.lastName || !formData.email || !formData.password) {
+    if (hasEmptyRequiredFields(["firstName", "lastName", "email", "password"])) {
       toast.error("Please fill in all fields");
       return;
     }
 
     try {
-      const response = await signupMutation.mutateAsync(formData);
+      const response = await signupMutation.mutateAsync(values);
       toast.success(response.message);
-      navigate("/verify-email", { state: { email: formData.email } });
+      navigate("/verify-email", { state: { email: values.email } });
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to create account");
     }
@@ -47,7 +42,7 @@ export function SignupForm() {
         <ControlledFormField
           key={field.id}
           {...field}
-          value={formData[field.id as keyof typeof formData]}
+          value={values[field.id as keyof typeof values]}
           onChange={handleChange}
         />
       ))}

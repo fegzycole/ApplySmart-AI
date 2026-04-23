@@ -1,2 +1,1 @@
-export { DashboardLayout } from "./DashboardLayout";
-export { TopNavLayout } from "./TopNavLayout";
+export { AppLayout } from "./AppLayout";

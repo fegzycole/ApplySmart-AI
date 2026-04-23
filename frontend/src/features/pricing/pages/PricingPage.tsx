@@ -11,7 +11,6 @@ import { Button } from "@/shared/components/ui/button";
 import { Sparkles } from "lucide-react";
 
 export function PricingPage() {
-  // Show "coming soon" when subscriptions are disabled
   if (!FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-violet-50 via-white to-cyan-50 dark:from-zinc-950 dark:via-violet-950/20 dark:to-zinc-950">

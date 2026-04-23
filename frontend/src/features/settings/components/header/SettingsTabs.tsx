@@ -5,7 +5,6 @@ import {
 } from "../../constants/settings.constants";
 
 export function SettingsTabs() {
-  // Dynamically set grid columns based on number of tabs
   const gridColsClass = `grid-cols-${SETTINGS_TABS.length}`;
 
   return (

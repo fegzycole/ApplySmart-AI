@@ -1,6 +1,7 @@
 package ai.applysmart.util;
 
 import ai.applysmart.dto.common.ApiResponse;
+import ai.applysmart.exception.UnauthorizedException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -8,26 +9,14 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import java.util.function.Function;
 
-/**
- * Utility class for common controller operations.
- */
 public final class ControllerUtils {
+
+    private static final String BEARER_PREFIX = "Bearer ";
 
     private ControllerUtils() {
         throw new UnsupportedOperationException("Utility class");
     }
 
-    /**
-     * Handle paginated or non-paginated list retrieval.
-     * Returns paginated response if pagination parameters are provided, otherwise returns full list.
-     *
-     * @param page optional page number
-     * @param size optional page size
-     * @param paginatedSupplier function to get paginated results
-     * @param listSupplier function to get full list
-     * @param <T> the type of items in the list
-     * @return ResponseEntity with either Page or List
-     */
     public static <T> ResponseEntity<?> handlePaginatedRequest(
             Integer page,
             Integer size,
@@ -44,17 +33,18 @@ public final class ControllerUtils {
         return ResponseEntity.ok(results);
     }
 
-    /**
-     * Create a success ApiResponse for delete operations.
-     *
-     * @param message success message
-     * @param <T> the type parameter (usually Void)
-     * @return ApiResponse with success message
-     */
-    public static <T> ApiResponse<T> createDeleteSuccessResponse(String message) {
+    public static <T> ApiResponse<T> successResponse(String message) {
         return ApiResponse.<T>builder()
                 .success(true)
                 .message(message)
                 .build();
+    }
+
+    public static String extractBearerToken(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_PREFIX)) {
+            throw new UnauthorizedException("Missing bearer token");
+        }
+
+        return authorizationHeader.substring(BEARER_PREFIX.length());
     }
 }

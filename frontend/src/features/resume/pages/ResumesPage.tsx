@@ -21,7 +21,6 @@ export function ResumesPage() {
     currentResumes,
     totalPages,
     stats,
-    toggleFavorite,
     deleteResume,
     isLoading
   } = useResumeManager();
@@ -40,7 +39,6 @@ export function ResumesPage() {
         <ResumeStats
           total={stats.total}
           complete={stats.complete}
-          favorites={stats.favorites}
         />
 
         {filteredResumes.length === 0 ? (
@@ -49,13 +47,11 @@ export function ResumesPage() {
           <>
             <ResumeTable
               resumes={currentResumes}
-              onToggleFavorite={toggleFavorite}
               onDelete={deleteDialog.openDialog}
             />
 
             <ResumeCardList
               resumes={currentResumes}
-              onToggleFavorite={toggleFavorite}
               onDelete={deleteDialog.openDialog}
             />
 

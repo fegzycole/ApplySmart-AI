@@ -1,5 +1,5 @@
 import type { FunnelStage } from "../../types/dashboard.types";
-import { APPLICATION_FUNNEL_STYLES, FUNNEL_COLOR_MAP } from "../../constants/dashboard.constants";
+import { APPLICATION_FUNNEL_STYLES, FUNNEL_COLOR_MAP, STAGE_ICON_MAP } from "../../constants/dashboard.constants";
 
 interface FunnelStageItemProps {
   stage: FunnelStage;
@@ -7,7 +7,7 @@ interface FunnelStageItemProps {
 }
 
 export function FunnelStageItem({ stage, isLast }: FunnelStageItemProps) {
-  const Icon = stage.icon;
+  const Icon = stage.icon ?? STAGE_ICON_MAP[stage.name] ?? STAGE_ICON_MAP.Saved;
   const colors = FUNNEL_COLOR_MAP[stage.color as keyof typeof FUNNEL_COLOR_MAP];
 
   return (

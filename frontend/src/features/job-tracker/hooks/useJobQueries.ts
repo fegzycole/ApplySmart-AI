@@ -1,10 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  invalidateDetailAndList,
+  removeDetailAndInvalidateList,
+} from '@/shared/lib/query-cache';
 import * as jobService from '../services/job-tracker.service';
 import type { Job, JobStatus } from '../types/job.types';
 
-/**
- * Query keys for job-tracker
- */
 export const JOB_KEYS = {
   all: ['jobs'] as const,
   lists: () => [...JOB_KEYS.all, 'list'] as const,
@@ -14,9 +15,6 @@ export const JOB_KEYS = {
   search: (query: string) => [...JOB_KEYS.all, 'search', query] as const,
 };
 
-/**
- * Fetch all jobs
- */
 export const useJobs = () => {
   return useQuery({
     queryKey: JOB_KEYS.lists(),
@@ -24,20 +22,14 @@ export const useJobs = () => {
   });
 };
 
-/**
- * Fetch job by ID
- */
 export const useJob = (id: number) => {
   return useQuery({
     queryKey: JOB_KEYS.detail(id),
     queryFn: () => jobService.fetchJobById(id),
-    enabled: !!id, // Only fetch if ID is provided
+    enabled: !!id,
   });
 };
 
-/**
- * Fetch jobs by status
- */
 export const useJobsByStatus = (status: JobStatus) => {
   return useQuery({
     queryKey: JOB_KEYS.list({ status }),
@@ -45,35 +37,25 @@ export const useJobsByStatus = (status: JobStatus) => {
   });
 };
 
-/**
- * Search jobs
- */
 export const useSearchJobs = (query: string) => {
   return useQuery({
     queryKey: JOB_KEYS.search(query),
     queryFn: () => jobService.searchJobs(query),
-    enabled: query.length > 0, // Only search if query is not empty
+    enabled: query.length > 0,
   });
 };
 
-/**
- * Create new job
- */
 export const useCreateJob = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: jobService.createJob,
     onSuccess: () => {
-      // Invalidate and refetch jobs list
       queryClient.invalidateQueries({ queryKey: JOB_KEYS.lists() });
     },
   });
 };
 
-/**
- * Update job
- */
 export const useUpdateJob = () => {
   const queryClient = useQueryClient();
 
@@ -81,16 +63,15 @@ export const useUpdateJob = () => {
     mutationFn: ({ id, updates }: { id: number; updates: Partial<Job> }) =>
       jobService.updateJob(id, updates),
     onSuccess: (_, variables) => {
-      // Invalidate specific job and lists
-      queryClient.invalidateQueries({ queryKey: JOB_KEYS.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: JOB_KEYS.lists() });
+      invalidateDetailAndList(
+        queryClient,
+        JOB_KEYS.detail(variables.id),
+        JOB_KEYS.lists()
+      );
     },
   });
 };
 
-/**
- * Update job status
- */
 export const useUpdateJobStatus = () => {
   const queryClient = useQueryClient();
 
@@ -98,25 +79,26 @@ export const useUpdateJobStatus = () => {
     mutationFn: ({ id, status }: { id: number; status: JobStatus }) =>
       jobService.updateJobStatus(id, status),
     onSuccess: (_, variables) => {
-      // Invalidate specific job and lists
-      queryClient.invalidateQueries({ queryKey: JOB_KEYS.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: JOB_KEYS.lists() });
+      invalidateDetailAndList(
+        queryClient,
+        JOB_KEYS.detail(variables.id),
+        JOB_KEYS.lists()
+      );
     },
   });
 };
 
-/**
- * Delete job
- */
 export const useDeleteJob = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: jobService.deleteJob,
     onSuccess: (_, deletedId) => {
-      // Remove from cache and invalidate lists
-      queryClient.removeQueries({ queryKey: JOB_KEYS.detail(deletedId) });
-      queryClient.invalidateQueries({ queryKey: JOB_KEYS.lists() });
+      removeDetailAndInvalidateList(
+        queryClient,
+        JOB_KEYS.detail(deletedId),
+        JOB_KEYS.lists()
+      );
     },
   });
 };

@@ -3,6 +3,7 @@ export const ROUTES = {
   LOGIN: '/login',
   SIGNUP: '/signup',
   PASSWORD_RESET: '/password-reset',
+  OAUTH_CALLBACK: '/auth/oauth2/callback',
   PRICING: '/pricing',
   DASHBOARD: {
     HOME: '/app',

@@ -1,8 +1,5 @@
 package ai.applysmart.exception;
 
-/**
- * Exception thrown when email sending operations fail.
- */
 public class EmailSendingException extends BaseApplicationException {
 
     public EmailSendingException(String message) {

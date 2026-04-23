@@ -1,37 +1,32 @@
-import { useState, FormEvent } from "react";
+import { FormEvent } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { Button } from "@/shared/components/ui/button";
+import { useFormState } from "@/shared/hooks/useFormState";
 import { ControlledFormField, PasswordFieldWithForgot } from "../shared";
 import { FORM_STYLES, LOGIN_FIELDS } from "../../constants";
 import { useLogin } from "../../hooks/useAuthQueries";
 
+const initialValues = {
+  email: "",
+  password: "",
+};
+
 export function LoginForm() {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const { values, handleChange, hasEmptyRequiredFields } = useFormState(initialValues);
   const loginMutation = useLogin();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.id]: e.target.value,
-    }));
-  };
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.email || !formData.password) {
+    if (hasEmptyRequiredFields(["email", "password"])) {
       toast.error("Please fill in all fields");
       return;
     }
 
     try {
-      await loginMutation.mutateAsync(formData);
+      await loginMutation.mutateAsync(values);
       toast.success("Logged in successfully");
       navigate("/app");
     } catch (error: any) {
@@ -43,14 +38,14 @@ export function LoginForm() {
     <form onSubmit={handleSubmit} className={FORM_STYLES.form}>
       <ControlledFormField
         {...LOGIN_FIELDS[0]}
-        value={formData.email}
+        value={values.email}
         onChange={handleChange}
       />
 
       <PasswordFieldWithForgot
         id={LOGIN_FIELDS[1].id}
         placeholder={LOGIN_FIELDS[1].placeholder}
-        value={formData.password}
+        value={values.password}
         onChange={handleChange}
       />
 

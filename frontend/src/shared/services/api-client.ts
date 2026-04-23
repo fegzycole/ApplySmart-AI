@@ -9,6 +9,15 @@ export const API_CONFIG = {
   },
 };
 
+export function resolveBackendUrl(path: string): string {
+  if (/^https?:\/\//.test(path)) {
+    return path;
+  }
+
+  const apiRoot = API_CONFIG.baseURL.replace(/\/api\/v1\/?$/, '');
+  return `${apiRoot}${path}`;
+}
+
 export interface ApiResponse<T> {
   data: T;
   status: number;
@@ -47,13 +56,11 @@ export class ApiClient {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
 
-      // Handle 401 Unauthorized - clear tokens and redirect to login
       if (response.status === 401) {
         this.clearAuthToken();
 
-        // Only redirect if we're not already on login/signup pages
         const currentPath = window.location.pathname;
-        const publicPaths = ['/login', '/signup', '/verify-email', '/password-reset', '/'];
+        const publicPaths = ['/login', '/signup', '/verify-email', '/password-reset', '/auth/oauth2/callback', '/'];
 
         if (!publicPaths.includes(currentPath)) {
           window.location.href = '/login';
@@ -115,15 +122,11 @@ export class ApiClient {
   }
 
   async post<T, D = unknown>(endpoint: string, data?: D, customTimeout?: number): Promise<T> {
-    // Check if data is FormData - if so, don't stringify and don't set Content-Type
     const isFormData = data instanceof FormData;
 
-    // For FormData, create headers without Content-Type (browser will set it with boundary)
-    // For other data, use regular headers with Content-Type: application/json
     const headers: Record<string, string> = {};
     Object.keys(this.headers).forEach(key => {
       if (isFormData && key === 'Content-Type') {
-        // Skip Content-Type for FormData
         return;
       }
       headers[key] = this.headers[key];

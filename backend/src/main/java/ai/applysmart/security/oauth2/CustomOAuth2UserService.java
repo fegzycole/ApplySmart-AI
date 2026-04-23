@@ -14,9 +14,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.Optional;
 
-/**
- * Custom OAuth2 user service for loading and processing OAuth2 user information.
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -54,7 +51,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user = userOptional.get();
             User.AuthProvider provider = User.AuthProvider.valueOf(registrationId.toUpperCase());
 
-            // Check if user is trying to login with a different provider than they signed up with
             if (!user.getAuthProvider().equals(provider)) {
                 throw new OAuth2AuthenticationProcessingException(
                         "You signed up with " + user.getAuthProvider() +
@@ -82,7 +78,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         userRequest.getClientRegistration().getRegistrationId().toUpperCase()
                 ))
                 .providerId(oAuth2UserInfo.getId())
-                .emailVerified(true) // OAuth2 providers verify emails
+                .emailVerified(true)
                 .enabled(true)
                 .role(User.Role.USER)
                 .build();
@@ -93,7 +89,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
         log.info("Updating existing OAuth2 user with email: {}", oAuth2UserInfo.getEmail());
 
-        // Update user information
         if (StringUtils.hasText(oAuth2UserInfo.getFirstName())) {
             existingUser.setFirstName(oAuth2UserInfo.getFirstName());
         }

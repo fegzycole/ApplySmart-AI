@@ -1,16 +1,17 @@
 import { CheckCircle2, Edit2 } from "lucide-react";
+import type { ResumeStatus } from "../../services/resume.service";
 
 interface StatusBadgeProps {
-  status: "draft" | "complete";
+  status: ResumeStatus;
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  if (status === "complete") {
+  if (status === "optimized" || status === "published") {
     return (
       <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 whitespace-nowrap">
         <CheckCircle2 className="size-3 text-emerald-600 dark:text-emerald-400" />
         <span className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
-          Complete
+          {status === "published" ? "Published" : "Optimized"}
         </span>
       </div>
     );

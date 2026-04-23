@@ -1,7 +1,6 @@
 package ai.applysmart.dto.job;
 
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -15,7 +14,7 @@ public class UpdateJobRequest {
              message = "Invalid URL format")
     private String link;
 
-    private String status; // SAVED, APPLIED, INTERVIEW, OFFER, REJECTED
+    private String status;
     private String notes;
     private String salary;
     private String location;

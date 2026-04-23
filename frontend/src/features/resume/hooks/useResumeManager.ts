@@ -1,20 +1,13 @@
 import { useState, useMemo } from "react";
 import { PAGINATION_CONFIG } from "../constants/pagination.constants";
-import { useResumes, useUpdateResume, useDeleteResume } from "./useResumeQueries";
-import type { Resume } from "../services/resume.service";
+import { useResumes, useDeleteResume } from "./useResumeQueries";
 
 export function useResumeManager() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
 
   const { data: resumes = [], isLoading } = useResumes();
-  const updateMutation = useUpdateResume();
   const deleteMutation = useDeleteResume();
-
-  const toggleFavorite = (id: number) => {
-    // Favorite functionality not available in API yet
-    console.warn('Favorite functionality not implemented');
-  };
 
   const deleteResume = (id: number) => {
     deleteMutation.mutate(id);
@@ -39,8 +32,7 @@ export function useResumeManager() {
 
   const stats = useMemo(() => ({
     total: resumes.length,
-    complete: resumes.filter(r => r.status === "published").length,
-    favorites: 0 // Favorite functionality not available in API yet
+    complete: resumes.filter(r => r.status === "published").length
   }), [resumes]);
 
   return {
@@ -53,7 +45,6 @@ export function useResumeManager() {
     currentResumes,
     totalPages,
     stats,
-    toggleFavorite,
     deleteResume,
     isLoading
   };

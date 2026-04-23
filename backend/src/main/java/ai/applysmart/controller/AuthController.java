@@ -3,7 +3,8 @@ package ai.applysmart.controller;
 import ai.applysmart.dto.auth.*;
 import ai.applysmart.dto.common.ApiResponse;
 import ai.applysmart.entity.User;
-import ai.applysmart.service.AuthService;
+import ai.applysmart.service.auth.AuthService;
+import ai.applysmart.util.ControllerUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -47,17 +48,20 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/oauth2/exchange")
+    @Operation(summary = "Exchange OAuth login code for access and refresh tokens")
+    public ResponseEntity<AuthResponse> exchangeOAuthCode(@Valid @RequestBody OAuthCodeExchangeRequest request) {
+        log.info("OAuth code exchange request received");
+        AuthResponse response = authService.exchangeOAuthCode(request.getCode());
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/request-password-reset")
     @Operation(summary = "Request password reset code")
     public ResponseEntity<ApiResponse<Void>> requestPasswordReset(@Valid @RequestBody PasswordResetRequest request) {
         log.info("Password reset request received for email: {}", request.getEmail());
         authService.requestPasswordReset(request);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("Password reset code sent to your email")
-                        .build()
-        );
+        return ResponseEntity.ok(ControllerUtils.successResponse("Password reset code sent to your email"));
     }
 
     @PostMapping("/reset-password")
@@ -65,12 +69,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         log.info("Reset password request received for email: {}", request.getEmail());
         authService.resetPassword(request);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("Password reset successfully")
-                        .build()
-        );
+        return ResponseEntity.ok(ControllerUtils.successResponse("Password reset successfully"));
     }
 
     @PostMapping("/verify-email")
@@ -78,12 +77,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> verifyEmail(@Valid @RequestBody VerifyEmailRequest request) {
         log.info("Email verification request received for: {}", request.getEmail());
         authService.verifyEmail(request);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("Email verified successfully")
-                        .build()
-        );
+        return ResponseEntity.ok(ControllerUtils.successResponse("Email verified successfully"));
     }
 
     @PostMapping("/resend-verification")
@@ -91,12 +85,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> resendVerification(@Valid @RequestBody PasswordResetRequest request) {
         log.info("Resend verification request received for: {}", request.getEmail());
         authService.resendVerificationCode(request.getEmail());
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("Verification code sent to your email")
-                        .build()
-        );
+        return ResponseEntity.ok(ControllerUtils.successResponse("Verification code sent to your email"));
     }
 
     @GetMapping("/me")
@@ -114,15 +103,9 @@ public class AuthController {
             @AuthenticationPrincipal User user) {
         log.info("Logout request received for user ID: {}", user.getId());
 
-        // Extract token from "Bearer <token>" format
-        String token = authHeader.replace("Bearer ", "");
+        String token = ControllerUtils.extractBearerToken(authHeader);
         authService.logout(token, user);
 
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("Logged out successfully")
-                        .build()
-        );
+        return ResponseEntity.ok(ControllerUtils.successResponse("Logged out successfully"));
     }
 }

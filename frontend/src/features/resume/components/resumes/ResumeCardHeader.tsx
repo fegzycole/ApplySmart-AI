@@ -1,21 +1,19 @@
 import { CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { ResumeCardIcon } from "./ResumeCardIcon";
+import { ResumeIdentity } from "./ResumeIdentity";
+import { ResumeScoreBadge } from "./ResumeScoreBadge";
 import { StatusBadge } from "./StatusBadge";
 import type { Resume } from "../../services/resume.service";
 
 interface ResumeCardHeaderProps {
   resume: Resume;
-  onToggleFavorite: () => void;
 }
 
 export function ResumeCardHeader({ resume }: ResumeCardHeaderProps) {
   return (
     <CardHeader className="pb-3">
       <div className="flex items-start justify-between mb-2">
-        <ResumeCardIcon />
-        <div className="size-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center">
-          <span className="text-white font-bold text-sm">{resume.score}</span>
-        </div>
+        <ResumeIdentity resume={resume} titleClassName="sr-only" />
+        <ResumeScoreBadge score={resume.score} />
       </div>
 
       <CardTitle className="text-base line-clamp-2 mb-2">

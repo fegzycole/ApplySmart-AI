@@ -2,8 +2,7 @@ import { motion } from "framer-motion";
 import { StepHeader } from "../StepHeader";
 import { TemplateSelector } from "../TemplateSelector";
 import { StepNavigation } from "../StepNavigation";
-
-type ResumeTemplate = "MODERN" | "PROFESSIONAL" | "CLASSIC" | "CREATIVE";
+import type { ResumeTemplate } from "../../../types/resume-builder.types";
 
 interface StepThreeProps {
   selectedTemplate: ResumeTemplate;

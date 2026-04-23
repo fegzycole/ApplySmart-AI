@@ -17,7 +17,7 @@ export const useCurrentUser = () => {
     queryKey: AUTH_KEYS.currentUser(),
     queryFn: authService.getCurrentUser,
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 };
 
@@ -60,6 +60,17 @@ export const useRefreshToken = () => {
 
   return useMutation({
     mutationFn: authService.refreshToken,
+    onSuccess: (data) => {
+      queryClient.setQueryData(AUTH_KEYS.currentUser(), data.user);
+    },
+  });
+};
+
+export const useExchangeOAuthCode = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (code: string) => authService.exchangeOAuthCode(code),
     onSuccess: (data) => {
       queryClient.setQueryData(AUTH_KEYS.currentUser(), data.user);
     },

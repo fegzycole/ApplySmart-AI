@@ -1,0 +1,55 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:applysmart_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+  cache:
+    type: none
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+  mail:
+    host: localhost
+    port: 2525
+    username: test@example.com
+    password: test-password
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: test-google-client
+            client-secret: test-google-secret
+          github:
+            client-id: test-github-client
+            client-secret: test-github-secret
+
+app:
+  jwt:
+    secret: test-secret-test-secret-test-secret-test-secret
+  rate-limit:
+    enabled: false
+  email:
+    from: test@example.com
+    support: support@example.com
+
+anthropic:
+  api-key: test-anthropic-key
+
+cloudinary:
+  cloud-name: test-cloud
+  api-key: test-key
+  api-secret: test-secret
+
+stripe:
+  api-key: test-stripe-key
+  webhook-secret: test-webhook-secret

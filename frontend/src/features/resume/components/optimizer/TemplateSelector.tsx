@@ -1,7 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 import { TemplatePreview } from "./TemplatePreview";
-
-type ResumeTemplate = 'MODERN' | 'PROFESSIONAL' | 'CLASSIC' | 'CREATIVE';
+import type { ResumeTemplate } from "../../types/resume-builder.types";
 
 interface TemplateSelectorProps {
   selected: ResumeTemplate;
@@ -9,10 +8,10 @@ interface TemplateSelectorProps {
 }
 
 const templates: { value: ResumeTemplate; label: string; desc: string }[] = [
-  { value: 'MODERN', label: 'Modern', desc: 'Minimalist & clean' },
-  { value: 'PROFESSIONAL', label: 'Professional', desc: 'Traditional & formal' },
-  { value: 'CLASSIC', label: 'Classic', desc: 'Timeless elegance' },
-  { value: 'CREATIVE', label: 'Creative', desc: 'Bold & unique' },
+  { value: "MODERN", label: "Modern", desc: "Minimalist & clean" },
+  { value: "PROFESSIONAL", label: "Professional", desc: "Traditional & formal" },
+  { value: "CLASSIC", label: "Classic", desc: "Timeless elegance" },
+  { value: "CREATIVE", label: "Creative", desc: "Bold & unique" },
 ];
 
 export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) {

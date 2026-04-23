@@ -16,7 +16,6 @@ import java.util.Optional;
 @Repository
 public interface ResumeRepository extends JpaRepository<Resume, Long> {
 
-    // @Where clause automatically filters deleted = false
     List<Resume> findByUserOrderByUpdatedAtDesc(User user);
 
     Page<Resume> findByUserOrderByUpdatedAtDesc(User user, Pageable pageable);
