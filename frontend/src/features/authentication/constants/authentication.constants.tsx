@@ -136,6 +136,10 @@ export const AUTH_CONTENT = {
     footerLink: "Sign in",
     footerLinkPath: "/login"
   },
+  oauthCallback: {
+    title: "Completing sign in",
+    description: "We're finalizing your secure OAuth session."
+  },
   oauth: {
     dividerText: "Or continue with"
   }

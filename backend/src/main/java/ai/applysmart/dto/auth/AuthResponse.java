@@ -6,9 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * DTO for authentication response containing tokens and user information.
- */
 @Data
 @Builder
 @NoArgsConstructor
@@ -17,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class AuthResponse {
     private String token;
     private String refreshToken;
+    @Builder.Default
     private String tokenType = "Bearer";
     private UserDto user;
 }

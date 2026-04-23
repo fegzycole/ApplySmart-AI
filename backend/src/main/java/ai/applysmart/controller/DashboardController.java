@@ -2,7 +2,7 @@ package ai.applysmart.controller;
 
 import ai.applysmart.dto.dashboard.*;
 import ai.applysmart.entity.User;
-import ai.applysmart.service.DashboardService;
+import ai.applysmart.service.dashboard.DashboardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

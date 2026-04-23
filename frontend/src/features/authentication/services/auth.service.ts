@@ -1,9 +1,11 @@
 import { apiClient } from '@/shared/services/api-client';
+import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
 import { tokenStorage } from '@/shared/utils/token-storage';
 import type {
   LoginCredentials,
   SignupData,
   PasswordResetRequest,
+  OAuthCodeExchangeRequest,
   AuthResponse,
   SignupResponse,
   VerifyEmailRequest,
@@ -11,16 +13,18 @@ import type {
   User
 } from '../types/auth.types';
 
-const ENDPOINTS = {
-  LOGIN: '/auth/login',
-  SIGNUP: '/auth/signup',
-  LOGOUT: '/auth/logout',
-  RESET_PASSWORD: '/auth/reset-password',
-  CURRENT_USER: '/auth/me',
-  REFRESH_TOKEN: '/auth/refresh',
-  VERIFY_EMAIL: '/auth/verify-email',
-  RESEND_VERIFICATION: '/auth/resend-verification',
-};
+const ENDPOINTS = API_ENDPOINTS.AUTH;
+
+function persistAuthenticatedSession(response: AuthResponse): void {
+  if (!response.token) {
+    return;
+  }
+
+  apiClient.setAuthToken(response.token);
+  if (response.refreshToken) {
+    tokenStorage.setRefreshToken(response.refreshToken);
+  }
+}
 
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   const response = await apiClient.post<AuthResponse, LoginCredentials>(
@@ -28,12 +32,7 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
     credentials
   );
 
-  if (response.token) {
-    apiClient.setAuthToken(response.token);
-    if (response.refreshToken) {
-      tokenStorage.setRefreshToken(response.refreshToken);
-    }
-  }
+  persistAuthenticatedSession(response);
 
   return response;
 };
@@ -44,7 +43,6 @@ export const signup = async (data: SignupData): Promise<SignupResponse> => {
     data
   );
 
-  // Don't set auth token - user must verify email and login
   return response;
 };
 
@@ -72,12 +70,18 @@ export const refreshToken = async (): Promise<AuthResponse> => {
     { refreshToken: refreshToken || '' }
   );
 
-  if (response.token) {
-    apiClient.setAuthToken(response.token);
-    if (response.refreshToken) {
-      tokenStorage.setRefreshToken(response.refreshToken);
-    }
-  }
+  persistAuthenticatedSession(response);
+
+  return response;
+};
+
+export const exchangeOAuthCode = async (code: string): Promise<AuthResponse> => {
+  const response = await apiClient.post<AuthResponse, OAuthCodeExchangeRequest>(
+    ENDPOINTS.OAUTH_EXCHANGE,
+    { code }
+  );
+
+  persistAuthenticatedSession(response);
 
   return response;
 };

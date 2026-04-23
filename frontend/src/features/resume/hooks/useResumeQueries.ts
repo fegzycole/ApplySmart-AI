@@ -1,6 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  invalidateDetailAndList,
+  removeDetailAndInvalidateList,
+} from '@/shared/lib/query-cache';
 import * as resumeService from '../services/resume.service';
-import type { Resume } from '../services/resume.service';
 
 export const RESUME_KEYS = {
   all: ['resumes'] as const,
@@ -25,38 +28,17 @@ export const useResume = (id: number) => {
   });
 };
 
-export const useCreateResume = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: resumeService.createResume,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: RESUME_KEYS.lists() });
-    },
-  });
-};
-
-export const useUpdateResume = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, updates }: { id: number; updates: Partial<Resume> }) =>
-      resumeService.updateResume(id, updates),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: RESUME_KEYS.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: RESUME_KEYS.lists() });
-    },
-  });
-};
-
 export const useDeleteResume = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: resumeService.deleteResume,
     onSuccess: (_, deletedId) => {
-      queryClient.removeQueries({ queryKey: RESUME_KEYS.detail(deletedId) });
-      queryClient.invalidateQueries({ queryKey: RESUME_KEYS.lists() });
+      removeDetailAndInvalidateList(
+        queryClient,
+        RESUME_KEYS.detail(deletedId),
+        RESUME_KEYS.lists()
+      );
     },
   });
 };
@@ -80,8 +62,11 @@ export const useOptimizeResume = () => {
     mutationFn: ({ resumeId, jobDescription }: { resumeId: number; jobDescription: string }) =>
       resumeService.optimizeResume(resumeId, jobDescription),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: RESUME_KEYS.detail(variables.resumeId) });
-      queryClient.invalidateQueries({ queryKey: RESUME_KEYS.lists() });
+      invalidateDetailAndList(
+        queryClient,
+        RESUME_KEYS.detail(variables.resumeId),
+        RESUME_KEYS.lists()
+      );
     },
   });
 };

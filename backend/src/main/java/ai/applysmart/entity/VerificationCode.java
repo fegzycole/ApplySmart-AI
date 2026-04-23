@@ -35,6 +35,7 @@ public class VerificationCode {
     private LocalDateTime expiresAt;
 
     @Column(nullable = false)
+    @Builder.Default
     private Boolean used = false;
 
     @Column(name = "used_at")

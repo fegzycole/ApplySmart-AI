@@ -1,16 +1,18 @@
 import { createBrowserRouter } from "react-router";
 import { ErrorBoundary } from "@/shared/components";
 import { ProtectedRoute, PublicRoute } from "@/shared/components/guards";
+import { ROUTES } from "@/shared/constants";
 
 import {
   LandingPage,
   LoginPage,
+  OAuthCallbackPage,
   SignupPage,
   PasswordResetPage,
   VerifyEmailPage
 } from "@/features/authentication";
 
-import { TopNavLayout, DashboardHomePage } from "@/features/dashboard";
+import { AppLayout, DashboardHomePage } from "@/features/dashboard";
 
 import {
   ResumeOptimizerPage,
@@ -44,6 +46,11 @@ export const router = createBrowserRouter([
     errorElement: <ErrorBoundary />,
   },
   {
+    path: ROUTES.OAUTH_CALLBACK,
+    element: <OAuthCallbackPage />,
+    errorElement: <ErrorBoundary />,
+  },
+  {
     path: "/signup",
     element: (
       <PublicRoute>
@@ -71,7 +78,7 @@ export const router = createBrowserRouter([
     path: "/app",
     element: (
       <ProtectedRoute>
-        <TopNavLayout />
+        <AppLayout />
       </ProtectedRoute>
     ),
     errorElement: <ErrorBoundary />,

@@ -3,18 +3,16 @@ import type { Resume } from "../../services/resume.service";
 
 interface ResumeCardListProps {
   resumes: Resume[];
-  onToggleFavorite: (id: number) => void;
   onDelete: (resume: Resume) => void;
 }
 
-export function ResumeCardList({ resumes, onToggleFavorite, onDelete }: ResumeCardListProps) {
+export function ResumeCardList({ resumes, onDelete }: ResumeCardListProps) {
   return (
     <div className="lg:hidden grid gap-4">
       {resumes.map((resume) => (
         <ResumeCard
           key={resume.id}
           resume={resume}
-          onToggleFavorite={onToggleFavorite}
           onDelete={() => onDelete(resume)}
         />
       ))}

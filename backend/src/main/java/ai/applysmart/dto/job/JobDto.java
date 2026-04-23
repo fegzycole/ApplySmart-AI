@@ -12,7 +12,7 @@ public class JobDto {
     private String company;
     private String role;
     private String link;
-    private String status; // SAVED, APPLIED, INTERVIEW, OFFER, REJECTED
+    private String status;
     private String notes;
     private String salary;
     private String location;

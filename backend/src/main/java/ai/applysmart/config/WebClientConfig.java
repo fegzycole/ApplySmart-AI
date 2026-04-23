@@ -3,7 +3,7 @@ package ai.applysmart.config;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
@@ -14,18 +14,19 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
+@RequiredArgsConstructor
 public class WebClientConfig {
 
-    @Value("${anthropic.timeout:180000}")
-    private int anthropicTimeout;
+    private final AnthropicProperties anthropicProperties;
 
     @Bean
     public WebClient.Builder webClientBuilder() {
-        int timeoutSeconds = anthropicTimeout / 1000;
+        int timeoutMillis = anthropicProperties.getTimeout();
+        int timeoutSeconds = timeoutMillis / 1000;
 
         HttpClient httpClient = HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, anthropicTimeout)
-                .responseTimeout(Duration.ofMillis(anthropicTimeout))
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, timeoutMillis)
+                .responseTimeout(Duration.ofMillis(timeoutMillis))
                 .doOnConnected(conn ->
                         conn.addHandlerLast(new ReadTimeoutHandler(timeoutSeconds, TimeUnit.SECONDS))
                                 .addHandlerLast(new WriteTimeoutHandler(timeoutSeconds, TimeUnit.SECONDS)));

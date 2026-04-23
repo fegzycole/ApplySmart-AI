@@ -1,5 +1,5 @@
 import { User, Mail, Phone, MapPin, Linkedin, Github, Globe, LucideIcon } from "lucide-react";
-import { ResumeTemplate, PersonalInfo } from "../contexts/ResumeBuilderContext";
+import type { PersonalInfo, ResumeTemplate } from "../types/resume-builder.types";
 
 export interface PersonalInfoField {
   key: keyof PersonalInfo;

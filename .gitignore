@@ -9,6 +9,7 @@
 *.env
 .env.*
 !.env.example
+docs/
 
 # Sensitive keys and secrets
 *.key

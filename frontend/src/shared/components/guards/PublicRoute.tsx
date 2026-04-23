@@ -5,10 +5,6 @@ interface PublicRouteProps {
   children: React.ReactNode;
 }
 
-/**
- * Public routes that redirect to dashboard if user is already authenticated
- * (e.g., login, signup, landing pages)
- */
 export function PublicRoute({ children }: PublicRouteProps) {
   const hasToken = tokenStorage.hasToken();
 

@@ -7,17 +7,13 @@ import type { Resume } from "../../services/resume.service";
 
 interface ResumeCardProps {
   resume: Resume;
-  onToggleFavorite: (id: number) => void;
   onDelete: () => void;
 }
 
-export function ResumeCard({ resume, onToggleFavorite, onDelete }: ResumeCardProps) {
+export function ResumeCard({ resume, onDelete }: ResumeCardProps) {
   return (
     <Card className={RESUME_CARD_STYLES.cardClassName}>
-      <ResumeCardHeader
-        resume={resume}
-        onToggleFavorite={() => onToggleFavorite(resume.id)}
-      />
+      <ResumeCardHeader resume={resume} />
 
       <CardContent className="space-y-3">
         <DateInfoSection resume={resume} />

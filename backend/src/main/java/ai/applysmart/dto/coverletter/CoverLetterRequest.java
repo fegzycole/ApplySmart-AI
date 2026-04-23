@@ -14,9 +14,9 @@ public class CoverLetterRequest {
     @NotBlank(message = "Job description is required")
     private String jobDescription;
 
-    private String tone; // professional, friendly, confident, formal, enthusiastic
+    private String tone;
 
-    private String highlights; // Key achievements to highlight
+    private String highlights;
 
-    private Long resumeId; // Optional resume to base cover letter on
+    private Long resumeId;
 }

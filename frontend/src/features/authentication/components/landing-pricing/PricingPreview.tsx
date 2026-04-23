@@ -54,7 +54,6 @@ const plans = [
 ];
 
 export function PricingPreview() {
-  // Hide pricing section when subscriptions are disabled
   if (!FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED) {
     return null;
   }

@@ -1,10 +1,11 @@
 {
-  "name": "@figma/my-make-file",
+  "name": "applysmart-ai",
   "private": true,
   "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "build": "vite build",
     "preview": "vite preview"
   },

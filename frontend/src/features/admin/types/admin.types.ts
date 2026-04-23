@@ -1,4 +1,3 @@
-// Frontend UI types
 export interface StatCardData {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
@@ -36,7 +35,6 @@ export interface RecentUser {
   joined: string;
 }
 
-// Backend API response types (matching AdminServiceImpl DTOs)
 export interface UserAdminDto {
   id: number;
   email: string;

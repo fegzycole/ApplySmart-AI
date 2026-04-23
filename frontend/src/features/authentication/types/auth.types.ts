@@ -23,6 +23,10 @@ export interface PasswordResetRequest {
   email: string;
 }
 
+export interface OAuthCodeExchangeRequest {
+  code: string;
+}
+
 export interface AuthResponse {
   user: User;
   token: string;

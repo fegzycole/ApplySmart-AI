@@ -82,8 +82,10 @@ export const RECENT_APPLICATIONS_STYLES = {
   },
   status: {
     base: "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-white text-xs font-medium shadow-lg",
+    saved: "bg-gradient-to-r from-slate-500 to-zinc-500",
     interview: "bg-gradient-to-r from-violet-500 to-fuchsia-500",
     applied: "bg-gradient-to-r from-amber-400 to-orange-500",
+    offer: "bg-gradient-to-r from-emerald-500 to-green-500",
     rejected: "bg-gradient-to-r from-red-500 to-rose-500",
     icon: "size-3"
   }

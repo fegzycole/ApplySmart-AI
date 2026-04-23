@@ -16,7 +16,6 @@ import java.util.Optional;
 @Repository
 public interface CoverLetterRepository extends JpaRepository<CoverLetter, Long> {
 
-    // @Where clause automatically filters deleted = false
     List<CoverLetter> findByUserOrderByCreatedAtDesc(User user);
 
     Page<CoverLetter> findByUserOrderByCreatedAtDesc(User user, Pageable pageable);

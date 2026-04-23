@@ -4,7 +4,7 @@ import { TERMS_CHECKBOX_STYLES } from "../../constants/authentication.constants"
 
 export function TermsCheckbox() {
   return (
-    <div className={TERMS_CHECKBOX_STYLES.container}>
+    <div className={TERMS_CHECKBOX_STYLES.wrapper}>
       <Checkbox id="terms" className={TERMS_CHECKBOX_STYLES.checkbox} />
       <Label htmlFor="terms" className={TERMS_CHECKBOX_STYLES.label}>
         I agree to the{" "}

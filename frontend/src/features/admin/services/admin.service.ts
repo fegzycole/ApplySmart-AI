@@ -1,24 +1,13 @@
 import { apiClient } from '@/shared/services/api-client';
+import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
 import type {
   AdminAnalyticsResponse,
   AdminUsersResponse,
   UserAdminDto
 } from '../types/admin.types';
 
-/**
- * Admin API Service
- * Makes API calls to admin endpoints (requires ADMIN role)
- */
+const ENDPOINTS = API_ENDPOINTS.ADMIN;
 
-const ENDPOINTS = {
-  USERS: '/admin/users',
-  ANALYTICS: '/admin/analytics',
-};
-
-/**
- * Fetch all users with their statistics
- * Supports pagination: ?page=0&size=20
- */
 export const fetchAllUsers = async (params?: { page?: number; size?: number }): Promise<UserAdminDto[] | AdminUsersResponse> => {
   const queryParams = params
     ? Object.entries(params).reduce((acc, [key, value]) => {

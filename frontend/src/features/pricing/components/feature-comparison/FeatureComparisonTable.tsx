@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { FEATURE_COMPARISON_STYLES, FEATURE_CATEGORIES, PRICING_PAGE_STYLES } from "../../constants/pricing.constants";
 import { TableHeader } from "./TableHeader";
 import { CategoryRow } from "./CategoryRow";
@@ -21,13 +22,13 @@ export function FeatureComparisonTable() {
             <table className={FEATURE_COMPARISON_STYLES.table.table}>
               <TableHeader />
               <tbody>
-                {FEATURE_CATEGORIES.map((category, categoryIndex) => (
-                  <React.Fragment key={categoryIndex}>
+                {FEATURE_CATEGORIES.map((category) => (
+                  <Fragment key={category.category}>
                     <CategoryRow categoryName={category.category} />
                     {category.items.map((item, itemIndex) => (
                       <FeatureRow key={itemIndex} feature={item} />
                     ))}
-                  </React.Fragment>
+                  </Fragment>
                 ))}
               </tbody>
             </table>

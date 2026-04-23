@@ -1,5 +1,5 @@
 import { Check } from "lucide-react";
-import { ResumeTemplate } from "../../contexts/ResumeBuilderContext";
+import type { ResumeTemplate } from "../../types/resume-builder.types";
 
 interface TemplateCardProps {
   id: ResumeTemplate;

@@ -1,9 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import * as dashboardService from '../services/dashboard.service';
 
-/**
- * Query keys for dashboard
- */
 export const DASHBOARD_KEYS = {
   all: ['dashboard'] as const,
   stats: () => [...DASHBOARD_KEYS.all, 'stats'] as const,
@@ -15,9 +12,6 @@ export const DASHBOARD_KEYS = {
   allData: () => [...DASHBOARD_KEYS.all, 'all-data'] as const,
 };
 
-/**
- * Fetch dashboard statistics
- */
 export const useDashboardStats = () => {
   return useQuery({
     queryKey: DASHBOARD_KEYS.stats(),
@@ -25,9 +19,6 @@ export const useDashboardStats = () => {
   });
 };
 
-/**
- * Fetch recent applications
- */
 export const useRecentApplications = (limit?: number) => {
   return useQuery({
     queryKey: DASHBOARD_KEYS.recentApps(limit),
@@ -35,9 +26,6 @@ export const useRecentApplications = (limit?: number) => {
   });
 };
 
-/**
- * Fetch application funnel
- */
 export const useApplicationFunnel = () => {
   return useQuery({
     queryKey: DASHBOARD_KEYS.funnel(),
@@ -45,9 +33,6 @@ export const useApplicationFunnel = () => {
   });
 };
 
-/**
- * Fetch conversion metrics
- */
 export const useConversionMetrics = () => {
   return useQuery({
     queryKey: DASHBOARD_KEYS.metrics(),
@@ -55,9 +40,6 @@ export const useConversionMetrics = () => {
   });
 };
 
-/**
- * Fetch success metrics trend data
- */
 export const useSuccessMetrics = () => {
   return useQuery({
     queryKey: DASHBOARD_KEYS.successMetrics(),
@@ -65,9 +47,6 @@ export const useSuccessMetrics = () => {
   });
 };
 
-/**
- * Fetch application velocity data
- */
 export const useApplicationVelocity = () => {
   return useQuery({
     queryKey: DASHBOARD_KEYS.velocity(),
@@ -75,9 +54,6 @@ export const useApplicationVelocity = () => {
   });
 };
 
-/**
- * Fetch all dashboard data at once
- */
 export const useDashboardData = () => {
   return useQuery({
     queryKey: DASHBOARD_KEYS.allData(),

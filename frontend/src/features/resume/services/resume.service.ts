@@ -1,25 +1,17 @@
 import { apiClient } from '@/shared/services/api-client';
+import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
+import type { ResumeTemplate } from "../types/resume-builder.types";
 
-/**
- * Resume API Service
- * Makes real API calls to backend endpoints
- */
+const ENDPOINTS = API_ENDPOINTS.RESUMES;
 
-const ENDPOINTS = {
-  RESUMES: '/resumes',
-  RESUME_BY_ID: (id: number) => `/resumes/${id}`,
-  ANALYZE: (id: number) => `/resumes/${id}/analyze`,
-  OPTIMIZE: (id: number) => `/resumes/${id}/optimize`,
-  UPLOAD: '/resumes/upload',
-};
+export type ResumeStatus = 'draft' | 'optimized' | 'published';
 
-// Types
 export interface Resume {
   id: number;
   name: string;
   lastModified: string;
   score: number;
-  status: 'draft' | 'optimized' | 'published';
+  status: ResumeStatus;
   content?: string;
 }
 
@@ -39,38 +31,18 @@ export interface ResumeOptimization {
   fileUrl: string;
 }
 
-export interface UploadedFile {
-  id: number;
-  name: string;
-  size: number;
-  uploadedAt: string;
-  url: string;
-}
-
-/**
- * Fetch all resumes
- */
 export const fetchResumes = async (): Promise<Resume[]> => {
-  return apiClient.get<Resume[]>(ENDPOINTS.RESUMES);
+  return apiClient.get<Resume[]>(ENDPOINTS.LIST);
 };
 
-/**
- * Fetch resume by ID
- */
 export const fetchResumeById = async (id: number): Promise<Resume> => {
-  return apiClient.get<Resume>(ENDPOINTS.RESUME_BY_ID(id));
+  return apiClient.get<Resume>(ENDPOINTS.GET(id));
 };
 
-/**
- * Delete resume
- */
 export const deleteResume = async (id: number): Promise<{ success: boolean; deletedId: number }> => {
-  return apiClient.delete(ENDPOINTS.RESUME_BY_ID(id));
+  return apiClient.delete(ENDPOINTS.DELETE(id));
 };
 
-/**
- * Analyze resume with AI
- */
 export const analyzeResume = async (
   resumeId: number,
   jobDescription?: string
@@ -80,9 +52,6 @@ export const analyzeResume = async (
   });
 };
 
-/**
- * Optimize resume for job description
- */
 export const optimizeResume = async (
   resumeId: number,
   jobDescription: string
@@ -92,46 +61,29 @@ export const optimizeResume = async (
   });
 };
 
-/**
- * Upload resume file
- */
-export const uploadResumeFile = async (file: File): Promise<UploadedFile> => {
+export const uploadResumeFile = async (file: File): Promise<Resume> => {
   const formData = new FormData();
   formData.append('file', file);
 
-  // For file uploads, we need to override the content-type header
-  const headers = {
-    // Let the browser set the boundary for multipart/form-data
-    'Content-Type': 'multipart/form-data',
-  };
-
-  return apiClient.post<UploadedFile>(ENDPOINTS.UPLOAD, formData);
+  return apiClient.post<Resume>(ENDPOINTS.UPLOAD, formData);
 };
 
-/**
- * Upload and optimize resume file for job description
- * Uses extended timeout (3 minutes) for AI processing
- */
 export const uploadAndOptimizeResume = async (
   file: File,
   jobDescription: string,
-  template: 'MODERN' | 'PROFESSIONAL' | 'CLASSIC' | 'CREATIVE' = 'MODERN'
+  template: ResumeTemplate = 'MODERN'
 ): Promise<ResumeOptimization> => {
   const formData = new FormData();
   formData.append('file', file);
   formData.append('jobDescription', jobDescription);
 
-  // Use 3 minute timeout for AI optimization
   return apiClient.post<ResumeOptimization>(
-    `/resumes/optimize-upload?template=${template}`,
+    `${ENDPOINTS.OPTIMIZE_UPLOAD}?template=${template}`,
     formData,
-    180000 // 3 minutes timeout
+    180000
   );
 };
 
-/**
- * Upload built resume PDF
- */
 export const uploadBuiltResume = async (
   file: File | Blob,
   name: string
@@ -140,5 +92,5 @@ export const uploadBuiltResume = async (
   formData.append('file', file, 'resume.pdf');
   formData.append('name', name);
 
-  return apiClient.post<Resume>('/resumes/build', formData);
+  return apiClient.post<Resume>(ENDPOINTS.BUILD, formData);
 };

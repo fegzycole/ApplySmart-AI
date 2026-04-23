@@ -21,7 +21,6 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         use_sql_comments: true
         jdbc:
@@ -39,9 +38,11 @@ spring:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD}
+      password: ${REDIS_PASSWORD:}
       timeout: 60000
       client-type: lettuce
+      repositories:
+        enabled: false
       lettuce:
         pool:
           max-active: 20
@@ -81,12 +82,6 @@ spring:
       max-request-size: 10MB
       enabled: true
 
-server:
-  tomcat:
-    connection-timeout: 300000  # 5 minutes for long-running AI operations
-  connection-timeout: 300000    # 5 minutes
-  max-http-header-size: 16KB
-
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -114,7 +109,12 @@ server:
               - read:user
             redirect-uri: "{baseUrl}/oauth2/callback/{registrationId}"
 
-# Application Configuration
+server:
+  tomcat:
+    connection-timeout: 300000
+  connection-timeout: 300000
+  max-http-header-size: 16KB
+
 app:
   name: ApplySmart AI
   version: 1.0.0
@@ -130,18 +130,17 @@ app:
     authorized-redirect-uri: ${OAUTH2_REDIRECT_URI:http://localhost:5173/auth/oauth2/callback}
 
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173,http://localhost:5174,https://applysmart-ai.vercel.app,https://applysmart-ai.org,http://applysmart-ai.org,https://www.applysmart-ai.org,http://www.applysmart-ai.org}
     allowed-methods: GET,POST,PUT,PATCH,DELETE,OPTIONS
     allowed-headers: "*"
     allow-credentials: true
     max-age: 3600
 
   rate-limit:
-    # Authentication endpoint rate limiting (per IP address)
-    capacity: 10                    # Maximum requests allowed in burst
-    refill-tokens: 10               # Tokens to add per refill interval
-    refill-duration-minutes: 1      # Refill interval in minutes
-    # Feature-level rate limits
+    enabled: true
+    capacity: 10
+    refill-tokens: 10
+    refill-duration-minutes: 1
     free-tier:
       resume-analysis: 10
       resume-optimization: 5
@@ -165,7 +164,7 @@ anthropic:
   model: claude-sonnet-4-6
   max-tokens: 4096
   temperature: 0.7
-  timeout: 180000  # 3 minutes for AI optimization operations
+  timeout: 180000
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}
@@ -181,12 +180,12 @@ stripe:
 logging:
   level:
     root: INFO
-    ai.applysmart: DEBUG
-    org.springframework.web: DEBUG
-    org.springframework.security: DEBUG
+    ai.applysmart: INFO
+    org.springframework.web: INFO
+    org.springframework.security: INFO
     org.hibernate: INFO
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
     file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
@@ -206,8 +205,8 @@ management:
       base-path: /actuator
   endpoint:
     health:
-      show-details: always
-      show-components: always
+      show-details: when_authorized
+      show-components: when_authorized
   prometheus:
     metrics:
       export:
@@ -241,6 +240,10 @@ spring:
 logging:
   level:
     ai.applysmart: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
 ---
 spring:
@@ -253,9 +256,28 @@ spring:
     hibernate:
       ddl-auto: validate
 
+app:
+  oauth2:
+    authorized-redirect-uri: ${OAUTH2_REDIRECT_URI}
+
 logging:
   level:
     root: WARN
     ai.applysmart: INFO
     org.springframework.web: WARN
     org.springframework.security: WARN
+    org.hibernate: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+
+management:
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

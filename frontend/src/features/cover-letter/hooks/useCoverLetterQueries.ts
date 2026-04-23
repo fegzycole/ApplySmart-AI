@@ -1,4 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  invalidateDetailAndList,
+  removeDetailAndInvalidateList,
+} from '@/shared/lib/query-cache';
 import * as coverLetterService from '../services/cover-letter.service';
 import type {
   CoverLetterRequest,
@@ -45,9 +49,12 @@ export const useUpdateCoverLetter = () => {
   return useMutation({
     mutationFn: ({ id, updates }: { id: number; updates: Partial<CoverLetter> }) =>
       coverLetterService.updateCoverLetter(id, updates),
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: COVER_LETTER_KEYS.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: COVER_LETTER_KEYS.lists() });
+    onSuccess: (_, variables) => {
+      invalidateDetailAndList(
+        queryClient,
+        COVER_LETTER_KEYS.detail(variables.id),
+        COVER_LETTER_KEYS.lists()
+      );
     },
   });
 };
@@ -58,8 +65,11 @@ export const useDeleteCoverLetter = () => {
   return useMutation({
     mutationFn: coverLetterService.deleteCoverLetter,
     onSuccess: (_, deletedId) => {
-      queryClient.removeQueries({ queryKey: COVER_LETTER_KEYS.detail(deletedId) });
-      queryClient.invalidateQueries({ queryKey: COVER_LETTER_KEYS.lists() });
+      removeDetailAndInvalidateList(
+        queryClient,
+        COVER_LETTER_KEYS.detail(deletedId),
+        COVER_LETTER_KEYS.lists()
+      );
     },
   });
 };
@@ -71,8 +81,11 @@ export const useRegenerateCoverLetter = () => {
     mutationFn: ({ id, updates }: { id: number; updates: Partial<CoverLetterRequest> }) =>
       coverLetterService.regenerateCoverLetter(id, updates),
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: COVER_LETTER_KEYS.detail(variables.id) });
-      queryClient.invalidateQueries({ queryKey: COVER_LETTER_KEYS.lists() });
+      invalidateDetailAndList(
+        queryClient,
+        COVER_LETTER_KEYS.detail(variables.id),
+        COVER_LETTER_KEYS.lists()
+      );
     },
   });
 };

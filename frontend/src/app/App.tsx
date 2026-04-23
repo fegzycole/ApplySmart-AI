@@ -5,7 +5,6 @@ import { router } from "./routes";
 import { Toaster } from "@/shared/components/ui/sonner";
 import { queryClient } from "@/shared/config/query-client";
 
-// Main App component
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>

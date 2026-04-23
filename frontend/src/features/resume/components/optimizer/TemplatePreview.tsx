@@ -2,8 +2,7 @@ import { ModernTemplatePreview } from "./previews/ModernTemplatePreview";
 import { ProfessionalTemplatePreview } from "./previews/ProfessionalTemplatePreview";
 import { ClassicTemplatePreview } from "./previews/ClassicTemplatePreview";
 import { CreativeTemplatePreview } from "./previews/CreativeTemplatePreview";
-
-type ResumeTemplate = 'MODERN' | 'PROFESSIONAL' | 'CLASSIC' | 'CREATIVE';
+import type { ResumeTemplate } from "../../types/resume-builder.types";
 
 interface TemplatePreviewProps {
   type: ResumeTemplate;
@@ -11,13 +10,13 @@ interface TemplatePreviewProps {
 
 export function TemplatePreview({ type }: TemplatePreviewProps) {
   switch (type) {
-    case 'MODERN':
+    case "MODERN":
       return <ModernTemplatePreview />;
-    case 'PROFESSIONAL':
+    case "PROFESSIONAL":
       return <ProfessionalTemplatePreview />;
-    case 'CLASSIC':
+    case "CLASSIC":
       return <ClassicTemplatePreview />;
-    case 'CREATIVE':
+    case "CREATIVE":
       return <CreativeTemplatePreview />;
   }
 }

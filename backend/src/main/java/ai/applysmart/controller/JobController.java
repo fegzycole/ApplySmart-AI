@@ -5,15 +5,13 @@ import ai.applysmart.dto.job.CreateJobRequest;
 import ai.applysmart.dto.job.JobDto;
 import ai.applysmart.dto.job.UpdateJobRequest;
 import ai.applysmart.entity.User;
-import ai.applysmart.service.JobService;
-import ai.applysmart.util.PaginationUtils;
+import ai.applysmart.service.job.JobService;
+import ai.applysmart.util.ControllerUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -47,15 +45,12 @@ public class JobController {
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         log.info("Get all jobs request from user: {} (page: {}, size: {})", user.getId(), page, size);
-
-        if (PaginationUtils.isPaginationRequested(page, size)) {
-            Pageable pageable = PaginationUtils.createPageable(page, size);
-            Page<JobDto> jobPage = jobService.getAllJobs(user, pageable);
-            return ResponseEntity.ok(jobPage);
-        }
-
-        List<JobDto> jobs = jobService.getAllJobs(user);
-        return ResponseEntity.ok(jobs);
+        return ControllerUtils.handlePaginatedRequest(
+                page,
+                size,
+                pageable -> jobService.getAllJobs(user, pageable),
+                () -> jobService.getAllJobs(user)
+        );
     }
 
     @GetMapping("/{id}")
@@ -86,12 +81,7 @@ public class JobController {
             @AuthenticationPrincipal User user) {
         log.info("Delete job {} request from user: {}", id, user.getId());
         jobService.deleteJob(id, user);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("Job deleted successfully")
-                        .build()
-        );
+        return ResponseEntity.ok(ControllerUtils.successResponse("Job deleted successfully"));
     }
 
     @GetMapping("/status/{status}")

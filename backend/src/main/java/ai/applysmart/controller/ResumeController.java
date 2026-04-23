@@ -3,23 +3,19 @@ package ai.applysmart.controller;
 import ai.applysmart.dto.common.ApiResponse;
 import ai.applysmart.dto.resume.*;
 import ai.applysmart.entity.User;
-import ai.applysmart.service.ResumeService;
-import ai.applysmart.util.PaginationUtils;
+import ai.applysmart.service.resume.ResumeService;
+import ai.applysmart.util.ControllerUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 @Slf4j
 @RestController
@@ -37,15 +33,12 @@ public class ResumeController {
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         log.info("Get all resumes request from user: {} (page: {}, size: {})", user.getId(), page, size);
-
-        if (PaginationUtils.isPaginationRequested(page, size)) {
-            Pageable pageable = PaginationUtils.createPageable(page, size);
-            Page<ResumeDto> resumePage = resumeService.getAllResumes(user, pageable);
-            return ResponseEntity.ok(resumePage);
-        }
-
-        List<ResumeDto> resumes = resumeService.getAllResumes(user);
-        return ResponseEntity.ok(resumes);
+        return ControllerUtils.handlePaginatedRequest(
+                page,
+                size,
+                pageable -> resumeService.getAllResumes(user, pageable),
+                () -> resumeService.getAllResumes(user)
+        );
     }
 
     @GetMapping("/{id}")
@@ -65,12 +58,7 @@ public class ResumeController {
             @AuthenticationPrincipal User user) {
         log.info("Delete resume {} request from user: {}", id, user.getId());
         resumeService.deleteResume(id, user);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .success(true)
-                        .message("Resume deleted successfully")
-                        .build()
-        );
+        return ResponseEntity.ok(ControllerUtils.successResponse("Resume deleted successfully"));
     }
 
     @PostMapping("/{id}/analyze")
@@ -115,15 +103,8 @@ public class ResumeController {
         log.info("Optimize uploaded file request from user: {} - File: {}, Job desc length: {}, Template: {}",
                 user.getId(), file.getOriginalFilename(), jobDescription.length(), template);
 
-        try {
-            ResumeOptimizationDto optimization = resumeService.optimizeUploadedFile(file, jobDescription, template, user);
-            log.info("Successfully completed optimization for user: {}. Returning response with {} changes",
-                    user.getId(), optimization.getChanges().size());
-            return ResponseEntity.ok(optimization);
-        } catch (Exception e) {
-            log.error("Error during optimization for user: {}", user.getId(), e);
-            throw e;
-        }
+        ResumeOptimizationDto optimization = resumeService.optimizeUploadedFile(file, jobDescription, template, user);
+        return ResponseEntity.ok(optimization);
     }
 
     @PostMapping(value = "/build", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
