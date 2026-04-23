@@ -14,7 +14,7 @@ import { TopNavLayout, DashboardHomePage } from "@/features/dashboard";
 
 import {
   ResumeOptimizerPage,
-  ResumeBuilderPage,
+  ResumeBuilderPageV2,
   ResumesPage
 } from "@/features/resume";
 
@@ -78,7 +78,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <DashboardHomePage /> },
       { path: "resume-optimizer", element: <ResumeOptimizerPage /> },
-      { path: "resume-builder", element: <ResumeBuilderPage /> },
+      { path: "resume-builder", element: <ResumeBuilderPageV2 /> },
       { path: "resumes", element: <ResumesPage /> },
       { path: "cover-letter", element: <CoverLetterGeneratorPage /> },
       { path: "job-tracker", element: <JobTrackerPage /> },

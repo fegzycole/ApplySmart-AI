@@ -62,23 +62,6 @@ export const fetchResumeById = async (id: number): Promise<Resume> => {
 };
 
 /**
- * Create new resume
- */
-export const createResume = async (resumeData: {
-  name: string;
-  content?: string;
-}): Promise<Resume> => {
-  return apiClient.post<Resume, typeof resumeData>(ENDPOINTS.RESUMES, resumeData);
-};
-
-/**
- * Update resume
- */
-export const updateResume = async (id: number, updates: Partial<Resume>): Promise<Resume> => {
-  return apiClient.patch<Resume, Partial<Resume>>(ENDPOINTS.RESUME_BY_ID(id), updates);
-};
-
-/**
  * Delete resume
  */
 export const deleteResume = async (id: number): Promise<{ success: boolean; deletedId: number }> => {
@@ -144,4 +127,18 @@ export const uploadAndOptimizeResume = async (
     formData,
     180000 // 3 minutes timeout
   );
+};
+
+/**
+ * Upload built resume PDF
+ */
+export const uploadBuiltResume = async (
+  file: File | Blob,
+  name: string
+): Promise<Resume> => {
+  const formData = new FormData();
+  formData.append('file', file, 'resume.pdf');
+  formData.append('name', name);
+
+  return apiClient.post<Resume>('/resumes/build', formData);
 };

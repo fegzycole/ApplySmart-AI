@@ -61,50 +61,6 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @Transactional
-    public ResumeDto createResume(CreateResumeRequest request, User user) {
-        log.info("Creating resume for user: {}", user.getId());
-        Resume resume = Resume.builder()
-                .user(user)
-                .name(request.getName())
-                .content(request.getContent())
-                .score(0)
-                .status(Resume.Status.DRAFT)
-                .wordCount(TextUtils.calculateWordCount(request.getContent()))
-                .build();
-        resume = resumeRepository.save(resume);
-        log.info("Created resume with ID: {}", resume.getId());
-        return convertToDto(resume);
-    }
-
-    @Override
-    @Transactional
-    public ResumeDto updateResume(Long id, UpdateResumeRequest request, User user) {
-        log.info("Updating resume {} for user: {}", id, user.getId());
-        Resume resume = resumeRepository.findByIdAndUser(id, user)
-                .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
-
-        if (request.getName() != null) {
-            resume.setName(request.getName());
-        }
-        if (request.getContent() != null) {
-            resume.setContent(request.getContent());
-            resume.setWordCount(TextUtils.calculateWordCount(request.getContent()));
-        }
-        if (request.getStatus() != null) {
-            try {
-                resume.setStatus(Resume.Status.valueOf(request.getStatus().toUpperCase()));
-            } catch (IllegalArgumentException e) {
-                throw new BadRequestException("Invalid status: " + request.getStatus());
-            }
-        }
-
-        resume = resumeRepository.save(resume);
-        log.info("Updated resume with ID: {}", resume.getId());
-        return convertToDto(resume);
-    }
-
-    @Override
-    @Transactional
     public void deleteResume(Long id, User user) {
         log.info("Deleting resume {} for user: {}", id, user.getId());
         Resume resume = resumeRepository.findByIdAndUser(id, user)
@@ -286,6 +242,44 @@ public class ResumeServiceImpl implements ResumeService {
                 .content("")
                 .fileUrl(fileUrl)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public ResumeDto uploadBuiltResume(MultipartFile file, String name, User user) {
+        log.info("Uploading built resume for user: {} - Name: {}, File: {}",
+                user.getId(), name, file.getOriginalFilename());
+
+        if (file.isEmpty()) {
+            throw new BadRequestException("File is empty");
+        }
+
+        if (!file.getContentType().equals("application/pdf")) {
+            throw new BadRequestException("Only PDF files are allowed");
+        }
+
+        try {
+            // Upload PDF to storage
+            ai.applysmart.dto.FileUploadResult uploadResult = fileStorageService.uploadFile(file);
+            log.info("Uploaded PDF to storage: {}", uploadResult.getUrl());
+
+            // Create and save resume entity (minimal data)
+            Resume resume = Resume.builder()
+                    .user(user)
+                    .name(name)
+                    .fileUrl(uploadResult.getUrl())
+                    .cloudinaryPublicId(uploadResult.getPublicId())
+                    .status(Resume.Status.DRAFT)
+                    .build();
+
+            resume = resumeRepository.save(resume);
+            log.info("Created resume with ID: {}", resume.getId());
+
+            return convertToDto(resume);
+        } catch (Exception e) {
+            log.error("Error uploading built resume for user: {}", user.getId(), e);
+            throw new ai.applysmart.exception.FileProcessingException("Failed to upload resume", e);
+        }
     }
 
     private ResumeDto convertToDto(Resume resume) {

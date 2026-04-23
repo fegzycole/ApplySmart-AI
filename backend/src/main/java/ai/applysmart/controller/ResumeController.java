@@ -58,27 +58,6 @@ public class ResumeController {
         return ResponseEntity.ok(resume);
     }
 
-    @PostMapping
-    @Operation(summary = "Create new resume")
-    public ResponseEntity<ResumeDto> createResume(
-            @Valid @RequestBody CreateResumeRequest request,
-            @AuthenticationPrincipal User user) {
-        log.info("Create resume request from user: {}", user.getId());
-        ResumeDto resume = resumeService.createResume(request, user);
-        return ResponseEntity.status(HttpStatus.CREATED).body(resume);
-    }
-
-    @PatchMapping("/{id}")
-    @Operation(summary = "Update resume")
-    public ResponseEntity<ResumeDto> updateResume(
-            @PathVariable Long id,
-            @Valid @RequestBody UpdateResumeRequest request,
-            @AuthenticationPrincipal User user) {
-        log.info("Update resume {} request from user: {}", id, user.getId());
-        ResumeDto resume = resumeService.updateResume(id, request, user);
-        return ResponseEntity.ok(resume);
-    }
-
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete resume")
     public ResponseEntity<ApiResponse<Void>> deleteResume(
@@ -145,5 +124,17 @@ public class ResumeController {
             log.error("Error during optimization for user: {}", user.getId(), e);
             throw e;
         }
+    }
+
+    @PostMapping(value = "/build", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload built resume PDF")
+    public ResponseEntity<ResumeDto> buildResume(
+            @RequestPart("file") MultipartFile file,
+            @RequestPart("name") String name,
+            @AuthenticationPrincipal User user) {
+        log.info("Build resume request from user: {} - Name: {}, File: {}",
+                user.getId(), name, file.getOriginalFilename());
+        ResumeDto resume = resumeService.uploadBuiltResume(file, name, user);
+        return ResponseEntity.status(HttpStatus.CREATED).body(resume);
     }
 }
