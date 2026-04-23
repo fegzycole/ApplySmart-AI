@@ -5,8 +5,16 @@
   "installCommand": "npm install",
   "rewrites": [
     {
+      "source": "/api/v1/(.*)",
+      "destination": "https://api.applysmart-ai.org/api/v1/$1"
+    },
+    {
       "source": "/api/(.*)",
-      "destination": "https://api.applysmart-ai.org/api/$1"
+      "destination": "https://api.applysmart-ai.org/api/v1/$1"
+    },
+    {
+      "source": "/oauth2/(.*)",
+      "destination": "https://api.applysmart-ai.org/oauth2/$1"
     },
     {
       "source": "/(.*)",
