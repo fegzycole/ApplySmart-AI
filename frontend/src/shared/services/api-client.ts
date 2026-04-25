@@ -1,54 +1,20 @@
 import { API_ENDPOINTS } from '../constants/api-endpoints';
 import { tokenStorage } from '../utils/token-storage';
 
-const PRODUCTION_API_BASE_URL = 'https://api.applysmart-ai.org/api/v1';
-const PRODUCTION_FRONTEND_HOSTS = new Set([
-  'applysmart-ai.org',
-  'www.applysmart-ai.org',
-]);
-
 export const API_CONFIG = {
-  baseURL: normalizeApiBaseUrl(import.meta.env.VITE_API_BASE_URL),
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
   timeout: parseInt(import.meta.env.VITE_API_TIMEOUT || '30000', 10),
   headers: {
     'Content-Type': 'application/json',
   },
 };
 
-function normalizeApiBaseUrl(rawBaseUrl?: string): string {
-  const trimmedBaseUrl = rawBaseUrl?.trim();
-  if (!trimmedBaseUrl) {
-    return resolveDefaultApiBaseUrl();
-  }
-
-  const sanitizedBaseUrl = trimmedBaseUrl.replace(/\/+$/, '');
-
-  if (sanitizedBaseUrl.endsWith('/api/v1')) {
-    return sanitizedBaseUrl;
-  }
-
-  if (sanitizedBaseUrl.endsWith('/api')) {
-    return `${sanitizedBaseUrl}/v1`;
-  }
-
-  return `${sanitizedBaseUrl}/api/v1`;
-}
-
-function resolveDefaultApiBaseUrl(): string {
-  if (typeof window !== 'undefined' && PRODUCTION_FRONTEND_HOSTS.has(window.location.hostname)) {
-    return PRODUCTION_API_BASE_URL;
-  }
-
-  return '/api/v1';
-}
-
 export function resolveBackendUrl(path: string): string {
   if (/^https?:\/\//.test(path)) {
     return path;
   }
 
-  const apiRoot = API_CONFIG.baseURL.replace(/\/api\/v1\/?$/, '');
-  return `${apiRoot}${path}`;
+  return path;
 }
 
 export interface ApiResponse<T> {
