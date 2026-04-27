@@ -14,7 +14,8 @@ export function resolveBackendUrl(path: string): string {
     return path;
   }
 
-  return path;
+  const apiRoot = API_CONFIG.baseURL.replace(/\/api\/v1\/?$/, '');
+  return `${apiRoot}${path}`;
 }
 
 export interface ApiResponse<T> {
