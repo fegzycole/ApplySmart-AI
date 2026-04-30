@@ -16,8 +16,6 @@ export function OAuthCallbackPage() {
     const code = searchParams.get("code");
     const error = searchParams.get("error");
 
-    window.history.replaceState({}, document.title, window.location.pathname);
-
     if (error) {
       toast.error("OAuth sign-in failed");
       navigate(ROUTES.LOGIN, { replace: true });
