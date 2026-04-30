@@ -114,6 +114,7 @@ server:
     connection-timeout: 300000
   connection-timeout: 300000
   max-http-header-size: 16KB
+  forward-headers-strategy: native
 
 app:
   name: ApplySmart AI

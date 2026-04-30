@@ -11,7 +11,7 @@ export function ClassicPreview({ data }: { data: ResumeData }) {
     <div className="bg-white p-8 md:p-12 min-h-[11in] w-full" style={{ fontFamily: 'Times New Roman, serif' }}>
       <div className="text-center mb-6 pb-4 border-b-2 border-black">
         <h1 className="text-[26pt] font-bold mb-2">{personalInfo.name || "Your Name"}</h1>
-        <ContactDetails personalInfo={personalInfo} className="text-[10pt] space-x-2" />
+        <ContactDetails personalInfo={personalInfo} className="flex justify-center flex-wrap gap-x-3 text-[10pt]" />
       </div>
 
       {summary && (

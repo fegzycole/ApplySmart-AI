@@ -40,14 +40,17 @@
         }
 
         .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
             font-size: 10pt;
             color: #333;
-            line-height: 1.4;
         }
 
-        .contact-info span {
-            display: inline-block;
-            margin-right: 20px;
+        .contact-item {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
         }
 
         /* Section Styles */
@@ -249,13 +252,7 @@
     <div class="header">
         <h1>{{name}}</h1>
         <div class="contact-info">
-            <span>{{email}}</span>
-            <span>{{phone}}</span>
-            <span>{{location}}</span>
-            <br/>
-            <span>{{linkedin}}</span>
-            <span>{{github}}</span>
-            <span>{{website}}</span>
+            {{contact_info}}
         </div>
     </div>
 

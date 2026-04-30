@@ -20,7 +20,6 @@ export function ProfessionalPreview({ data }: ProfessionalPreviewProps) {
         <ContactDetails
           personalInfo={personalInfo}
           className="flex flex-wrap gap-x-3 text-[10pt] text-[#555]"
-          separator="|"
         />
       </div>
 

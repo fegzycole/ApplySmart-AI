@@ -1,90 +1,32 @@
 import type { ResumeData } from "../../../types/resume-builder.types";
-import {
-  ContactDetails,
-  PreviewSection,
-  ResponsibilitiesList,
-  SkillTags,
-} from "./PreviewPrimitives";
-import { formatDateRange, getResponsibilities } from "./preview-utils";
+import { SingleColumnPreview, type SingleColumnTheme } from "./SingleColumnPreview";
 
-export function CreativePreview({ data }: { data: ResumeData }) {
-  const { personalInfo, summary, workExperience, education, skills } = data;
+interface CreativePreviewProps {
+  data: ResumeData;
+}
 
-  return (
-    <div className="bg-white min-h-[11in] w-full" style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif' }}>
-      <div className="flex flex-col md:flex-row">
-        <aside className="w-full md:w-1/3 bg-gradient-to-b from-fuchsia-600 to-pink-600 p-6 md:p-8 text-white">
-          <div className="mb-8">
-            <h1 className="text-[24pt] font-bold mb-2">{personalInfo.name || "Your Name"}</h1>
-            <ContactDetails
-              personalInfo={personalInfo}
-              className="space-y-1"
-              itemClassName="text-[9pt]"
-              direction="stacked"
-            />
-          </div>
+const CREATIVE_THEME: SingleColumnTheme = {
+  fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+  headerClassName: "mb-6 pb-4 border-b-2 border-[#6366f1]",
+  nameClassName: "text-[28pt] font-black text-[#1e1e2e] mb-2 tracking-tight",
+  contactClassName: "flex flex-wrap gap-x-2 text-[10pt] text-[#555]",
+  sectionTitleClassName: "text-[13pt] font-extrabold text-[#6366f1] mb-3 uppercase tracking-wide border-b-2 border-[#e5e7eb] pb-1",
+  summaryClassName: "text-[10.5pt] leading-relaxed text-[#374151]",
+  expContainerClassName: "mb-5",
+  expHeaderClassName: "flex justify-between items-start mb-1",
+  positionClassName: "text-[12pt] font-bold text-[#1e1e2e]",
+  companyClassName: "text-[10.5pt] text-[#6366f1] font-semibold",
+  dateClassName: "text-[10pt] text-[#6b7280]",
+  locationClassName: "text-[10pt] text-[#9ca3af]",
+  responsibilitiesClassName: "list-disc list-outside ml-5 space-y-0.5",
+  responsibilityItemClassName: "text-[10pt] text-[#374151] leading-relaxed",
+  eduContainerClassName: "mb-3 flex justify-between",
+  degreeClassName: "text-[11pt] font-bold text-[#1e1e2e]",
+  institutionClassName: "text-[10pt] text-[#4b5563]",
+  skillsClassName: "flex flex-wrap gap-2",
+  skillsItemClassName: "text-[9.5pt] px-3 py-1 rounded font-medium bg-[#eff6ff] text-[#1e40af] border border-[#bfdbfe]",
+};
 
-          {skills.length > 0 && (
-            <PreviewSection
-              title="SKILLS"
-              className="mb-6"
-              titleClassName="text-[12pt] font-bold mb-3 border-b-2 border-white/30 pb-2"
-            >
-              <SkillTags
-                skills={skills}
-                className="space-y-1.5"
-                itemClassName="block text-[9pt] px-2 py-1 bg-white/20 rounded"
-              />
-            </PreviewSection>
-          )}
-
-          {education.length > 0 && (
-            <PreviewSection
-              title="EDUCATION"
-              className="mb-6"
-              titleClassName="text-[12pt] font-bold mb-3 border-b-2 border-white/30 pb-2"
-            >
-              {education.map((item) => (
-                <div key={item.id} className="mb-3">
-                  <div className="font-bold text-[10pt]">{item.degree || "Degree"}</div>
-                  <div className="text-[9pt] opacity-90">{item.institution || "Institution"}</div>
-                  <div className="text-[8pt] opacity-75">{item.graduationDate || "Year"}</div>
-                </div>
-              ))}
-            </PreviewSection>
-          )}
-        </aside>
-
-        <main className="w-full md:w-2/3 p-8">
-          {summary && (
-            <PreviewSection title="PROFILE" className="mb-6" titleClassName="text-[14pt] font-bold text-fuchsia-600 mb-3">
-              <p className="text-[10pt] leading-relaxed text-gray-700">{summary}</p>
-            </PreviewSection>
-          )}
-
-          {workExperience.length > 0 && (
-            <PreviewSection title="EXPERIENCE" className="mb-6" titleClassName="text-[14pt] font-bold text-fuchsia-600 mb-3">
-              {workExperience.map((experience) => (
-                <div key={experience.id} className="mb-4">
-                  <h3 className="text-[11pt] font-bold text-gray-900">
-                    {experience.position || "Position"}
-                  </h3>
-                  <div className="text-[10pt] text-fuchsia-600 font-semibold mb-1">
-                    {experience.company || "Company"}
-                  </div>
-                  <div className="text-[9pt] text-gray-500 mb-2">
-                    {formatDateRange(experience.startDate, experience.endDate)}
-                  </div>
-                  <ResponsibilitiesList
-                    responsibilities={getResponsibilities(experience)}
-                    className="list-disc ml-4 text-[9.5pt] text-gray-700 space-y-0.5"
-                  />
-                </div>
-              ))}
-            </PreviewSection>
-          )}
-        </main>
-      </div>
-    </div>
-  );
+export function CreativePreview({ data }: CreativePreviewProps) {
+  return <SingleColumnPreview data={data} theme={CREATIVE_THEME} />;
 }
