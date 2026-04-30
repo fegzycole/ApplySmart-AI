@@ -1,38 +1,39 @@
 import type { ReactNode } from "react";
+import { Mail, Phone, MapPin, Linkedin, Github, Globe, type LucideIcon } from "lucide-react";
 import type { PersonalInfo } from "../../../types/resume-builder.types";
-import { getContactItems } from "./preview-utils";
+import { getContactEntries, type ContactField } from "./preview-utils";
+
+const CONTACT_ICONS: Record<ContactField, LucideIcon> = {
+  email: Mail,
+  phone: Phone,
+  location: MapPin,
+  linkedin: Linkedin,
+  github: Github,
+  website: Globe,
+};
 
 interface ContactDetailsProps {
   personalInfo: PersonalInfo;
   className: string;
   itemClassName?: string;
-  separator?: string;
-  direction?: "inline" | "stacked";
 }
 
-export function ContactDetails({
-  personalInfo,
-  className,
-  itemClassName,
-  separator = "•",
-  direction = "inline",
-}: ContactDetailsProps) {
-  const items = getContactItems(personalInfo);
+export function ContactDetails({ personalInfo, className, itemClassName }: ContactDetailsProps) {
+  const entries = getContactEntries(personalInfo);
 
-  if (items.length === 0) {
+  if (entries.length === 0) {
     return null;
   }
 
   return (
     <div className={className}>
-      {items.map((item, index) => {
-        const content = direction === "inline" && index > 0 ? `${separator} ${item}` : item;
-        const Item = direction === "inline" ? "span" : "p";
-
+      {entries.map(({ field, value }) => {
+        const Icon = CONTACT_ICONS[field];
         return (
-          <Item key={item} className={itemClassName}>
-            {content}
-          </Item>
+          <span key={field} className={`${itemClassName ?? ""} inline-flex items-center gap-[0.3em] whitespace-nowrap`.trim()}>
+            <Icon size={11} strokeWidth={1.75} />
+            {value}
+          </span>
         );
       })}
     </div>

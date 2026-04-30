@@ -5,15 +5,23 @@ import type {
   WorkExperience,
 } from "../../../types/resume-builder.types";
 
-export function getContactItems(personalInfo: PersonalInfo) {
-  return [
-    personalInfo.email,
-    personalInfo.phone,
-    personalInfo.location,
-    personalInfo.linkedin,
-    personalInfo.github,
-    personalInfo.website,
-  ].filter(Boolean);
+export type ContactField = "email" | "phone" | "location" | "linkedin" | "github" | "website";
+
+export interface ContactEntry {
+  field: ContactField;
+  value: string;
+}
+
+export function getContactEntries(personalInfo: PersonalInfo): ContactEntry[] {
+  const fields: ContactEntry[] = [
+    { field: "email", value: personalInfo.email },
+    { field: "phone", value: personalInfo.phone },
+    { field: "location", value: personalInfo.location },
+    { field: "linkedin", value: personalInfo.linkedin },
+    { field: "github", value: personalInfo.github },
+    { field: "website", value: personalInfo.website },
+  ];
+  return fields.filter(({ value }) => Boolean(value));
 }
 
 export function formatDateRange(startDate: string, endDate: string, fallback = "") {

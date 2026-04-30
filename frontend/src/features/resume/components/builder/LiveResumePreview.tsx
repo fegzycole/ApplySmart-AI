@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useResumeBuilder } from "../../contexts/ResumeBuilderContext";
 import { ModernPreview } from "./previews/ModernPreview";
 import { ProfessionalPreview } from "./previews/ProfessionalPreview";
@@ -9,6 +9,8 @@ import { uploadBuiltResume } from "../../services/resume.service";
 import { toast } from "sonner";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+
+const PREVIEW_WIDTH = 816;
 
 async function generatePDF(): Promise<Blob> {
   const el = document.getElementById("resume-preview");
@@ -29,6 +31,29 @@ export function LiveResumePreview() {
   const { resumeData } = useResumeBuilder();
   const [saving, setSaving] = useState(false);
   const [downloading, setDownloading] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(1);
+  const [scaledHeight, setScaledHeight] = useState(0);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    const content = contentRef.current;
+    if (!container || !content) return;
+
+    const update = () => {
+      const newScale = Math.min(1, container.clientWidth / PREVIEW_WIDTH);
+      setScale(newScale);
+      setScaledHeight(content.scrollHeight * newScale);
+    };
+
+    const ro = new ResizeObserver(update);
+    ro.observe(container);
+    ro.observe(content);
+    update();
+    return () => ro.disconnect();
+  }, [resumeData.template]);
 
   const handleSave = async () => {
     if (!resumeData.personalInfo.name) {
@@ -86,9 +111,33 @@ export function LiveResumePreview() {
         className="bg-zinc-100 dark:bg-zinc-800 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-700 p-4"
         style={{ height: "calc(100vh - 180px)" }}
       >
-        <div className="w-full h-full overflow-auto bg-white rounded-xl shadow-inner flex items-start justify-center p-4">
-          <div id="resume-preview" className="w-full max-w-[8.5in]">
-            {renderPreview()}
+        <div
+          ref={containerRef}
+          className="w-full h-full overflow-auto rounded-xl bg-zinc-200 dark:bg-zinc-900"
+        >
+          <div
+            style={{
+              width: `${PREVIEW_WIDTH * scale}px`,
+              height: scaledHeight > 0 ? `${scaledHeight}px` : "auto",
+              margin: "0 auto",
+              position: "relative",
+            }}
+          >
+            <div
+              ref={contentRef}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: `${PREVIEW_WIDTH}px`,
+                transformOrigin: "top left",
+                transform: `scale(${scale})`,
+              }}
+            >
+              <div id="resume-preview" className="shadow-lg">
+                {renderPreview()}
+              </div>
+            </div>
           </div>
         </div>
       </div>
