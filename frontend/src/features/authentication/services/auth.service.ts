@@ -47,9 +47,11 @@ export const signup = async (data: SignupData): Promise<SignupResponse> => {
 };
 
 export const logout = async (): Promise<void> => {
-  await apiClient.post<void>(ENDPOINTS.LOGOUT);
-
-  apiClient.clearAuthToken();
+  try {
+    await apiClient.post<void>(ENDPOINTS.LOGOUT);
+  } finally {
+    apiClient.clearAuthToken();
+  }
 };
 
 export const resetPassword = async (data: PasswordResetRequest): Promise<void> => {

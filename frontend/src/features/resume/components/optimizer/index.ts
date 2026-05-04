@@ -8,6 +8,5 @@ export { ScoreHeader } from "./ScoreHeader";
 export { StrengthsCard } from "./StrengthsCard";
 export { ImprovementsCard } from "./ImprovementsCard";
 export { KeywordAnalysisCard } from "./KeywordAnalysisCard";
-export { ActionButtons } from "./ActionButtons";
 export { OptimizationUploadView } from "./OptimizationUploadView";
 export { OptimizationResultView } from "./OptimizationResultView";

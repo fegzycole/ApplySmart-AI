@@ -7,8 +7,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Component
 public class ResumeFileValidator {
 
-    private static final String PDF_CONTENT_TYPE = "application/pdf";
-
     public String requireUploadableFile(MultipartFile file) {
         requireNonEmptyFile(file);
 
@@ -27,10 +25,13 @@ public class ResumeFileValidator {
         }
     }
 
-    public void requireBuiltResumePdf(MultipartFile file) {
-        requireNonEmptyFile(file);
-        if (!PDF_CONTENT_TYPE.equals(file.getContentType())) {
-            throw new BadRequestException("Only PDF files are allowed");
+    public void requireBuiltResumePdf(byte[] fileBytes, String name) {
+        if (fileBytes == null || fileBytes.length == 0) {
+            throw new BadRequestException("File is empty");
+        }
+
+        if (name == null || name.isBlank()) {
+            throw new BadRequestException("Resume name is required");
         }
     }
 

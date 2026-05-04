@@ -24,7 +24,6 @@
             padding: 0.3in 0.3in;
         }
 
-        /* Header Section */
         .header {
             margin-bottom: 20px;
             padding-bottom: 12px;
@@ -42,18 +41,21 @@
         .contact-info {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 15px;
             font-size: 10pt;
             color: #555;
         }
 
-        .contact-item {
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
+        .contact-info span {
+            display: inline-block;
         }
 
-        /* Section Styles */
+        .contact-info span:not(:last-child)::after {
+            content: "•";
+            margin-left: 15px;
+            color: #6366f1;
+        }
+
         .section {
             margin-bottom: 18px;
         }
@@ -73,7 +75,6 @@
             border-bottom: 2px solid #e5e7eb;
         }
 
-        /* Summary */
         .summary {
             font-size: 10.5pt;
             line-height: 1.6;
@@ -81,7 +82,6 @@
             text-align: justify;
         }
 
-        /* Work Experience */
         .experience-item {
             margin-bottom: 16px;
             page-break-inside: avoid;
@@ -134,7 +134,6 @@
             color: #444;
         }
 
-        /* Education */
         .education-item {
             margin-bottom: 14px;
             page-break-inside: avoid;
@@ -169,7 +168,6 @@
             margin-top: 3px;
         }
 
-        /* Skills */
         .skills-container {
             display: flex;
             flex-wrap: wrap;
@@ -187,7 +185,6 @@
             font-weight: 500;
         }
 
-        /* Certifications */
         .certification-item {
             margin-bottom: 6px;
             font-size: 10.5pt;
@@ -199,7 +196,6 @@
             font-weight: 700;
         }
 
-        /* Projects */
         .project-item {
             margin-bottom: 14px;
             page-break-inside: avoid;
@@ -235,7 +231,6 @@
             color: #6366f1;
         }
 
-        /* Print Optimization */
         @media print {
             body {
                 -webkit-print-color-adjust: exact;
@@ -246,33 +241,33 @@
 </head>
 <body>
 <div class="container">
-    <!-- Header -->
     <div class="header">
         <h1>{{name}}</h1>
         <div class="contact-info">
-            {{contact_info}}
+            <span>{{email}}</span>
+            <span>{{phone}}</span>
+            <span>{{location}}</span>
+            <span>{{linkedin}}</span>
+            <span>{{github}}</span>
+            <span>{{website}}</span>
         </div>
     </div>
 
-    <!-- Summary -->
     <div class="section">
         <h2 class="section-title">Professional Summary</h2>
         <p class="summary">{{summary}}</p>
     </div>
 
-    <!-- Work Experience -->
     <div class="section">
         <h2 class="section-title">Work Experience</h2>
         {{work_experience}}
     </div>
 
-    <!-- Education -->
     <div class="section">
         <h2 class="section-title">Education</h2>
         {{education}}
     </div>
 
-    <!-- Skills -->
     <div class="section">
         <h2 class="section-title">Skills</h2>
         <div class="skills-container">

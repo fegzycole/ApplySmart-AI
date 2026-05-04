@@ -18,7 +18,7 @@ interface OptimizationResultProps {
 
 export function OptimizationResultView({ result, onStartOver }: OptimizationResultProps) {
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="min-w-0 max-w-6xl mx-auto space-y-6 sm:space-y-8">
       <ResultHeader />
 
       <ScoreComparison
@@ -26,7 +26,7 @@ export function OptimizationResultView({ result, onStartOver }: OptimizationResu
         optimizedScore={result.optimizedScore}
       />
 
-      <div className="grid lg:grid-cols-5 gap-6">
+      <div className="grid min-w-0 gap-6 lg:grid-cols-5">
         <ChangesList changes={result.changes} />
         <PdfPreview fileUrl={result.fileUrl} />
       </div>
@@ -35,13 +35,13 @@ export function OptimizationResultView({ result, onStartOver }: OptimizationResu
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="flex justify-center pt-8"
+        className="flex justify-center pt-4 sm:pt-8"
       >
         <Button
           onClick={onStartOver}
           variant="outline"
           size="lg"
-          className="h-11 px-6 rounded-xl"
+          className="h-11 w-full sm:w-auto px-6 rounded-xl"
         >
           <ArrowLeft className="size-4 mr-2" />
           Optimize Another Resume

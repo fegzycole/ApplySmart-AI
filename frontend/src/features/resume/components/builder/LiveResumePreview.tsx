@@ -1,41 +1,61 @@
 import { useState, useRef, useEffect } from "react";
+import { toast } from "sonner";
 import { useResumeBuilder } from "../../contexts/ResumeBuilderContext";
+import type { ResumeData } from "../../types/resume-builder.types";
+import {
+  buildResumeFromData,
+  renderResumePdf,
+} from "../../services/resume.service";
+import { buildResumePdfPayload, buildResumePayload } from "../../utils/resume-builder-payload";
+import { triggerBrowserDownload } from "../../utils/resume-download";
 import { ModernPreview } from "./previews/ModernPreview";
 import { ProfessionalPreview } from "./previews/ProfessionalPreview";
 import { ClassicPreview } from "./previews/ClassicPreview";
 import { CreativePreview } from "./previews/CreativePreview";
 import { PreviewHeader } from "./PreviewHeader";
-import { uploadBuiltResume } from "../../services/resume.service";
-import { toast } from "sonner";
-import html2canvas from "html2canvas";
-import jsPDF from "jspdf";
 
 const PREVIEW_WIDTH = 816;
 
-async function generatePDF(): Promise<Blob> {
-  const el = document.getElementById("resume-preview");
-  if (!el) throw new Error("Preview element not found");
+function getValidationError(data: ResumeData): string | null {
+  if (!data.personalInfo.name.trim()) return "Please enter your full name.";
+  if (!data.personalInfo.email.trim()) return "Please enter your email address.";
 
-  const canvas = await html2canvas(el, { scale: 2, useCORS: true, logging: false });
-  const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+  for (const exp of data.workExperience) {
+    if (!exp.company.trim()) return "One of your work experience entries is missing a company name.";
+    if (!exp.position.trim()) return "One of your work experience entries is missing a job title.";
+  }
 
-  const w = pdf.internal.pageSize.getWidth();
-  const h = pdf.internal.pageSize.getHeight();
-  const ratio = Math.min(w / canvas.width, h / canvas.height);
+  for (const edu of data.education) {
+    if (!edu.institution.trim()) return "One of your education entries is missing an institution name.";
+    if (!edu.degree.trim()) return "One of your education entries is missing a degree.";
+  }
 
-  pdf.addImage(canvas.toDataURL("image/png"), "PNG", (w - canvas.width * ratio) / 2, 0, canvas.width * ratio, canvas.height * ratio);
-  return pdf.output("blob");
+  if (data.workExperience.length === 0) return "Please add at least one work experience entry.";
+  if (data.education.length === 0) return "Please add at least one education entry.";
+  if (data.skills.length === 0) return "Please add at least one skill.";
+
+  return null;
+}
+
+function renderPreviewComponent(data: ResumeData) {
+  switch (data.template) {
+    case "PROFESSIONAL": return <ProfessionalPreview data={data} />;
+    case "CLASSIC":      return <ClassicPreview data={data} />;
+    case "CREATIVE":     return <CreativePreview data={data} />;
+    default:             return <ModernPreview data={data} />;
+  }
 }
 
 export function LiveResumePreview() {
-  const { resumeData } = useResumeBuilder();
-  const [saving, setSaving] = useState(false);
+  const { resumeData, resetResumeData } = useResumeBuilder();
   const [downloading, setDownloading] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
   const [scaledHeight, setScaledHeight] = useState(0);
+
+  const isValid = getValidationError(resumeData) === null;
 
   useEffect(() => {
     const container = containerRef.current;
@@ -55,65 +75,38 @@ export function LiveResumePreview() {
     return () => ro.disconnect();
   }, [resumeData.template]);
 
-  const handleSave = async () => {
-    if (!resumeData.personalInfo.name) {
-      toast.error("Please enter your name before saving");
-      return;
-    }
-    setSaving(true);
-    try {
-      const name = `${resumeData.personalInfo.name.replace(/\s+/g, "_")}_Resume`;
-      await uploadBuiltResume(await generatePDF(), name);
-      toast.success("Resume saved successfully!");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to save resume");
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const handleDownload = async () => {
     setDownloading(true);
     try {
-      const url = URL.createObjectURL(await generatePDF());
-      const link = Object.assign(document.createElement("a"), {
-        href: url,
-        download: resumeData.personalInfo.name
-          ? `${resumeData.personalInfo.name.replace(/\s+/g, "_")}_Resume.pdf`
-          : "Resume.pdf",
-      });
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      toast.success("Resume downloaded successfully!");
-    } catch {
-      toast.error("Failed to download resume");
+      const name = resumeData.personalInfo.name.replace(/\s+/g, "_") + "_Resume";
+      await buildResumeFromData(buildResumePayload(resumeData, name));
+      const blob = await renderResumePdf(buildResumePdfPayload(resumeData, name));
+      triggerBrowserDownload(blob, `${name}.pdf`);
+      resetResumeData();
+      toast.success("Resume saved and downloaded!");
+    } catch (error) {
+      console.error("Download failed:", error);
+      toast.error("Failed to download resume. Please try again.");
     } finally {
       setDownloading(false);
     }
   };
 
-  const renderPreview = () => {
-    switch (resumeData.template) {
-      case "PROFESSIONAL": return <ProfessionalPreview data={resumeData} />;
-      case "CLASSIC":      return <ClassicPreview data={resumeData} />;
-      case "CREATIVE":     return <CreativePreview data={resumeData} />;
-      default:             return <ModernPreview data={resumeData} />;
-    }
-  };
-
   return (
-    <div className="sticky top-6 space-y-4">
-      <PreviewHeader onSave={handleSave} onDownload={handleDownload} saving={saving} downloading={downloading} />
+    <div className="min-w-0 space-y-4 xl:sticky xl:top-6">
+      <PreviewHeader
+        onDownload={handleDownload}
+        downloading={downloading}
+        disabled={!isValid}
+      />
       <div
         key={resumeData.template}
-        className="bg-zinc-100 dark:bg-zinc-800 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-700 p-4"
-        style={{ height: "calc(100vh - 180px)" }}
+        className="min-w-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-700 p-2 sm:p-4"
+        style={{ height: "clamp(24rem, 72vh, calc(100vh - 180px))" }}
       >
         <div
           ref={containerRef}
-          className="w-full h-full overflow-auto rounded-xl bg-zinc-200 dark:bg-zinc-900"
+          className="min-w-0 w-full h-full overflow-x-hidden overflow-y-auto rounded-xl bg-zinc-200 dark:bg-zinc-900"
         >
           <div
             style={{
@@ -134,8 +127,8 @@ export function LiveResumePreview() {
                 transform: `scale(${scale})`,
               }}
             >
-              <div id="resume-preview" className="shadow-lg">
-                {renderPreview()}
+              <div className="shadow-lg">
+                {renderPreviewComponent(resumeData)}
               </div>
             </div>
           </div>

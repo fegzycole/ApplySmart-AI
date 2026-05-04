@@ -1,11 +1,17 @@
-import { useState } from "react";
-import { DEFAULT_RESUME_DATA } from "../constants/resume-builder.defaults";
+import { useEffect, useState } from "react";
+import { createDefaultResumeData } from "../constants/resume-builder.defaults";
 import {
   createCertification,
   createEducation,
   createProject,
   createWorkExperience,
 } from "../utils/resume-builder-items";
+import { dedupeSkills } from "../utils/resume-builder-skills";
+import {
+  clearResumeBuilderData,
+  loadResumeBuilderData,
+  saveResumeBuilderData,
+} from "../utils/resume-builder-storage";
 import type {
   Certification,
   Education,
@@ -18,7 +24,11 @@ import type {
 } from "../types/resume-builder.types";
 
 export function useResumeBuilderState(): ResumeBuilderContextValue {
-  const [resumeData, setResumeData] = useState<ResumeData>(DEFAULT_RESUME_DATA);
+  const [resumeData, setResumeData] = useState<ResumeData>(() => loadResumeBuilderData());
+
+  useEffect(() => {
+    saveResumeBuilderData(resumeData);
+  }, [resumeData]);
 
   const updatePersonalInfo = (info: Partial<PersonalInfo>) => {
     setResumeData((prev) => ({
@@ -29,6 +39,11 @@ export function useResumeBuilderState(): ResumeBuilderContextValue {
 
   const updateSummary = (summary: string) => {
     setResumeData((prev) => ({ ...prev, summary }));
+  };
+
+  const resetResumeData = () => {
+    clearResumeBuilderData();
+    setResumeData(createDefaultResumeData());
   };
 
   const updateTemplate = (template: ResumeTemplate) => {
@@ -82,7 +97,7 @@ export function useResumeBuilderState(): ResumeBuilderContextValue {
   };
 
   const updateSkills = (skills: string[]) => {
-    setResumeData((prev) => ({ ...prev, skills }));
+    setResumeData((prev) => ({ ...prev, skills: dedupeSkills(skills) }));
   };
 
   const addProject = () => {
@@ -133,6 +148,7 @@ export function useResumeBuilderState(): ResumeBuilderContextValue {
 
   return {
     resumeData,
+    resetResumeData,
     updatePersonalInfo,
     updateSummary,
     updateTemplate,

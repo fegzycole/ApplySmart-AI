@@ -16,13 +16,13 @@ const templates: { value: ResumeTemplate; label: string; desc: string }[] = [
 
 export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) {
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 min-[520px]:grid-cols-2 gap-4">
       {templates.map((t) => (
         <button
           key={t.value}
           onClick={() => onSelect(t.value)}
           className={cn(
-            "relative p-3 rounded-2xl border-2 transition-all text-left group",
+            "relative min-w-0 p-3 rounded-2xl border-2 transition-all text-left group",
             selected === t.value
               ? "border-violet-500 bg-violet-50 dark:bg-violet-950/30 shadow-lg shadow-violet-500/20"
               : "border-zinc-200 dark:border-zinc-800 hover:border-violet-300 dark:hover:border-violet-700"

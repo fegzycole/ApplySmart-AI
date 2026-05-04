@@ -4,8 +4,13 @@ import { Label } from "@/shared/components/ui/label";
 import { useResumeBuilder } from "../../contexts/ResumeBuilderContext";
 import { SectionHeader } from "./SectionHeader";
 
+const MAX_CHARS = 5000;
+
 export function SummarySection() {
   const { resumeData, updateSummary } = useResumeBuilder();
+
+  const charCount = resumeData.summary.length;
+  const atLimit = charCount >= MAX_CHARS;
 
   return (
     <div className="space-y-4">
@@ -20,9 +25,11 @@ export function SummarySection() {
           value={resumeData.summary}
           onChange={(e) => updateSummary(e.target.value)}
           className="min-h-[120px] rounded-xl border-zinc-200 dark:border-zinc-800 focus:border-violet-500 focus:ring-violet-500/20 resize-none transition-all"
-          maxLength={500}
+          maxLength={MAX_CHARS}
         />
-        <p className="flex justify-end text-xs text-zinc-500">{resumeData.summary.length} / 500</p>
+        <p className={`flex justify-end text-xs ${atLimit ? "text-red-500" : "text-zinc-500"}`}>
+          {charCount} / {MAX_CHARS}
+        </p>
       </div>
     </div>
   );

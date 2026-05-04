@@ -23,6 +23,7 @@ public final class PromptConstants {
         - Use regular hyphens (-) for date ranges: "2020 - 2023" NOT "2020 — 2023"
         - Use commas or periods for sentence breaks, NEVER em dashes
         - Use simple, clean punctuation only: periods, commas, hyphens, colons
+        - Skills array: each item must be a clean string with NO trailing periods, dots, or stray punctuation (e.g. "Technical Documentation" not "Technical Documentation .")
         """;
 
     public static final String JSON_OUTPUT_REQUIREMENT = """

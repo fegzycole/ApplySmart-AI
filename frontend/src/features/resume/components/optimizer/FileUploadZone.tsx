@@ -35,7 +35,7 @@ export function FileUploadZone({
       onDrop={onDrop}
       onClick={() => fileInputRef.current?.click()}
       className={cn(
-        "relative border-2 border-dashed rounded-2xl p-16 text-center cursor-pointer transition-all",
+        "relative min-w-0 border-2 border-dashed rounded-2xl px-4 py-10 sm:px-8 sm:py-14 lg:p-16 text-center cursor-pointer transition-all",
         dragActive
           ? "border-violet-500 bg-violet-50 dark:bg-violet-950/30"
           : "border-zinc-200 dark:border-zinc-800 hover:border-violet-300 dark:hover:border-violet-700"
@@ -48,11 +48,11 @@ export function FileUploadZone({
         accept=".pdf,.docx"
         onChange={handleFileChange}
       />
-      <Upload className="size-16 text-zinc-300 dark:text-zinc-700 mx-auto mb-4" />
-      <p className="text-lg font-medium text-zinc-900 dark:text-white mb-1">
+      <Upload className="size-12 sm:size-16 text-zinc-300 dark:text-zinc-700 mx-auto mb-4" />
+      <p className="text-sm sm:text-lg font-medium text-zinc-900 dark:text-white mb-1">
         Drop your resume here
       </p>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 break-words">
         or click to browse • PDF or DOCX • Max 10MB
       </p>
     </div>

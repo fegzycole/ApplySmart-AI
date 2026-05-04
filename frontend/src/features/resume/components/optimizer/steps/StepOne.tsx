@@ -6,11 +6,12 @@ import { FileCard } from "../FileCard";
 
 interface StepOneProps {
   file: File | null;
+  savedFileName: string | null;
   onFileSelect: (file: File) => void;
   onFileRemove: () => void;
 }
 
-export function StepOne({ file, onFileSelect, onFileRemove }: StepOneProps) {
+export function StepOne({ file, savedFileName, onFileSelect, onFileRemove }: StepOneProps) {
   const [dragActive, setDragActive] = useState(false);
 
   const handleDragEnter = (e: React.DragEvent) => {
@@ -58,6 +59,12 @@ export function StepOne({ file, onFileSelect, onFileRemove }: StepOneProps) {
         title="Upload Your Resume"
         description="Start by uploading your current resume in PDF or DOCX format"
       />
+
+      {!file && savedFileName && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">
+          Draft restored. Re-upload <span className="font-medium">{savedFileName}</span> to continue with your saved job description and template.
+        </div>
+      )}
 
       {!file ? (
         <FileUploadZone

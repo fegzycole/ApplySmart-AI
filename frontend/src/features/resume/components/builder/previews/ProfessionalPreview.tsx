@@ -1,6 +1,6 @@
 import type { ResumeData } from "../../../types/resume-builder.types";
-import { ContactDetails, PreviewSection, ResponsibilitiesList } from "./PreviewPrimitives";
-import { formatDateRange, getEducationTitle, getResponsibilities } from "./preview-utils";
+import { ContactDetails, PreviewSection, ResponsibilitiesList, SummaryText } from "./PreviewPrimitives";
+import { formatDateRange, formatEducationDate, getEducationTitle, getResponsibilities } from "./preview-utils";
 
 interface ProfessionalPreviewProps {
   data: ResumeData;
@@ -25,7 +25,7 @@ export function ProfessionalPreview({ data }: ProfessionalPreviewProps) {
 
       {summary && (
         <PreviewSection title="Professional Summary" className="mb-5" titleClassName={sectionTitleClassName}>
-          <p className="text-[10.5pt] leading-relaxed text-[#555]">{summary}</p>
+          <SummaryText summary={summary} className="text-[10.5pt] leading-relaxed text-[#555]" />
         </PreviewSection>
       )}
 
@@ -34,11 +34,16 @@ export function ProfessionalPreview({ data }: ProfessionalPreviewProps) {
           {workExperience.map((experience) => (
             <div key={experience.id} className="mb-4">
               <div className="flex justify-between items-start mb-1">
-                <h3 className="text-[11.5pt] font-bold text-[#2c3e50]">
-                  {experience.position || "Position"} - {experience.company || "Company"}
-                </h3>
+                <div>
+                  <h3 className="text-[11.5pt] font-bold text-[#2c3e50]">
+                    {experience.position || "Position"} - {experience.company || "Company"}
+                  </h3>
+                  {experience.location && (
+                    <div className="text-[10pt] text-[#666] italic">{experience.location}</div>
+                  )}
+                </div>
                 <span className="text-[10pt] text-[#666]">
-                  {formatDateRange(experience.startDate, experience.endDate, "Date")}
+                  {formatDateRange(experience.startDate, experience.endDate, "Date", experience.current)}
                 </span>
               </div>
               <ResponsibilitiesList
@@ -59,7 +64,7 @@ export function ProfessionalPreview({ data }: ProfessionalPreviewProps) {
                 <span className="text-[11pt] font-semibold text-[#2c3e50]">
                   {getEducationTitle(item, "dash")}
                 </span>
-                <span className="text-[10pt] text-[#666]">{item.graduationDate || "Year"}</span>
+                <span className="text-[10pt] text-[#666]">{formatEducationDate(item)}</span>
               </div>
             </div>
           ))}

@@ -5,13 +5,16 @@ import {
   type ResumeOptimization,
 } from "../services/resume.service";
 import type { ResumeTemplate } from "../types/resume-builder.types";
-
-type OptimizerView = "upload" | "result";
+import type { OptimizerView } from "../types/resume-optimizer.types";
+import {
+  clearResumeOptimizerState,
+  loadResumeOptimizerState,
+  saveResumeOptimizerResult,
+} from "../utils/resume-optimizer-storage";
 
 export function useResumeOptimizer() {
-  const [view, setView] = useState<OptimizerView>("upload");
+  const [result, setResult] = useState<ResumeOptimization | null>(() => loadResumeOptimizerState().result);
   const [optimizing, setOptimizing] = useState(false);
-  const [result, setResult] = useState<ResumeOptimization | null>(null);
 
   const optimize = async (
     file: File,
@@ -23,7 +26,7 @@ export function useResumeOptimizer() {
     try {
       const optimizationResult = await uploadAndOptimizeResume(file, jobDescription, template);
       setResult(optimizationResult);
-      setView("result");
+      saveResumeOptimizerResult(optimizationResult);
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Failed to optimize resume. Please try again.",
@@ -34,9 +37,11 @@ export function useResumeOptimizer() {
   };
 
   const startOver = () => {
-    setView("upload");
     setResult(null);
+    clearResumeOptimizerState();
   };
+
+  const view: OptimizerView = result ? "result" : "upload";
 
   return {
     optimize,

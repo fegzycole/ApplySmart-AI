@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -107,15 +108,39 @@ public class ResumeController {
         return ResponseEntity.ok(optimization);
     }
 
-    @PostMapping(value = "/build", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation(summary = "Upload built resume PDF")
-    public ResponseEntity<ResumeDto> buildResume(
-            @RequestPart("file") MultipartFile file,
-            @RequestPart("name") String name,
+    @PostMapping("/build/from-data")
+    @Operation(summary = "Generate and save a built resume from structured data")
+    public ResponseEntity<ResumeDto> buildResumeFromData(
+            @Valid @RequestBody BuildResumeFromDataRequest request,
             @AuthenticationPrincipal User user) {
-        log.info("Build resume request from user: {} - Name: {}, File: {}",
-                user.getId(), name, file.getOriginalFilename());
-        ResumeDto resume = resumeService.uploadBuiltResume(file, name, user);
+        log.info("Build structured resume request from user: {} - Name: {}, Template: {}",
+                user.getId(), request.getName(), request.getTemplate());
+        ResumeDto resume = resumeService.buildResumeFromData(request, user);
         return ResponseEntity.status(HttpStatus.CREATED).body(resume);
+    }
+
+    @PostMapping(value = "/build/pdf", produces = MediaType.APPLICATION_PDF_VALUE)
+    @Operation(summary = "Generate a resume PDF from structured data without saving")
+    public ResponseEntity<byte[]> renderResumePdf(
+            @Valid @RequestBody RenderResumePdfRequest request,
+            @AuthenticationPrincipal User user) {
+        log.info("Render resume PDF request from user: {} - Template: {}",
+                user.getId(), request.getTemplate());
+
+        byte[] pdfBytes = resumeService.renderResumePdf(request, user);
+        String filename = buildPdfFilename(request.getName());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdfBytes);
+    }
+
+    private String buildPdfFilename(String name) {
+        if (name == null || name.isBlank()) {
+            return "resume.pdf";
+        }
+
+        return name.trim().replaceAll("\\s+", "_") + ".pdf";
     }
 }

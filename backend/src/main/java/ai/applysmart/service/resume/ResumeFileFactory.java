@@ -37,11 +37,15 @@ public class ResumeFileFactory {
                 .build();
     }
 
-    public Resume createBuiltResume(MultipartFile file, String name, User user) {
-        validator.requireBuiltResumePdf(file);
-        FileUploadResult uploadResult = fileStorageService.uploadFile(file);
-        log.info("Uploaded PDF to storage: {}", uploadResult.getUrl());
+    public Resume createBuiltResume(byte[] pdfBytes, String name, User user) {
+        validator.requireBuiltResumePdf(pdfBytes, name);
+        FileUploadResult uploadResult = fileStorageService.uploadFileBytes(pdfBytes, name + ".pdf");
+        log.info("Uploaded generated PDF to storage: {}", uploadResult.getUrl());
 
+        return buildResumeRecord(name, user, uploadResult);
+    }
+
+    private Resume buildResumeRecord(String name, User user, FileUploadResult uploadResult) {
         return Resume.builder()
                 .user(user)
                 .name(name)

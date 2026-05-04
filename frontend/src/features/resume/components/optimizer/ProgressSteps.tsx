@@ -12,11 +12,49 @@ const steps = [
 ];
 
 export function ProgressSteps({ currentStep }: ProgressStepsProps) {
+  const currentIndex = currentStep - 1;
+  const progressPercent = (currentStep / steps.length) * 100;
+
   return (
-    <div className="mb-12">
-      <div className="flex items-center justify-center max-w-2xl mx-auto">
+    <div className="mb-8 sm:mb-12">
+      <div className="sm:hidden rounded-2xl border border-violet-200 dark:border-violet-900/60 bg-white/90 dark:bg-zinc-900/90 p-4 shadow-sm">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-600 dark:text-violet-400">
+              Step {currentStep} of {steps.length}
+            </p>
+            <p className="mt-1 text-sm font-semibold text-zinc-900 dark:text-white">
+              {steps[currentIndex]?.label}
+            </p>
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            {steps.map((step) => (
+              <div
+                key={step.num}
+                className={cn(
+                  "size-2.5 rounded-full transition-colors",
+                  currentStep >= step.num
+                    ? "bg-gradient-to-r from-violet-600 to-fuchsia-600"
+                    : "bg-zinc-200 dark:bg-zinc-700"
+                )}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="mt-4 h-2 overflow-hidden rounded-full bg-zinc-200 dark:bg-zinc-800">
+          <motion.div
+            initial={false}
+            animate={{ width: `${progressPercent}%` }}
+            transition={{ duration: 0.25 }}
+            className="h-full rounded-full bg-gradient-to-r from-violet-600 to-fuchsia-600"
+          />
+        </div>
+      </div>
+
+      <div className="hidden sm:flex sm:items-center sm:justify-center max-w-2xl mx-auto">
         {steps.map((s, idx) => (
-          <div key={s.num} className="flex items-center">
+          <div key={s.num} className="flex items-center justify-center sm:justify-start">
             <div className="flex flex-col items-center">
               <motion.div
                 initial={false}
@@ -43,7 +81,7 @@ export function ProgressSteps({ currentStep }: ProgressStepsProps) {
               <motion.div
                 initial={false}
                 className={cn(
-                  "h-0.5 w-24 mx-4 transition-colors",
+                  "hidden sm:block h-0.5 w-16 lg:w-24 mx-3 lg:mx-4 transition-colors",
                   currentStep > s.num
                     ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600'
                     : 'bg-zinc-200 dark:bg-zinc-800'

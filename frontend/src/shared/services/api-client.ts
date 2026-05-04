@@ -145,6 +145,53 @@ export class ApiClient {
     return this.handleResponse<T>(response);
   }
 
+  async postBlob<D = unknown>(endpoint: string, data?: D, customTimeout?: number): Promise<Blob> {
+    const response = await this.fetchWithTimeout(
+      `${this.baseURL}${endpoint}`,
+      {
+        method: 'POST',
+        headers: this.headers,
+        body: data ? JSON.stringify(data) : undefined,
+      },
+      customTimeout
+    );
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+
+      throw new ApiError(
+        error.message || `HTTP Error ${response.status}`,
+        response.status,
+        error
+      );
+    }
+
+    return response.blob();
+  }
+
+  async getBlobByUrl(pathOrUrl: string, customTimeout?: number): Promise<Blob> {
+    const response = await this.fetchWithTimeout(
+      resolveBackendUrl(pathOrUrl),
+      {
+        method: 'GET',
+        headers: this.headers,
+      },
+      customTimeout
+    );
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+
+      throw new ApiError(
+        error.message || `HTTP Error ${response.status}`,
+        response.status,
+        error
+      );
+    }
+
+    return response.blob();
+  }
+
   async put<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
     const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
       method: 'PUT',

@@ -47,4 +47,12 @@ public final class ControllerUtils {
 
         return authorizationHeader.substring(BEARER_PREFIX.length());
     }
+
+    public static String extractBearerTokenOrNull(String authorizationHeader) {
+        if (authorizationHeader == null || !authorizationHeader.startsWith(BEARER_PREFIX)) {
+            return null;
+        }
+
+        return authorizationHeader.substring(BEARER_PREFIX.length());
+    }
 }

@@ -61,7 +61,7 @@ export function ScoreComparison({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="grid md:grid-cols-3 gap-6"
+      className="grid gap-4 sm:gap-6 md:grid-cols-3"
     >
       <ScoreCard
         label="Before"

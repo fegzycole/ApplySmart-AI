@@ -21,12 +21,12 @@ export function StepNavigation({
   showBack = true,
 }: StepNavigationProps) {
   return (
-    <div className="flex gap-3 pt-4">
+    <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row">
       {showBack && onBack && (
         <Button
           onClick={onBack}
           variant="outline"
-          className="flex-1 h-12 rounded-xl"
+          className="h-12 w-full sm:flex-1 rounded-xl"
           disabled={isSubmitting}
         >
           Back
@@ -37,7 +37,7 @@ export function StepNavigation({
         <Button
           onClick={onNext}
           disabled={nextDisabled}
-          className="flex-1 h-12 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white"
+          className="h-12 w-full sm:flex-1 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white"
         >
           Continue
           <ArrowRight className="size-4 ml-2" />
@@ -48,7 +48,7 @@ export function StepNavigation({
         <Button
           onClick={onSubmit}
           disabled={submitDisabled || isSubmitting}
-          className="flex-1 h-12 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-semibold shadow-lg shadow-violet-500/50"
+          className="h-12 w-full sm:flex-1 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-semibold shadow-lg shadow-violet-500/50"
         >
           {isSubmitting ? (
             <>

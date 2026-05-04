@@ -6,6 +6,7 @@ import ai.applysmart.dto.resume.ResumeOptimizationDto;
 
 public interface ClaudeService {
     ResumeAnalysisDto analyzeResume(String resumeContent, String jobDescription);
+    ResumeAnalysisDto analyzeStructuredResume(ParsedResumeDto resumeData, String jobDescription);
     ResumeOptimizationDto optimizeResume(String resumeContent, String jobDescription);
     ParsedResumeDto optimizeStructuredResume(ParsedResumeDto resumeData, String jobDescription);
     String generateCoverLetter(String resumeContent, String jobDescription, String companyName,

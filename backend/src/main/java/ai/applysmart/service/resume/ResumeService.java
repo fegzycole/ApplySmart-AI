@@ -17,5 +17,6 @@ public interface ResumeService {
     ResumeOptimizationDto optimizeResume(Long id, OptimizeResumeRequest request, User user);
     ResumeDto uploadResumeFile(MultipartFile file, User user);
     ResumeOptimizationDto optimizeUploadedFile(MultipartFile file, String jobDescription, String template, User user);
-    ResumeDto uploadBuiltResume(MultipartFile file, String name, User user);
+    ResumeDto buildResumeFromData(BuildResumeFromDataRequest request, User user);
+    byte[] renderResumePdf(RenderResumePdfRequest request, User user);
 }

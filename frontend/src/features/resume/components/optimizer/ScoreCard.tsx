@@ -31,7 +31,7 @@ export function ScoreCard({
     >
       <div
         className={cn(
-          "text-sm font-medium uppercase tracking-wide flex items-center gap-2",
+          "text-xs sm:text-sm font-medium uppercase tracking-wide flex items-center gap-2",
           isHighlight
             ? "text-violet-700 dark:text-violet-400"
             : "text-zinc-500 dark:text-zinc-400"
@@ -43,7 +43,7 @@ export function ScoreCard({
       <div className="space-y-2">
         <div
           className={cn(
-            "text-5xl font-bold",
+            "text-4xl sm:text-5xl font-bold",
             isHighlight
               ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent"
               : "text-zinc-900 dark:text-white"
@@ -53,7 +53,7 @@ export function ScoreCard({
           {score}
         </div>
         {rating && (
-          <div className={cn("text-sm font-medium", rating.color)}>
+          <div className={cn("text-xs sm:text-sm font-medium", rating.color)}>
             {rating.label}
           </div>
         )}

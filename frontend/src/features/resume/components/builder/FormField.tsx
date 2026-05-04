@@ -14,11 +14,11 @@ interface FormFieldProps {
 
 export function FormField({ id, label, placeholder, value, onChange, type = "text", icon: Icon }: FormFieldProps) {
   return (
-    <div className="space-y-2">
+    <div className="min-w-0 space-y-2">
       <Label htmlFor={id} className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
         {label}
       </Label>
-      <div className={Icon ? "relative" : undefined}>
+      <div className={Icon ? "relative min-w-0" : "min-w-0"}>
         {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-zinc-400" />}
         <Input
           id={id}
@@ -26,7 +26,7 @@ export function FormField({ id, label, placeholder, value, onChange, type = "tex
           placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={Icon ? "h-11 rounded-xl pl-10" : "h-10 rounded-lg"}
+          className={Icon ? "h-11 min-w-0 rounded-xl pl-10" : "h-10 min-w-0 rounded-lg"}
         />
       </div>
     </div>

@@ -91,6 +91,11 @@ public class AuthController {
     @GetMapping("/me")
     @Operation(summary = "Get current authenticated user")
     public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            log.warn("Get current user request received without an authenticated principal");
+            throw new ai.applysmart.exception.UnauthorizedException("Authentication required");
+        }
+
         log.info("Get current user request for user ID: {}", user.getId());
         UserDto userDto = authService.getCurrentUser(user.getId());
         return ResponseEntity.ok(userDto);
@@ -99,11 +104,15 @@ public class AuthController {
     @PostMapping("/logout")
     @Operation(summary = "Logout user and revoke current token")
     public ResponseEntity<ApiResponse<Void>> logout(
-            @RequestHeader("Authorization") String authHeader,
+            @RequestHeader(value = "Authorization", required = false) String authHeader,
             @AuthenticationPrincipal User user) {
-        log.info("Logout request received for user ID: {}", user.getId());
+        if (user == null) {
+            log.info("Logout request received without an authenticated principal");
+        } else {
+            log.info("Logout request received for user ID: {}", user.getId());
+        }
 
-        String token = ControllerUtils.extractBearerToken(authHeader);
+        String token = ControllerUtils.extractBearerTokenOrNull(authHeader);
         authService.logout(token, user);
 
         return ResponseEntity.ok(ControllerUtils.successResponse("Logged out successfully"));
