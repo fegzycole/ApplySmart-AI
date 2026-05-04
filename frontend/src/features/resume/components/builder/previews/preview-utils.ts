@@ -24,24 +24,59 @@ export function getContactEntries(personalInfo: PersonalInfo): ContactEntry[] {
   return fields.filter(({ value }) => Boolean(value));
 }
 
-export function formatDateRange(startDate: string, endDate: string, fallback = "") {
-  if (startDate && endDate) {
-    return `${startDate} - ${endDate}`;
+export function formatDateRange(startDate: string, endDate: string, fallback = "", current = false) {
+  const end = current ? "Present" : endDate;
+
+  if (startDate && end) {
+    return `${startDate} - ${end}`;
   }
 
-  return startDate || endDate || fallback;
+  return startDate || end || fallback;
 }
 
 export function getResponsibilities(experience: WorkExperience) {
   return experience.responsibilities.filter(Boolean);
 }
 
-export function getEducationTitle(education: Education, separator: "dash" | "field") {
-  if (separator === "field") {
-    return `${education.degree || "Degree"}${education.field ? ` in ${education.field}` : ""}`;
+export function formatEducationDate(education: Education) {
+  return formatDateRange(education.startDate, education.graduationDate, "Year", education.current);
+}
+
+function isFieldFirstCredential(credential: string) {
+  const normalized = credential.trim().toLowerCase();
+  return (
+    normalized.includes("certificate") ||
+    normalized.includes("diploma") ||
+    normalized.includes("program") ||
+    normalized.includes("bootcamp") ||
+    normalized.includes("nanodegree") ||
+    normalized.includes("fellowship")
+  );
+}
+
+function getEducationCredential(education: Education) {
+  const credential = education.degree.trim();
+  const field = education.field.trim();
+
+  if (credential && field) {
+    if (isFieldFirstCredential(credential)) {
+      return `${field} ${credential}`;
+    }
+
+    return `${credential} in ${field}`;
   }
 
-  return `${education.degree || "Degree"} - ${education.institution || "Institution"}`;
+  return credential || field || "Credential";
+}
+
+export function getEducationTitle(education: Education, separator: "dash" | "field") {
+  const credential = getEducationCredential(education);
+
+  if (separator === "field") {
+    return credential;
+  }
+
+  return `${credential} - ${education.institution || "Institution"}`;
 }
 
 export function hasResumeContent(data: ResumeData) {

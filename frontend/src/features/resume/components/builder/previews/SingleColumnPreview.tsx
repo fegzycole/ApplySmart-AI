@@ -5,9 +5,11 @@ import {
   PreviewSection,
   ResponsibilitiesList,
   SkillTags,
+  SummaryText,
 } from "./PreviewPrimitives";
 import {
   formatDateRange,
+  formatEducationDate,
   getEducationTitle,
   getResponsibilities,
   hasResumeContent,
@@ -58,7 +60,7 @@ export function SingleColumnPreview({ data, theme }: SingleColumnPreviewProps) {
 
       {summary && (
         <PreviewSection title="Professional Summary" className="mb-[18px]" titleClassName={theme.sectionTitleClassName}>
-          <p className={theme.summaryClassName}>{summary}</p>
+          <SummaryText summary={summary} className={theme.summaryClassName} />
         </PreviewSection>
       )}
 
@@ -73,7 +75,7 @@ export function SingleColumnPreview({ data, theme }: SingleColumnPreviewProps) {
                 </div>
                 <div className="text-right shrink-0 ml-4">
                   <div className={theme.dateClassName}>
-                    {formatDateRange(experience.startDate, experience.endDate, "Date")}
+                    {formatDateRange(experience.startDate, experience.endDate, "Date", experience.current)}
                   </div>
                   {experience.location && (
                     <div className={theme.locationClassName}>{experience.location}</div>
@@ -99,7 +101,7 @@ export function SingleColumnPreview({ data, theme }: SingleColumnPreviewProps) {
                 <div className={theme.institutionClassName}>{item.institution || "Institution"}</div>
               </div>
               <div className="text-right shrink-0 ml-4">
-                <div className={theme.dateClassName}>{item.graduationDate || "Year"}</div>
+                <div className={theme.dateClassName}>{formatEducationDate(item)}</div>
                 {item.location && (
                   <div className={theme.locationClassName}>{item.location}</div>
                 )}

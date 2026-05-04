@@ -1,10 +1,12 @@
 import { Code, Plus, X } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { Button } from "@/shared/components/ui/button";
 import { Badge } from "@/shared/components/ui/badge";
 import { useResumeBuilder } from "../../contexts/ResumeBuilderContext";
+import { hasSkill, normalizeSkill } from "../../utils/resume-builder-skills";
 import { SectionHeader } from "./SectionHeader";
 
 export function SkillsSection() {
@@ -12,8 +14,15 @@ export function SkillsSection() {
   const [newSkill, setNewSkill] = useState("");
 
   const addSkill = () => {
-    if (!newSkill.trim()) return;
-    updateSkills([...resumeData.skills, newSkill.trim()]);
+    const skill = normalizeSkill(newSkill);
+    if (!skill) return;
+
+    if (hasSkill(resumeData.skills, skill)) {
+      toast.error("That skill is already in your list.");
+      return;
+    }
+
+    updateSkills([...resumeData.skills, skill]);
     setNewSkill("");
   };
 
@@ -26,7 +35,7 @@ export function SkillsSection() {
       <SectionHeader icon={Code} title="Skills" />
 
       <div className="space-y-4">
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1 space-y-2">
             <Label htmlFor="new-skill" className="text-sm font-medium">Add a skill</Label>
             <Input
@@ -38,8 +47,8 @@ export function SkillsSection() {
               className="h-10 rounded-lg"
             />
           </div>
-          <div className="flex items-end">
-            <Button onClick={addSkill} size="sm" className="h-10 rounded-lg bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700">
+          <div className="flex">
+            <Button onClick={addSkill} size="sm" className="h-10 w-full sm:w-auto rounded-lg bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700">
               <Plus className="size-4 mr-1" />
               Add
             </Button>

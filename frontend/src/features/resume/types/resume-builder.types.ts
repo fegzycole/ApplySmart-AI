@@ -17,6 +17,7 @@ export interface WorkExperience {
   location: string;
   startDate: string;
   endDate: string;
+  current: boolean;
   responsibilities: string[];
 }
 
@@ -28,6 +29,7 @@ export interface Education {
   location: string;
   startDate: string;
   graduationDate: string;
+  current: boolean;
   gpa: string;
 }
 
@@ -59,6 +61,7 @@ export interface ResumeData {
 
 export interface ResumeBuilderContextValue {
   resumeData: ResumeData;
+  resetResumeData: () => void;
   updatePersonalInfo: (info: Partial<PersonalInfo>) => void;
   updateSummary: (summary: string) => void;
   updateTemplate: (template: ResumeTemplate) => void;

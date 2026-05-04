@@ -6,7 +6,7 @@ export function ResumeOptimizerPage() {
   const { optimize, optimizing, result, startOver, view } = useResumeOptimizer();
 
   return (
-    <div className="p-4 lg:p-8">
+    <div className="min-w-0 overflow-x-hidden px-3 py-4 sm:px-4 sm:py-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         <OptimizerHeader />
         <OptimizerWorkspace

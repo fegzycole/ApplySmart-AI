@@ -12,7 +12,7 @@ export function FileCard({ file, onRemove }: FileCardProps) {
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="relative rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6"
+      className="relative min-w-0 rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 sm:p-6"
     >
       <Button
         variant="ghost"
@@ -22,12 +22,12 @@ export function FileCard({ file, onRemove }: FileCardProps) {
       >
         <X className="size-4" />
       </Button>
-      <div className="flex items-center gap-4">
+      <div className="flex items-start gap-3 sm:gap-4">
         <div className="size-12 rounded-xl bg-gradient-to-br from-violet-100 to-fuchsia-100 dark:from-violet-950 dark:to-fuchsia-950 flex items-center justify-center">
           <FileCheck className="size-6 text-violet-600 dark:text-violet-400" />
         </div>
-        <div className="flex-1">
-          <p className="font-medium text-zinc-900 dark:text-white">
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-zinc-900 dark:text-white break-words">
             {file.name}
           </p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400">

@@ -1,16 +1,6 @@
 import type { ReactNode } from "react";
-import { Mail, Phone, MapPin, Linkedin, Github, Globe, type LucideIcon } from "lucide-react";
 import type { PersonalInfo } from "../../../types/resume-builder.types";
-import { getContactEntries, type ContactField } from "./preview-utils";
-
-const CONTACT_ICONS: Record<ContactField, LucideIcon> = {
-  email: Mail,
-  phone: Phone,
-  location: MapPin,
-  linkedin: Linkedin,
-  github: Github,
-  website: Globe,
-};
+import { getContactEntries } from "./preview-utils";
 
 interface ContactDetailsProps {
   personalInfo: PersonalInfo;
@@ -27,15 +17,11 @@ export function ContactDetails({ personalInfo, className, itemClassName }: Conta
 
   return (
     <div className={className}>
-      {entries.map(({ field, value }) => {
-        const Icon = CONTACT_ICONS[field];
-        return (
-          <span key={field} className={`${itemClassName ?? ""} inline-flex items-center gap-[0.3em] whitespace-nowrap`.trim()}>
-            <Icon size={11} strokeWidth={1.75} />
-            {value}
-          </span>
-        );
-      })}
+      {entries.map(({ field, value }) => (
+        <span key={field} className={`${itemClassName ?? ""} whitespace-nowrap`.trim()}>
+          {value}
+        </span>
+      ))}
     </div>
   );
 }
@@ -59,6 +45,15 @@ export function PreviewSection({
       {children}
     </section>
   );
+}
+
+interface SummaryTextProps {
+  summary: string;
+  className: string;
+}
+
+export function SummaryText({ summary, className }: SummaryTextProps) {
+  return <p className={`${className} whitespace-pre-wrap break-words`.trim()}>{summary}</p>;
 }
 
 interface ResponsibilitiesListProps {

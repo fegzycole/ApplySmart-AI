@@ -20,7 +20,8 @@ export const API_ENDPOINTS = {
     UPLOAD: '/resumes/upload',
     ANALYZE: (id: number) => `/resumes/${id}/analyze`,
     OPTIMIZE_UPLOAD: '/resumes/optimize-upload',
-    BUILD: '/resumes/build',
+    BUILD_FROM_DATA: '/resumes/build/from-data',
+    BUILD_PDF: '/resumes/build/pdf',
   },
   COVER_LETTERS: {
     GENERATE: '/cover-letters/generate',

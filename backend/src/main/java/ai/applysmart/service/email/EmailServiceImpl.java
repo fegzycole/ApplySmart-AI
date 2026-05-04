@@ -2,7 +2,6 @@ package ai.applysmart.service.email;
 
 import ai.applysmart.config.EmailProperties;
 import ai.applysmart.exception.EmailSendingException;
-import ai.applysmart.service.email.EmailService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

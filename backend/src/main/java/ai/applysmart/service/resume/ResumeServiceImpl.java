@@ -1,6 +1,8 @@
 package ai.applysmart.service.resume;
 
+import ai.applysmart.dto.resume.BuildResumeFromDataRequest;
 import ai.applysmart.dto.resume.OptimizeResumeRequest;
+import ai.applysmart.dto.resume.RenderResumePdfRequest;
 import ai.applysmart.dto.resume.ResumeAnalysisDto;
 import ai.applysmart.dto.resume.ResumeDto;
 import ai.applysmart.dto.resume.ResumeOptimizationDto;
@@ -11,10 +13,6 @@ import ai.applysmart.exception.FileProcessingException;
 import ai.applysmart.exception.ResourceNotFoundException;
 import ai.applysmart.repository.ResumeRepository;
 import ai.applysmart.service.ai.ClaudeService;
-import ai.applysmart.service.resume.ResumeService;
-import ai.applysmart.service.resume.ResumeDtoMapper;
-import ai.applysmart.service.resume.ResumeFileFactory;
-import ai.applysmart.service.resume.ResumeOptimizationWorkflow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,6 +32,7 @@ public class ResumeServiceImpl implements ResumeService {
     private final ResumeRepository resumeRepository;
     private final ClaudeService claudeService;
     private final ResumeFileFactory resumeFileFactory;
+    private final ResumeBuildWorkflow resumeBuildWorkflow;
     private final ResumeOptimizationWorkflow optimizationWorkflow;
     private final ResumeDtoMapper resumeDtoMapper;
 
@@ -125,14 +124,19 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @Transactional
-    public ResumeDto uploadBuiltResume(MultipartFile file, String name, User user) {
-        log.info("Uploading built resume for user: {} - Name: {}, File: {}",
-                user.getId(), name, file.getOriginalFilename());
+    public ResumeDto buildResumeFromData(BuildResumeFromDataRequest request, User user) {
+        log.info("Building resume from structured data for user: {} - Name: {}, Template: {}",
+                user.getId(), request.getName(), request.getTemplate());
 
         try {
-            Resume resume = resumeFileFactory.createBuiltResume(file, name, user);
+            Resume resume = resumeBuildWorkflow.createBuiltResume(
+                    request.getResumeData(),
+                    request.getTemplate(),
+                    request.getName(),
+                    user
+            );
             resume = resumeRepository.save(resume);
-            log.info("Created resume with ID: {}", resume.getId());
+            log.info("Created structured resume with ID: {}", resume.getId());
 
             return resumeDtoMapper.toDto(resume);
         } catch (BadRequestException e) {
@@ -140,9 +144,16 @@ public class ResumeServiceImpl implements ResumeService {
         } catch (FileProcessingException e) {
             throw e;
         } catch (Exception e) {
-            log.error("Error uploading built resume for user: {}", user.getId(), e);
-            throw new FileProcessingException("Failed to upload resume", e);
+            log.error("Error building structured resume for user: {}", user.getId(), e);
+            throw new FileProcessingException("Failed to build resume", e);
         }
+    }
+
+    @Override
+    public byte[] renderResumePdf(RenderResumePdfRequest request, User user) {
+        log.info("Rendering resume PDF for download for user: {} - Template: {}",
+                user.getId(), request.getTemplate());
+        return resumeBuildWorkflow.generatePdf(request.getResumeData(), request.getTemplate());
     }
 
     private void requireResumeContent(Resume resume) {

@@ -1,6 +1,10 @@
 import { apiClient } from '@/shared/services/api-client';
 import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
 import type { ResumeTemplate } from "../types/resume-builder.types";
+import type {
+  BuildResumeFromDataPayload,
+  RenderResumePdfPayload,
+} from "../utils/resume-builder-payload";
 
 const ENDPOINTS = API_ENDPOINTS.RESUMES;
 
@@ -84,13 +88,20 @@ export const uploadAndOptimizeResume = async (
   );
 };
 
-export const uploadBuiltResume = async (
-  file: File | Blob,
-  name: string
+export const buildResumeFromData = async (
+  payload: BuildResumeFromDataPayload
 ): Promise<Resume> => {
-  const formData = new FormData();
-  formData.append('file', file, 'resume.pdf');
-  formData.append('name', name);
+  return apiClient.post<Resume>(ENDPOINTS.BUILD_FROM_DATA, payload, 180000);
+};
 
-  return apiClient.post<Resume>(ENDPOINTS.BUILD, formData);
+export const renderResumePdf = async (
+  payload: RenderResumePdfPayload
+): Promise<Blob> => {
+  return apiClient.postBlob(ENDPOINTS.BUILD_PDF, payload, 180000);
+};
+
+export const downloadResumeFile = async (
+  fileUrl: string
+): Promise<Blob> => {
+  return apiClient.getBlobByUrl(fileUrl, 180000);
 };

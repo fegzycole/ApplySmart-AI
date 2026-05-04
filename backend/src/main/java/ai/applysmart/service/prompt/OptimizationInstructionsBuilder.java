@@ -48,23 +48,21 @@ public class OptimizationInstructionsBuilder {
 
     public String buildTruthfulnessRules() {
         return """
-            CRITICAL TRUTHFULNESS RULES:
+            HARD CONSTRAINTS — THESE NEVER CHANGE:
 
-            ❌ NEVER add specific skills, tools, certifications, or qualifications not explicitly present in the original resume
-            ❌ NEVER change organization names, dates, job titles, or education details
-            ❌ NEVER invent projects, certifications, or achievements
+            ❌ NEVER change employment dates or company names
+            ❌ NEVER invent entire job experiences, companies, or education that do not exist
+            ❌ NEVER remove or downgrade core technologies the candidate demonstrably has
+            ❌ NEVER replace a specific named tool with a generic category label (specific always beats generic)
+            ❌ NEVER inflate a junior title to a senior one without clear evidence of that scope in the resume
 
-            ✅ YOU MAY (IMPORTANT - THIS IS HOW YOU IMPROVE MATCH SCORE):
+            ✅ EVERYTHING ELSE SERVES THE JD:
 
-            1. GENERALIZE EXISTING EXPERIENCE INTO BROADER CONCEPTS
-            2. INFER IMPLICIT SKILLS FROM DEMONSTRATED EXPERIENCE
-            3. USE JOB DESCRIPTION TERMINOLOGY WHEN IT MATCHES CONCEPTUALLY
-            4. PRIORITIZE KEYWORD ALIGNMENT THROUGH AGGRESSIVE REPHRASING
-            5. EMPHASIZE TRANSFERABLE SKILLS AGGRESSIVELY
-
-            🚫 HARD BOUNDARY:
-            - DO NOT introduce keywords or qualifications the candidate cannot confidently discuss in interviews
-            - Abstraction and generalization are encouraged; fabrication is forbidden
+            1. ADD JD-required skills to the skills section — even if not explicitly in the original resume — when the candidate's background makes them credible
+            2. WEAVE JD tools and keywords into work bullets naturally — frame existing work to demonstrate those requirements
+            3. REFRAME job titles to better reflect actual scope when targeting a specific role type (e.g. "Software Engineer" → "Application Engineer" when the work involved owning enterprise platforms and SaaS tooling)
+            4. REORDER and prioritise — surface the most JD-relevant content first throughout
+            5. INFER and surface implicit experience — if the candidate worked in an enterprise environment and the JD requires Jira/Slack/Google Workspace, weave those into relevant bullets
             """;
     }
 

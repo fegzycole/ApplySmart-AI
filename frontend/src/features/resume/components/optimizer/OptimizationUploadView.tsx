@@ -1,9 +1,9 @@
-import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { ProgressSteps } from "./ProgressSteps";
 import { StepOne } from "./steps/StepOne";
 import { StepTwo } from "./steps/StepTwo";
 import { StepThree } from "./steps/StepThree";
+import { useResumeOptimizerDraft } from "../../hooks/useResumeOptimizerDraft";
 import type { ResumeTemplate } from "../../types/resume-builder.types";
 
 interface OptimizationUploadViewProps {
@@ -12,19 +12,18 @@ interface OptimizationUploadViewProps {
 }
 
 export function OptimizationUploadView({ onOptimize, optimizing }: OptimizationUploadViewProps) {
-  const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [file, setFile] = useState<File | null>(null);
-  const [jobDescription, setJobDescription] = useState("");
-  const [template, setTemplate] = useState<ResumeTemplate>("MODERN");
-
-  const handleFileSelect = (selectedFile: File) => {
-    setFile(selectedFile);
-    setStep(2);
-  };
-
-  const handleFileRemove = () => {
-    setFile(null);
-  };
+  const {
+    step,
+    setStep,
+    file,
+    jobDescription,
+    setJobDescription,
+    template,
+    setTemplate,
+    savedFileName,
+    selectFile,
+    removeFile,
+  } = useResumeOptimizerDraft();
 
   const handleSubmit = () => {
     if (file && jobDescription.trim()) {
@@ -35,15 +34,16 @@ export function OptimizationUploadView({ onOptimize, optimizing }: OptimizationU
   const canProceedToStep3 = jobDescription.trim().length > 50;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="min-w-0 max-w-4xl mx-auto">
       <ProgressSteps currentStep={step} />
 
       <AnimatePresence mode="wait">
         {step === 1 && (
           <StepOne
             file={file}
-            onFileSelect={handleFileSelect}
-            onFileRemove={handleFileRemove}
+            savedFileName={savedFileName}
+            onFileSelect={selectFile}
+            onFileRemove={removeFile}
           />
         )}
 

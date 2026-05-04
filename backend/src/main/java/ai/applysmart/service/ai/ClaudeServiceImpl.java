@@ -38,6 +38,19 @@ public class ClaudeServiceImpl implements ClaudeService {
     }
 
     @Override
+    public ResumeAnalysisDto analyzeStructuredResume(ParsedResumeDto resumeData, String jobDescription) {
+        log.info("Analyzing structured resume with Claude AI for: {}",
+                resumeData.getPersonalInfo() != null ? resumeData.getPersonalInfo().getName() : "Unknown");
+        try {
+            String resumeJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(resumeData);
+            return analyzeResume(resumeJson, jobDescription);
+        } catch (Exception e) {
+            log.error("Failed to serialize resume data for analysis", e);
+            throw new ApiCommunicationException("Failed to analyse structured resume", e);
+        }
+    }
+
+    @Override
     public ResumeOptimizationDto optimizeResume(String resumeContent, String jobDescription) {
         log.info("Optimizing resume with Claude AI");
 

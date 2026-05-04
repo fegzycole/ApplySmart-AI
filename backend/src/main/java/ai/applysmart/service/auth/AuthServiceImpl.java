@@ -137,6 +137,11 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(String token, User user) {
+        if (user == null) {
+            log.info("Skipping token revocation because logout request has no authenticated user");
+            return;
+        }
+
         log.info("Logging out user with ID: {}", user.getId());
 
         authTokenManager.revoke(token, user);

@@ -7,28 +7,27 @@ public class SkillsOptimizationInstructions {
 
     public String build() {
         return """
-            3. SKILLS SECTION (25% of your score) - CLEAN, GROUPED, EXACT MATCHES:
-               GOAL: Pass ATS by including EXACT skills and qualifications from job description
+            3. SKILLS SECTION — JD-FIRST, TIGHT, NO NOISE:
+               GOAL: Every must-have from the JD appears here. Nothing irrelevant does.
 
                MANDATORY FORMAT:
-               - Group into 4-6 clear categories appropriate for the field
-                 Examples by profession:
-                 * Tech: Languages, Frameworks, Infrastructure, Tools, Databases
-                 * Healthcare: Clinical Skills, Patient Care, Medical Systems, Certifications
-                 * Marketing: Digital Marketing, Analytics, Content Creation, Platforms, Strategy
-                 * Education: Teaching Methods, Curriculum, Technology, Assessment, Specializations
-                 * Finance: Analysis, Software, Compliance, Reporting, Forecasting
-                 * Sales: CRM Systems, Prospecting, Negotiation, Product Knowledge, Methodology
-               - Each category: 5-8 items maximum
-               - List job's required skills/tools FIRST in each category
-               - Add job requirements even if not explicitly stated in original resume
-               - Keep it scannable (not a wall of keywords)
+               - Output a flat list of individual skill strings (JSON array)
+               - Order: JD must-have skills FIRST, then supporting skills, then general tools
+               - Keep total to 20-28 items — tight and credible, not exhaustive
 
-               DIRECT MATCHING STRATEGY:
-               - Use the EXACT terminology from the job description
-               - If job mentions specific tools/systems/methods → include them verbatim
-               - If job mentions certifications/licenses → include them in relevant section
-               - NO abstraction in skills section - use exact names from job posting
+               BUILD THE SKILLS LIST:
+               1. Start with every must-have tool, skill, and qualification named in the JD
+               2. Add the candidate's core proven skills from the original resume that establish credibility for this role
+               3. Add any remaining original skills that are relevant to this role type
+
+               PRUNE ruthlessly:
+               - Remove skills from the original resume that have no relevance to the target role
+               - Apply this across all fields: a nurse applying for a clinical role should not list social media marketing; a marketer should not list surgical techniques; a backend engineer targeting a SaaS admin role should not list unrelated frontend frameworks
+               - The reader should look at this list and immediately think "this person does exactly this job"
+
+               NEVER:
+               - Replace a specific named tool or credential with a generic label ("Salesforce" must not become "CRM Tools"; "Atlassian Suite" must not become "SaaS Platforms"; "Epic EMR" must not become "Healthcare Systems")
+               - Remove the candidate's core proven skills — they are the credibility anchor for the rest of the resume
             """;
     }
 }

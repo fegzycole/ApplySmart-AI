@@ -65,6 +65,16 @@ public class AuthTokenManager {
     }
 
     public void revoke(String token, User user) {
+        if (user == null) {
+            log.warn("Skipping token revocation because user is missing");
+            return;
+        }
+
+        if (token == null || token.isBlank()) {
+            log.info("Skipping token revocation for user {} because bearer token is missing", user.getId());
+            return;
+        }
+
         String jti = tokenProvider.getJtiFromToken(token);
         if (jti == null) {
             log.warn("Could not extract JTI from token for user {}", user.getId());

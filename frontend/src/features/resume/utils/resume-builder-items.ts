@@ -12,6 +12,7 @@ export function createWorkExperience(): WorkExperience {
     location: "",
     startDate: "",
     endDate: "",
+    current: false,
     responsibilities: [""],
   };
 }
@@ -25,6 +26,7 @@ export function createEducation(): Education {
     location: "",
     startDate: "",
     graduationDate: "",
+    current: false,
     gpa: "",
   };
 }

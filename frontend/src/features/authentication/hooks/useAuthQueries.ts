@@ -43,7 +43,7 @@ export const useLogout = () => {
 
   return useMutation({
     mutationFn: authService.logout,
-    onSuccess: () => {
+    onSettled: () => {
       queryClient.clear();
     },
   });

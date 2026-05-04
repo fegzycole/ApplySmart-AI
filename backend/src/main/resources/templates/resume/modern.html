@@ -44,18 +44,21 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 15px;
             font-size: 10pt;
             color: #555;
         }
 
-        .contact-item {
-            display: inline-flex;
-            align-items: center;
-            white-space: nowrap;
+        .contact-info span {
+            display: inline-block;
         }
 
-        /* Section Styles */
+        .contact-info span:not(:last-child)::after {
+            content: "•";
+            margin-left: 15px;
+            color: #3498db;
+        }
+
         .section {
             margin-bottom: 18px;
         }
@@ -75,7 +78,6 @@
             padding-bottom: 5px;
         }
 
-        /* Summary */
         .summary {
             font-size: 10.5pt;
             line-height: 1.6;
@@ -83,7 +85,6 @@
             text-align: justify;
         }
 
-        /* Work Experience */
         .experience-item {
             margin-bottom: 18px;
             page-break-inside: avoid;
@@ -136,7 +137,6 @@
             color: #555;
         }
 
-        /* Education */
         .education-item {
             margin-bottom: 15px;
             page-break-inside: avoid;
@@ -171,7 +171,6 @@
             margin-top: 3px;
         }
 
-        /* Skills */
         .skills-container {
             display: flex;
             flex-wrap: wrap;
@@ -188,7 +187,6 @@
             font-weight: 500;
         }
 
-        /* Certifications */
         .certification-item {
             margin-bottom: 8px;
             font-size: 10.5pt;
@@ -199,7 +197,6 @@
             color: #2c3e50;
         }
 
-        /* Projects */
         .project-item {
             margin-bottom: 15px;
             page-break-inside: avoid;
@@ -235,7 +232,6 @@
             font-style: italic;
         }
 
-        /* Print Optimization */
         @media print {
             body {
                 -webkit-print-color-adjust: exact;
@@ -246,33 +242,33 @@
 </head>
 <body>
 <div class="container">
-    <!-- Header -->
     <div class="header">
         <h1>{{name}}</h1>
         <div class="contact-info">
-            {{contact_info}}
+            <span>{{email}}</span>
+            <span>{{phone}}</span>
+            <span>{{location}}</span>
+            <span>{{linkedin}}</span>
+            <span>{{github}}</span>
+            <span>{{website}}</span>
         </div>
     </div>
 
-    <!-- Summary -->
     <div class="section">
         <h2 class="section-title">Professional Summary</h2>
         <p class="summary">{{summary}}</p>
     </div>
 
-    <!-- Work Experience -->
     <div class="section">
         <h2 class="section-title">Work Experience</h2>
         {{work_experience}}
     </div>
 
-    <!-- Education -->
     <div class="section">
         <h2 class="section-title">Education</h2>
         {{education}}
     </div>
 
-    <!-- Skills -->
     <div class="section">
         <h2 class="section-title">Skills</h2>
         <div class="skills-container">

@@ -10,7 +10,7 @@ import ai.applysmart.entity.User;
 import ai.applysmart.service.ai.ClaudeService;
 import ai.applysmart.service.file.FileStorageService;
 import ai.applysmart.service.resume.ResumeChangeDetector;
-import ai.applysmart.service.scoring.ResumeMatchScorer;
+import ai.applysmart.dto.resume.ResumeAnalysisDto;
 import ai.applysmart.service.resume.ResumeParserService;
 import ai.applysmart.service.template.ResumeTemplateService;
 import ai.applysmart.util.TextUtils;
@@ -30,9 +30,9 @@ public class ResumeOptimizationWorkflow {
     private final ResumeParserService resumeParserService;
     private final ResumeTemplateService resumeTemplateService;
     private final FileStorageService fileStorageService;
-    private final ResumeMatchScorer matchScorer;
     private final ResumeChangeDetector changeDetector;
     private final ResumeFileValidator validator;
+    private final ResumeTemplateSelector resumeTemplateSelector;
 
     public ResumeOptimizationDto optimizeStoredResume(Resume resume, OptimizeResumeRequest request) {
         ResumeOptimizationDto optimization = claudeService.optimizeResume(
@@ -82,12 +82,7 @@ public class ResumeOptimizationWorkflow {
     }
 
     private ResumeTemplate selectTemplate(String template) {
-        try {
-            return template != null ? ResumeTemplate.valueOf(template.toUpperCase()) : ResumeTemplate.MODERN;
-        } catch (IllegalArgumentException e) {
-            log.warn("Invalid template '{}', using MODERN as default", template);
-            return ResumeTemplate.MODERN;
-        }
+        return resumeTemplateSelector.select(template);
     }
 
     private String generateAndUploadPdf(ParsedResumeDto resume, ResumeTemplate template, String originalFilename) {
@@ -110,12 +105,13 @@ public class ResumeOptimizationWorkflow {
     private ResumeOptimizationDto buildOptimizationResult(ParsedResumeDto original, ParsedResumeDto optimized,
                                                           String jobDescription, String fileUrl) {
         List<String> changes = changeDetector.detectChanges(original, optimized);
-        int originalScore = matchScorer.calculateScore(original, jobDescription);
-        int optimizedScore = matchScorer.calculateScore(optimized, jobDescription);
+
+        ResumeAnalysisDto originalAnalysis = claudeService.analyzeStructuredResume(original, jobDescription);
+        ResumeAnalysisDto optimizedAnalysis = claudeService.analyzeStructuredResume(optimized, jobDescription);
 
         return ResumeOptimizationDto.builder()
-                .originalScore(originalScore)
-                .optimizedScore(matchScorer.capScoreImprovement(originalScore, optimizedScore))
+                .originalScore(originalAnalysis.getScore())
+                .optimizedScore(optimizedAnalysis.getScore())
                 .changes(changes)
                 .content("")
                 .fileUrl(fileUrl)
