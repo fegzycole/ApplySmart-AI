@@ -1,6 +1,7 @@
 export { DecorativeBackground } from "./DecorativeBackground";
 export { AuthNavigation } from "./AuthNavigation";
 export { AuthCardHeader } from "./AuthCardHeader";
+export { AuthFormErrorSummary } from "./AuthFormErrorSummary";
 export { AuthPageShell } from "./AuthPageShell";
 export { FormField } from "./FormField";
 export { ControlledFormField } from "./ControlledFormField";

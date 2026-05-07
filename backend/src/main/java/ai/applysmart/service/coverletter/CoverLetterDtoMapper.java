@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class CoverLetterDtoMapper {
 
-    public CoverLetterResponseDto toResponseDto(CoverLetter coverLetter, String pdfUrl) {
+    public CoverLetterResponseDto toResponseDto(CoverLetter coverLetter) {
         return CoverLetterResponseDto.builder()
                 .id(coverLetter.getId())
                 .company(coverLetter.getCompany())
@@ -16,16 +16,9 @@ public class CoverLetterDtoMapper {
                 .tone(coverLetter.getTone())
                 .wordCount(coverLetter.getWordCount())
                 .linkedResumeId(coverLetter.getLinkedResumeId())
-                .pdfUrl(pdfUrl)
+                .pdfUrl(coverLetter.getFileUrl())
                 .createdAt(coverLetter.getCreatedAt())
                 .lastModified(coverLetter.getUpdatedAt())
-                .build();
-    }
-
-    public ai.applysmart.dto.resume.CoverLetterDto toGeneratedDto(String content) {
-        return ai.applysmart.dto.resume.CoverLetterDto.builder()
-                .content(content)
-                .pdfUrl(null)
                 .build();
     }
 }

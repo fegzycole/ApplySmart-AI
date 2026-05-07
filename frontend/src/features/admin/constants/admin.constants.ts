@@ -13,12 +13,7 @@ export const ADMIN_HEADER_STYLES = {
   logoContainer: "flex items-center gap-2",
   logoIcon: "size-6 text-indigo-600 dark:text-indigo-400",
   logoText: "text-xl font-semibold text-zinc-900 dark:text-white",
-  adminBadge: "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-900",
-  pageHeader: {
-    container: "mb-8",
-    title: "text-3xl font-bold text-zinc-900 dark:text-white mb-2",
-    description: "text-zinc-600 dark:text-zinc-400"
-  }
+  adminBadge: "bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-900"
 } as const;
 
 export const STATS_GRID_STYLES = {

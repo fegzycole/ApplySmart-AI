@@ -4,7 +4,6 @@ import ai.applysmart.dto.common.ApiResponse;
 import ai.applysmart.dto.coverletter.CoverLetterRequest;
 import ai.applysmart.dto.coverletter.CoverLetterResponseDto;
 import ai.applysmart.dto.coverletter.UpdateCoverLetterRequest;
-import ai.applysmart.dto.resume.CoverLetterDto;
 import ai.applysmart.entity.User;
 import ai.applysmart.service.coverletter.CoverLetterService;
 import ai.applysmart.util.ControllerUtils;
@@ -41,7 +40,7 @@ public class CoverLetterController {
 
     @PostMapping(value = "/generate-from-file", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "Generate cover letter from resume file with customizable tone")
-    public ResponseEntity<CoverLetterDto> generateCoverLetterFromFile(
+    public ResponseEntity<CoverLetterResponseDto> generateCoverLetterFromFile(
             @RequestPart(value = "resume", required = false) MultipartFile resumeFile,
             @RequestPart("jobDescription") String jobDescription,
             @RequestPart(value = "companyName", required = false) String companyName,
@@ -51,22 +50,23 @@ public class CoverLetterController {
             @AuthenticationPrincipal User user) {
         log.info("Generate cover letter from file request from user: {} for company: {}, position: {}",
                  user.getId(), companyName, positionTitle);
-        CoverLetterDto coverLetter = coverLetterService.generateCoverLetter(
+        CoverLetterResponseDto coverLetter = coverLetterService.generateCoverLetter(
                 resumeFile, jobDescription, companyName, positionTitle, tone, keyAchievements, user);
-        return ResponseEntity.ok(coverLetter);
+        return ResponseEntity.status(HttpStatus.CREATED).body(coverLetter);
     }
 
     @GetMapping
     @Operation(summary = "Get all cover letters for authenticated user with pagination support")
     public ResponseEntity<?> getAllCoverLetters(
             @AuthenticationPrincipal User user,
+            @RequestParam(required = false) String query,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         log.info("Get all cover letters request from user: {} (page: {}, size: {})", user.getId(), page, size);
         return ControllerUtils.handlePaginatedRequest(
                 page,
                 size,
-                pageable -> coverLetterService.getAllCoverLetters(user, pageable),
+                pageable -> coverLetterService.getAllCoverLetters(user, pageable, query),
                 () -> coverLetterService.getAllCoverLetters(user)
         );
     }

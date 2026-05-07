@@ -8,5 +8,5 @@ import lombok.Data;
 public class SecuritySettingsDto {
     private Boolean twoFactorEnabled;
     private Boolean hasPassword;
-    private Integer activeSessions;
+    private Boolean twoFactorSetupPending;
 }

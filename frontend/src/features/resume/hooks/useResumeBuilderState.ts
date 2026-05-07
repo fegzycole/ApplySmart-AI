@@ -23,8 +23,8 @@ import type {
   WorkExperience,
 } from "../types/resume-builder.types";
 
-export function useResumeBuilderState(): ResumeBuilderContextValue {
-  const [resumeData, setResumeData] = useState<ResumeData>(() => loadResumeBuilderData());
+export function useResumeBuilderState(initialData?: ResumeData): ResumeBuilderContextValue {
+  const [resumeData, setResumeData] = useState<ResumeData>(() => initialData ?? loadResumeBuilderData());
 
   useEffect(() => {
     saveResumeBuilderData(resumeData);

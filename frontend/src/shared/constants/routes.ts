@@ -9,7 +9,7 @@ export const ROUTES = {
     HOME: '/app',
     RESUME_OPTIMIZER: '/app/resume-optimizer',
     RESUME_BUILDER: '/app/resume-builder',
-    RESUMES: '/app/resumes',
+    DOCUMENTS: '/app/documents',
     COVER_LETTER: '/app/cover-letter',
     JOB_TRACKER: '/app/job-tracker',
     ANALYTICS: '/app/analytics',

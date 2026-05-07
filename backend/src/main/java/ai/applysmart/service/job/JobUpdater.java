@@ -2,6 +2,7 @@ package ai.applysmart.service.job;
 
 import ai.applysmart.dto.job.UpdateJobRequest;
 import ai.applysmart.entity.Job;
+import ai.applysmart.util.DateUtils;
 import ai.applysmart.util.EnumUtils;
 import ai.applysmart.util.TextUtils;
 import org.springframework.stereotype.Component;
@@ -11,15 +12,21 @@ public class JobUpdater {
 
     public void apply(Job job, UpdateJobRequest request) {
         if (request.getCompany() != null) {
-            job.setCompany(request.getCompany());
+            String company = TextUtils.trimToNull(request.getCompany());
+            if (company != null) {
+                job.setCompany(company);
+            }
         }
 
         if (request.getRole() != null) {
-            job.setRole(request.getRole());
+            String role = TextUtils.trimToNull(request.getRole());
+            if (role != null) {
+                job.setRole(role);
+            }
         }
 
         if (request.getLink() != null) {
-            job.setLink(request.getLink());
+            job.setLink(TextUtils.trimToNull(request.getLink()));
         }
 
         if (TextUtils.isNotBlank(request.getStatus())) {
@@ -27,19 +34,22 @@ public class JobUpdater {
         }
 
         if (request.getNotes() != null) {
-            job.setNotes(request.getNotes());
+            job.setNotes(TextUtils.trimToNull(request.getNotes()));
         }
 
         if (request.getSalary() != null) {
-            job.setSalary(request.getSalary());
+            job.setSalary(TextUtils.trimToNull(request.getSalary()));
         }
 
         if (request.getLocation() != null) {
-            job.setLocation(request.getLocation());
+            job.setLocation(TextUtils.trimToNull(request.getLocation()));
         }
 
         if (request.getApplicationDeadline() != null) {
-            job.setApplicationDeadline(request.getApplicationDeadline());
+            job.setApplicationDeadline(DateUtils.parseOptionalLocalDateTime(
+                    request.getApplicationDeadline(),
+                    "applicationDeadline"
+            ));
         }
     }
 }

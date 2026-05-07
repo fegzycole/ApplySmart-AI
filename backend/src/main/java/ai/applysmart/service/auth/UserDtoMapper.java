@@ -19,6 +19,7 @@ public class UserDtoMapper {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .imageUrl(user.getImageUrl())
                 .role(user.getRole().name())
                 .emailVerified(user.getEmailVerified())
                 .twoFactorEnabled(user.getTwoFactorEnabled())

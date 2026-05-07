@@ -1,9 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { tokenStorage } from '@/shared/utils/token-storage';
 import * as authService from '../services/auth.service';
 import type {
   LoginCredentials,
   SignupData,
   PasswordResetRequest,
+  TwoFactorLoginVerifyRequest,
   VerifyEmailRequest,
 } from '../types/auth.types';
 
@@ -16,6 +18,7 @@ export const useCurrentUser = () => {
   return useQuery({
     queryKey: AUTH_KEYS.currentUser(),
     queryFn: authService.getCurrentUser,
+    enabled: tokenStorage.hasToken(),
     retry: false,
     staleTime: 5 * 60 * 1000,
   });
@@ -27,7 +30,22 @@ export const useLogin = () => {
   return useMutation({
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
     onSuccess: (data) => {
-      queryClient.setQueryData(AUTH_KEYS.currentUser(), data.user);
+      if (data.user && data.token) {
+        queryClient.setQueryData(AUTH_KEYS.currentUser(), data.user);
+      }
+    },
+  });
+};
+
+export const useVerifyTwoFactorLogin = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: TwoFactorLoginVerifyRequest) => authService.verifyTwoFactorLogin(data),
+    onSuccess: (data) => {
+      if (data.user && data.token) {
+        queryClient.setQueryData(AUTH_KEYS.currentUser(), data.user);
+      }
     },
   });
 };
@@ -61,18 +79,9 @@ export const useRefreshToken = () => {
   return useMutation({
     mutationFn: authService.refreshToken,
     onSuccess: (data) => {
-      queryClient.setQueryData(AUTH_KEYS.currentUser(), data.user);
-    },
-  });
-};
-
-export const useExchangeOAuthCode = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (code: string) => authService.exchangeOAuthCode(code),
-    onSuccess: (data) => {
-      queryClient.setQueryData(AUTH_KEYS.currentUser(), data.user);
+      if (data.user && data.token) {
+        queryClient.setQueryData(AUTH_KEYS.currentUser(), data.user);
+      }
     },
   });
 };

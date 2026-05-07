@@ -6,7 +6,7 @@ interface ProgressStepsProps {
 }
 
 const steps = [
-  { num: 1, label: 'Upload Resume' },
+  { num: 1, label: 'Choose Resume' },
   { num: 2, label: 'Job Details' },
   { num: 3, label: 'Customize' }
 ];

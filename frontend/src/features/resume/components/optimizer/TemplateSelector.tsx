@@ -16,23 +16,27 @@ const templates: { value: ResumeTemplate; label: string; desc: string }[] = [
 
 export function TemplateSelector({ selected, onSelect }: TemplateSelectorProps) {
   return (
-    <div className="grid grid-cols-1 min-[520px]:grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-3">
       {templates.map((t) => (
         <button
           key={t.value}
           onClick={() => onSelect(t.value)}
           className={cn(
-            "relative min-w-0 p-3 rounded-2xl border-2 transition-all text-left group",
+            "relative min-w-0 rounded-2xl border-2 p-2.5 text-left transition-all group sm:p-3",
             selected === t.value
               ? "border-violet-500 bg-violet-50 dark:bg-violet-950/30 shadow-lg shadow-violet-500/20"
               : "border-zinc-200 dark:border-zinc-800 hover:border-violet-300 dark:hover:border-violet-700"
           )}
         >
-          <div className="w-full aspect-[8.5/11] rounded-lg mb-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-hidden p-2 scale-90">
+          <div className="mb-2 h-28 overflow-hidden rounded-xl border border-zinc-200 bg-white p-1.5 dark:border-zinc-800 dark:bg-zinc-900 sm:h-32 sm:p-2">
             <TemplatePreview type={t.value} />
           </div>
-          <div className="font-semibold text-zinc-900 dark:text-white text-sm">{t.label}</div>
-          <div className="text-xs text-zinc-500 dark:text-zinc-400">{t.desc}</div>
+          <div className="font-semibold text-zinc-900 dark:text-white text-sm leading-tight">
+            {t.label}
+          </div>
+          <div className="text-[11px] leading-tight text-zinc-500 dark:text-zinc-400 sm:text-xs">
+            {t.desc}
+          </div>
         </button>
       ))}
     </div>

@@ -3,7 +3,9 @@ package ai.applysmart.service.job;
 import ai.applysmart.dto.job.CreateJobRequest;
 import ai.applysmart.entity.Job;
 import ai.applysmart.entity.User;
+import ai.applysmart.util.DateUtils;
 import ai.applysmart.util.EnumUtils;
+import ai.applysmart.util.TextUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -18,14 +20,17 @@ public class JobFactory {
 
         return Job.builder()
                 .user(user)
-                .company(request.getCompany())
-                .role(request.getRole())
-                .link(request.getLink())
+                .company(TextUtils.trimToNull(request.getCompany()))
+                .role(TextUtils.trimToNull(request.getRole()))
+                .link(TextUtils.trimToNull(request.getLink()))
                 .status(status)
-                .notes(request.getNotes())
-                .salary(request.getSalary())
-                .location(request.getLocation())
-                .applicationDeadline(request.getApplicationDeadline())
+                .notes(TextUtils.trimToNull(request.getNotes()))
+                .salary(TextUtils.trimToNull(request.getSalary()))
+                .location(TextUtils.trimToNull(request.getLocation()))
+                .applicationDeadline(DateUtils.parseOptionalLocalDateTime(
+                        request.getApplicationDeadline(),
+                        "applicationDeadline"
+                ))
                 .build();
     }
 }

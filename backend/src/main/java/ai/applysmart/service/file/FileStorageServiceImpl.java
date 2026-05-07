@@ -23,6 +23,11 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public FileUploadResult uploadFile(MultipartFile file) {
+        return uploadFile(file, "applysmart/resumes");
+    }
+
+    @Override
+    public FileUploadResult uploadFile(MultipartFile file, String folder) {
         if (file.isEmpty()) {
             throw new BadRequestException("File is empty");
         }
@@ -30,7 +35,7 @@ public class FileStorageServiceImpl implements FileStorageService {
         try {
             Map uploadResult = cloudinary.uploader().upload(file.getBytes(),
                     ObjectUtils.asMap(
-                            "folder", "applysmart/resumes",
+                            "folder", folder,
                             "resource_type", "auto"
                     ));
 
@@ -46,12 +51,17 @@ public class FileStorageServiceImpl implements FileStorageService {
 
     @Override
     public FileUploadResult uploadFileBytes(byte[] fileBytes, String filename) {
+        return uploadFileBytes(fileBytes, filename, "applysmart/optimized-resumes");
+    }
+
+    @Override
+    public FileUploadResult uploadFileBytes(byte[] fileBytes, String filename, String folder) {
         try {
             String filenameWithoutExtension = filename.replaceAll("\\.pdf$", "");
 
             Map uploadResult = cloudinary.uploader().upload(fileBytes,
                     ObjectUtils.asMap(
-                            "folder", "applysmart/optimized-resumes",
+                            "folder", folder,
                             "resource_type", "auto",
                             "public_id", filenameWithoutExtension,
                             "use_filename", true,

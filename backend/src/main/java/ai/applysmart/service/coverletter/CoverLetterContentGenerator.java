@@ -24,16 +24,16 @@ public class CoverLetterContentGenerator {
     private final FileParserService fileParserService;
 
     public String generate(CoverLetterRequest request, User user) {
-        validateJobDescription(request.getJobDescription());
+        validateRequest(request.getJobDescription(), request.getCompany(), request.getPosition());
 
-        return claudeService.generateCoverLetter(
+        return sanitizeGeneratedContent(claudeService.generateCoverLetter(
                 resolveResumeContent(request.getResumeId(), user),
                 request.getJobDescription(),
                 request.getCompany(),
                 request.getPosition(),
                 normalizeTone(request.getTone()),
                 request.getHighlights()
-        );
+        ));
     }
 
     public String generate(
@@ -44,16 +44,16 @@ public class CoverLetterContentGenerator {
             String tone,
             String keyAchievements
     ) {
-        validateJobDescription(jobDescription);
+        validateRequest(jobDescription, companyName, positionTitle);
 
-        return claudeService.generateCoverLetter(
+        return sanitizeGeneratedContent(claudeService.generateCoverLetter(
                 extractResumeContent(resumeFile),
                 jobDescription,
                 companyName,
                 positionTitle,
                 normalizeTone(tone),
                 keyAchievements
-        );
+        ));
     }
 
     public String normalizeTone(String tone) {
@@ -79,9 +79,27 @@ public class CoverLetterContentGenerator {
         return fileParserService.extractTextFromFile(resumeFile);
     }
 
-    private void validateJobDescription(String jobDescription) {
+    private void validateRequest(String jobDescription, String company, String position) {
         if (TextUtils.isBlank(jobDescription)) {
             throw new BadRequestException("Job description is required");
         }
+
+        if (TextUtils.isBlank(company)) {
+            throw new BadRequestException("Company is required");
+        }
+
+        if (TextUtils.isBlank(position)) {
+            throw new BadRequestException("Position is required");
+        }
+    }
+
+    private String sanitizeGeneratedContent(String content) {
+        if (content == null) {
+            return null;
+        }
+
+        return content
+                .replace('\u2014', '-')
+                .replace('\u2013', '-');
     }
 }

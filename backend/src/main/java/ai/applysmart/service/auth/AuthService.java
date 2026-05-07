@@ -6,6 +6,7 @@ import ai.applysmart.dto.auth.PasswordResetRequest;
 import ai.applysmart.dto.auth.ResetPasswordRequest;
 import ai.applysmart.dto.auth.SignupRequest;
 import ai.applysmart.dto.auth.SignupResponse;
+import ai.applysmart.dto.auth.TwoFactorLoginVerifyRequest;
 import ai.applysmart.dto.auth.UserDto;
 import ai.applysmart.dto.auth.VerifyEmailRequest;
 import ai.applysmart.entity.User;
@@ -19,6 +20,8 @@ public interface AuthService {
     AuthResponse refreshToken(String refreshToken);
 
     AuthResponse exchangeOAuthCode(String code);
+
+    AuthResponse verifyTwoFactorLogin(TwoFactorLoginVerifyRequest request);
 
     void requestPasswordReset(PasswordResetRequest request);
 

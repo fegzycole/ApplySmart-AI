@@ -3,13 +3,22 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  imageUrl?: string | null;
   role: 'USER' | 'ADMIN';
   emailVerified: boolean;
+  twoFactorEnabled?: boolean;
 }
 
 export interface LoginCredentials {
   email: string;
   password: string;
+}
+
+export type LoginStage = 'credentials' | 'twoFactor';
+
+export interface TwoFactorLoginVerifyRequest {
+  challengeToken: string;
+  code: string;
 }
 
 export interface SignupData {
@@ -28,10 +37,13 @@ export interface OAuthCodeExchangeRequest {
 }
 
 export interface AuthResponse {
-  user: User;
-  token: string;
-  refreshToken: string;
-  tokenType: string;
+  user?: User | null;
+  token?: string | null;
+  refreshToken?: string | null;
+  tokenType?: string | null;
+  requiresTwoFactor?: boolean;
+  challengeEmail?: string | null;
+  twoFactorChallengeToken?: string | null;
 }
 
 export interface SignupResponse {

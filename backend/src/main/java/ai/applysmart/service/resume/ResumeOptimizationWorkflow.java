@@ -1,19 +1,19 @@
 package ai.applysmart.service.resume;
 
 import ai.applysmart.dto.file.FileUploadResult;
+import ai.applysmart.dto.resume.BuildResumeFromDataRequest;
 import ai.applysmart.dto.resume.OptimizeResumeRequest;
 import ai.applysmart.dto.resume.ParsedResumeDto;
 import ai.applysmart.dto.resume.ResumeOptimizationDto;
 import ai.applysmart.dto.resume.ResumeTemplate;
 import ai.applysmart.entity.Resume;
 import ai.applysmart.entity.User;
+import ai.applysmart.exception.FileProcessingException;
 import ai.applysmart.service.ai.ClaudeService;
 import ai.applysmart.service.file.FileStorageService;
-import ai.applysmart.service.resume.ResumeChangeDetector;
 import ai.applysmart.dto.resume.ResumeAnalysisDto;
-import ai.applysmart.service.resume.ResumeParserService;
 import ai.applysmart.service.template.ResumeTemplateService;
-import ai.applysmart.util.TextUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -33,36 +33,79 @@ public class ResumeOptimizationWorkflow {
     private final ResumeChangeDetector changeDetector;
     private final ResumeFileValidator validator;
     private final ResumeTemplateSelector resumeTemplateSelector;
+    private final ResumeFileFactory resumeFileFactory;
+    private final ResumeOptimizationNamer resumeOptimizationNamer;
+    private final ObjectMapper objectMapper;
 
-    public ResumeOptimizationDto optimizeStoredResume(Resume resume, OptimizeResumeRequest request) {
-        ResumeOptimizationDto optimization = claudeService.optimizeResume(
-                resume.getContent(),
+    public ResumeOptimizationArtifacts optimizeStoredResume(Resume resume, OptimizeResumeRequest request) {
+        ParsedResumeDto originalResume = resolveStructuredResume(resume);
+        ParsedResumeDto optimizedResumeData = optimizeStructuredResume(originalResume, request.getJobDescription());
+        ResumeTemplate selectedTemplate = selectTemplate(request.getTemplate());
+        FileUploadResult uploadResult = generateAndUploadPdf(
+                optimizedResumeData,
+                selectedTemplate,
+                resume.getUser(),
                 request.getJobDescription()
         );
+        String serializedOptimizedResume = serializeResumeData(optimizedResumeData);
+        Resume optimizedResumeRecord = resumeFileFactory.createOptimizedResume(
+                resumeOptimizationNamer.buildOptimizedResumeName(resume.getUser(), request.getJobDescription()),
+                serializedOptimizedResume,
+                null,
+                resume.getUser(),
+                uploadResult
+        );
+        ResumeOptimizationDto optimization = buildOptimizationResult(
+                originalResume,
+                optimizedResumeData,
+                request.getJobDescription(),
+                uploadResult.getUrl()
+        );
+        optimizedResumeRecord.setScore(optimization.getOptimizedScore());
 
-        resume.setContent(optimization.getContent());
-        resume.setScore(optimization.getOptimizedScore());
-        resume.setStatus(Resume.Status.OPTIMIZED);
-        resume.setWordCount(TextUtils.calculateWordCount(optimization.getContent()));
-
-        return optimization;
+        return ResumeOptimizationArtifacts.builder()
+                .optimization(optimization)
+                .optimizedResume(optimizedResumeRecord)
+                .build();
     }
 
-    public ResumeOptimizationDto optimizeUploadedFile(MultipartFile file, String jobDescription,
-                                                       String template, User user) {
-        log.info("Optimizing uploaded file for user: {} with template: {}", user.getId(), template);
-        validator.requireOptimizationInput(file, jobDescription);
+    public ResumeOptimizationArtifacts optimizeUploadedFile(MultipartFile file, OptimizeResumeRequest request, User user) {
+        log.info("Optimizing uploaded file for user: {} with template: {}", user.getId(), request.getTemplate());
+        validator.requireOptimizationInput(file, request.getJobDescription());
 
         try {
             ParsedResumeDto parsedResume = parseResume(file);
-            ParsedResumeDto optimizedResume = optimizeStructuredResume(parsedResume, jobDescription);
-            ResumeTemplate selectedTemplate = selectTemplate(template);
-            String fileUrl = generateAndUploadPdf(optimizedResume, selectedTemplate, file.getOriginalFilename());
+            ParsedResumeDto optimizedResume = optimizeStructuredResume(parsedResume, request.getJobDescription());
+            ResumeTemplate selectedTemplate = selectTemplate(request.getTemplate());
+            FileUploadResult uploadResult = generateAndUploadPdf(
+                    optimizedResume,
+                    selectedTemplate,
+                    user,
+                    request.getJobDescription()
+            );
+            String serializedOptimizedResume = serializeResumeData(optimizedResume);
+            Resume optimizedResumeRecord = resumeFileFactory.createOptimizedResume(
+                    resumeOptimizationNamer.buildOptimizedResumeName(user, request.getJobDescription()),
+                    serializedOptimizedResume,
+                    null,
+                    user,
+                    uploadResult
+            );
+            ResumeOptimizationDto optimization = buildOptimizationResult(
+                    parsedResume,
+                    optimizedResume,
+                    request.getJobDescription(),
+                    uploadResult.getUrl()
+            );
+            optimizedResumeRecord.setScore(optimization.getOptimizedScore());
 
-            return buildOptimizationResult(parsedResume, optimizedResume, jobDescription, fileUrl);
+            return ResumeOptimizationArtifacts.builder()
+                    .optimization(optimization)
+                    .optimizedResume(optimizedResumeRecord)
+                    .build();
         } catch (Exception e) {
             log.error("Error during optimization process for user {}", user.getId(), e);
-            throw e;
+            throw new FileProcessingException("Failed to optimize uploaded resume", e);
         }
     }
 
@@ -85,21 +128,58 @@ public class ResumeOptimizationWorkflow {
         return resumeTemplateSelector.select(template);
     }
 
-    private String generateAndUploadPdf(ParsedResumeDto resume, ResumeTemplate template, String originalFilename) {
+    private ResumeTemplate selectTemplate(ResumeTemplate template) {
+        return template != null ? template : ResumeTemplate.MODERN;
+    }
+
+    private FileUploadResult generateAndUploadPdf(ParsedResumeDto resume, ResumeTemplate template,
+                                                  User user, String jobDescription) {
         log.info("Generating PDF using template: {}", template.getDisplayName());
         byte[] pdfBytes = resumeTemplateService.generatePdf(resume, template);
         log.info("PDF generation completed. Size: {} bytes", pdfBytes.length);
 
-        FileUploadResult uploadResult = fileStorageService.uploadFileBytes(pdfBytes, createOptimizedFilename(originalFilename));
+        FileUploadResult uploadResult = fileStorageService.uploadFileBytes(
+                pdfBytes,
+                resumeOptimizationNamer.buildOptimizedPdfFilename(user, jobDescription)
+        );
         log.info("Optimized PDF uploaded successfully. URL: {}", uploadResult.getUrl());
-        return uploadResult.getUrl();
+        return uploadResult;
     }
 
-    private String createOptimizedFilename(String originalFilename) {
-        if (originalFilename != null) {
-            return originalFilename.replace(".pdf", "-optimized.pdf");
+    private ParsedResumeDto resolveStructuredResume(Resume resume) {
+        String content = resume.getContent();
+
+        try {
+            BuildResumeFromDataRequest builtResume = objectMapper.readValue(content, BuildResumeFromDataRequest.class);
+            if (builtResume.getResumeData() != null) {
+                return builtResume.getResumeData();
+            }
+        } catch (Exception ignored) {
+            // Fall through to other supported persisted resume formats.
         }
-        return "resume-optimized.pdf";
+
+        try {
+            ParsedResumeDto parsedResume = objectMapper.readValue(content, ParsedResumeDto.class);
+            if (parsedResume.getPersonalInfo() != null
+                    || parsedResume.getSummary() != null
+                    || parsedResume.getWorkExperience() != null
+                    || parsedResume.getEducation() != null
+                    || parsedResume.getSkills() != null) {
+                return parsedResume;
+            }
+        } catch (Exception ignored) {
+            // Fall through to text parsing for uploaded resumes.
+        }
+
+        return resumeParserService.parseResumeText(content);
+    }
+
+    private String serializeResumeData(ParsedResumeDto resumeData) {
+        try {
+            return objectMapper.writeValueAsString(resumeData);
+        } catch (Exception e) {
+            throw new FileProcessingException("Failed to serialize optimized resume", e);
+        }
     }
 
     private ResumeOptimizationDto buildOptimizationResult(ParsedResumeDto original, ParsedResumeDto optimized,

@@ -29,14 +29,12 @@ public class AuthTokenManager {
     private final UserRepository userRepository;
     private final TokenService tokenService;
 
-    public AuthTokens authenticate(LoginRequest request) {
+    public User authenticateUser(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        User user = (User) authentication.getPrincipal();
-        return issue(authentication, user);
+        SecurityContextHolder.clearContext();
+        return (User) authentication.getPrincipal();
     }
 
     public AuthTokens refresh(String refreshToken) {
@@ -95,13 +93,5 @@ public class AuthTokenManager {
 
         tokenService.revokeToken(jti, remainingTTL);
         log.info("Token revoked for user {}, JTI: {}", user.getId(), jti);
-    }
-
-    private AuthTokens issue(Authentication authentication, User user) {
-        return new AuthTokens(
-                tokenProvider.generateToken(authentication),
-                tokenProvider.generateRefreshToken(user),
-                user
-        );
     }
 }

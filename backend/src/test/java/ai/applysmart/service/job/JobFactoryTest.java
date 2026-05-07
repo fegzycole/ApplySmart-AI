@@ -6,6 +6,7 @@ import ai.applysmart.entity.User;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 class JobFactoryTest {
@@ -25,5 +26,28 @@ class JobFactoryTest {
         assertEquals("Acme", job.getCompany());
         assertEquals("Backend Engineer", job.getRole());
         assertEquals(Job.Status.SAVED, job.getStatus());
+    }
+
+    @Test
+    void createNormalizesOptionalBlankValues() {
+        User user = User.builder().email("user@example.com").firstName("Ada").lastName("Lovelace").build();
+        CreateJobRequest request = new CreateJobRequest();
+        request.setCompany("  Acme  ");
+        request.setRole("  Backend Engineer ");
+        request.setLink("   ");
+        request.setNotes("  ");
+        request.setSalary("  ");
+        request.setLocation("  ");
+        request.setApplicationDeadline(" ");
+
+        Job job = factory.create(request, user);
+
+        assertEquals("Acme", job.getCompany());
+        assertEquals("Backend Engineer", job.getRole());
+        assertNull(job.getLink());
+        assertNull(job.getNotes());
+        assertNull(job.getSalary());
+        assertNull(job.getLocation());
+        assertNull(job.getApplicationDeadline());
     }
 }

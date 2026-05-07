@@ -6,24 +6,46 @@ import { ResumeUploadSection } from "../resume-upload/ResumeUploadSection";
 import { JobDetailsCardHeader } from "./JobDetailsCardHeader";
 import { TextareaField } from "./TextareaField";
 import { GenerateButton } from "./GenerateButton";
-import type { ToneOption } from "../../types/cover-letter.types";
+import { CoverLetterFormErrorSummary } from "./CoverLetterFormErrorSummary";
+import type { CoverLetterFormData, ToneOption } from "../../types/cover-letter.types";
+import type { ChangeEvent, FormEvent } from "react";
 
 interface JobDetailsCardProps {
+  company: string;
+  position: string;
+  jobDescription: string;
+  highlights: string;
   tone: ToneOption;
+  onCompanyChange: (value: string) => void;
+  onPositionChange: (value: string) => void;
+  onJobDescriptionChange: (value: string) => void;
+  onHighlightsChange: (value: string) => void;
   onToneChange: (value: ToneOption) => void;
-  uploadedFile: string | null;
-  onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  uploadedFile: File | null;
+  onFileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
   onRemoveFile: () => void;
+  fieldErrors: Partial<Record<keyof CoverLetterFormData, string>>;
+  formErrors: string[];
   generating: boolean;
-  onGenerate: () => void;
+  onGenerate: (event: FormEvent<HTMLFormElement>) => void;
 }
 
 export function JobDetailsCard({
+  company,
+  position,
+  jobDescription,
+  highlights,
   tone,
+  onCompanyChange,
+  onPositionChange,
+  onJobDescriptionChange,
+  onHighlightsChange,
   onToneChange,
   uploadedFile,
   onFileUpload,
   onRemoveFile,
+  fieldErrors,
+  formErrors,
   generating,
   onGenerate
 }: JobDetailsCardProps) {
@@ -32,36 +54,60 @@ export function JobDetailsCard({
       <CardHeader>
         <JobDetailsCardHeader />
       </CardHeader>
-      <CardContent className={JOB_DETAILS_CARD_STYLES.content}>
-        <div className={JOB_DETAILS_CARD_STYLES.inputGrid}>
-          <FormInputField id="company" label="Company Name" placeholder="e.g., Google" />
-          <FormInputField id="position" label="Position Title" placeholder="e.g., Senior Software Engineer" />
-        </div>
+      <CardContent>
+        <form noValidate onSubmit={onGenerate} className={JOB_DETAILS_CARD_STYLES.content}>
+          <CoverLetterFormErrorSummary messages={formErrors} />
 
-        <ToneSelector value={tone} onChange={onToneChange} />
+          <div className={JOB_DETAILS_CARD_STYLES.inputGrid}>
+            <FormInputField
+              id="company"
+              label="Company Name"
+              placeholder="e.g., Google"
+              value={company}
+              onChange={onCompanyChange}
+              error={fieldErrors.company}
+            />
+            <FormInputField
+              id="position"
+              label="Position Title"
+              placeholder="e.g., Senior Software Engineer"
+              value={position}
+              onChange={onPositionChange}
+              error={fieldErrors.position}
+            />
+          </div>
 
-        <ResumeUploadSection
-          uploadedFile={uploadedFile}
-          onFileUpload={onFileUpload}
-          onRemoveFile={onRemoveFile}
-        />
+          <ToneSelector value={tone} onChange={onToneChange} />
 
-        <TextareaField
-          id={TEXTAREA_FIELDS.jobDescription.id}
-          label={TEXTAREA_FIELDS.jobDescription.label}
-          placeholder={TEXTAREA_FIELDS.jobDescription.placeholder}
-          minHeight={TEXTAREA_FIELDS.jobDescription.minHeight}
-        />
+          <ResumeUploadSection
+            uploadedFile={uploadedFile}
+            onFileUpload={onFileUpload}
+            onRemoveFile={onRemoveFile}
+          />
 
-        <TextareaField
-          id={TEXTAREA_FIELDS.highlights.id}
-          label={TEXTAREA_FIELDS.highlights.label}
-          placeholder={TEXTAREA_FIELDS.highlights.placeholder}
-          minHeight={TEXTAREA_FIELDS.highlights.minHeight}
-          hint={TEXTAREA_FIELDS.highlights.hint}
-        />
+          <TextareaField
+            id={TEXTAREA_FIELDS.jobDescription.id}
+            label={TEXTAREA_FIELDS.jobDescription.label}
+            placeholder={TEXTAREA_FIELDS.jobDescription.placeholder}
+            minHeight={TEXTAREA_FIELDS.jobDescription.minHeight}
+            value={jobDescription}
+            onChange={onJobDescriptionChange}
+            error={fieldErrors.jobDescription}
+          />
 
-        <GenerateButton generating={generating} onGenerate={onGenerate} />
+          <TextareaField
+            id={TEXTAREA_FIELDS.highlights.id}
+            label={TEXTAREA_FIELDS.highlights.label}
+            placeholder={TEXTAREA_FIELDS.highlights.placeholder}
+            minHeight={TEXTAREA_FIELDS.highlights.minHeight}
+            value={highlights}
+            onChange={onHighlightsChange}
+            error={fieldErrors.highlights}
+            hint={TEXTAREA_FIELDS.highlights.hint}
+          />
+
+          <GenerateButton generating={generating} />
+        </form>
       </CardContent>
     </Card>
   );

@@ -40,6 +40,15 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/login/2fa/verify")
+    @Operation(summary = "Verify a two-factor login code")
+    public ResponseEntity<AuthResponse> verifyTwoFactorLogin(
+            @Valid @RequestBody TwoFactorLoginVerifyRequest request) {
+        log.info("Two-factor login verification request received");
+        AuthResponse response = authService.verifyTwoFactorLogin(request);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/refresh")
     @Operation(summary = "Refresh access token using refresh token")
     public ResponseEntity<AuthResponse> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {

@@ -6,6 +6,7 @@ import type { FormFieldConfig } from "../../types/authentication.types";
 interface ControlledFormFieldProps extends FormFieldConfig {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
 export function ControlledFormField({
@@ -14,7 +15,8 @@ export function ControlledFormField({
   type,
   placeholder,
   value,
-  onChange
+  onChange,
+  error,
 }: ControlledFormFieldProps) {
   return (
     <div className={FORM_FIELD_STYLES.wrapper}>
@@ -29,9 +31,16 @@ export function ControlledFormField({
           value={value}
           onChange={onChange}
           className={FORM_FIELD_STYLES.input}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${id}-error` : undefined}
         />
         <div className={FORM_FIELD_STYLES.focusGlow} />
       </div>
+      {error ? (
+        <p id={`${id}-error`} className="text-xs text-red-600 dark:text-red-400">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

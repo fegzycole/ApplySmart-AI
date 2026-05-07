@@ -4,14 +4,13 @@ import { GENERATE_BUTTON_STYLES } from "../../constants/cover-letter.constants";
 
 interface GenerateButtonProps {
   generating: boolean;
-  onGenerate: () => void;
 }
 
-export function GenerateButton({ generating, onGenerate }: GenerateButtonProps) {
+export function GenerateButton({ generating }: GenerateButtonProps) {
   return (
     <Button
+      type="submit"
       className={GENERATE_BUTTON_STYLES.base}
-      onClick={onGenerate}
       disabled={generating}
     >
       {generating ? (

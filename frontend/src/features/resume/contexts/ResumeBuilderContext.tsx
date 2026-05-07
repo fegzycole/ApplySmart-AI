@@ -1,6 +1,6 @@
 import { createContext, useContext, type ReactNode } from "react";
 import { useResumeBuilderState } from "../hooks/useResumeBuilderState";
-import type { ResumeBuilderContextValue } from "../types/resume-builder.types";
+import type { ResumeBuilderContextValue, ResumeData } from "../types/resume-builder.types";
 
 export type {
   Certification,
@@ -14,8 +14,8 @@ export type {
 
 const ResumeBuilderContext = createContext<ResumeBuilderContextValue | undefined>(undefined);
 
-export function ResumeBuilderProvider({ children }: { children: ReactNode }) {
-  const value = useResumeBuilderState();
+export function ResumeBuilderProvider({ children, initialData }: { children: ReactNode; initialData?: ResumeData }) {
+  const value = useResumeBuilderState(initialData);
 
   return (
     <ResumeBuilderContext.Provider value={value}>

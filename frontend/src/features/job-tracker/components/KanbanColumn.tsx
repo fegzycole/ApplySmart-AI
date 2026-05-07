@@ -7,15 +7,18 @@ interface KanbanColumnProps {
   column: Column;
   jobs: Job[];
   onDrop: (jobId: number, newStatus: JobStatus) => void;
+  onEdit: (job: Job) => void;
   onDelete: (id: number) => void;
-  columns: Column[];
+  emptyMessage: string;
 }
 
 export function KanbanColumn({
   column,
   jobs,
   onDrop,
+  onEdit,
   onDelete,
+  emptyMessage,
 }: KanbanColumnProps) {
   const [{ isOver }, drop] = useDrop<Job, void, { isOver: boolean }>({
     accept: "JOB",
@@ -31,8 +34,10 @@ export function KanbanColumn({
       <ColumnDropZone
         jobs={jobs}
         isOver={isOver}
+        onEdit={onEdit}
         onDelete={onDelete}
         dropRef={drop as unknown as React.Ref<HTMLDivElement>}
+        emptyMessage={jobs.length === 0 ? emptyMessage : ""}
       />
     </div>
   );

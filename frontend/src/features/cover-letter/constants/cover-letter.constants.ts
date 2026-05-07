@@ -2,151 +2,137 @@ import { Target, Upload, Sparkles, Award, BarChart3, Users, Star, Zap } from "lu
 import type { HowItWorksStep, AIFeature, ToneSelectOption } from "../types/cover-letter.types";
 
 export const COVER_LETTER_PAGE_STYLES = {
-  container: "p-4 lg:p-8",
-  wrapper: "max-w-7xl mx-auto",
-  header: "mb-8",
-  grid: "grid lg:grid-cols-5 gap-6",
-  leftColumn: "lg:col-span-3 space-y-6",
-  rightColumn: "lg:col-span-2 space-y-6"
-} as const;
-
-export const COVER_LETTER_HEADER_STYLES = {
-  wrapper: "flex items-start justify-between mb-6",
-  content: "",
-  badge: {
-    container: "inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500/10 via-fuchsia-500/10 to-cyan-500/10 border border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300 text-xs sm:text-sm mb-4",
-    icon: "size-4",
-    text: "font-medium"
-  },
-  title: {
-    container: "text-3xl sm:text-4xl font-bold mb-2",
-    gradient: "bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 bg-clip-text text-transparent"
-  },
-  description: "text-zinc-600 dark:text-zinc-400 text-sm sm:text-base lg:text-lg"
+  container: "overflow-x-hidden px-3 py-4 sm:px-4 sm:py-5 lg:px-8 lg:py-8",
+  wrapper: "relative mx-auto max-w-6xl",
+  header: "mb-5 sm:mb-7",
+  grid: "grid min-w-0 gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)] lg:gap-5 xl:gap-6",
+  leftColumn: "min-w-0 space-y-4 sm:space-y-5",
+  rightColumn: "min-w-0 space-y-4 sm:space-y-5 lg:sticky lg:top-24 lg:self-start"
 } as const;
 
 export const COVER_LETTER_HEADER_CONTENT = {
-  badge: "AI-Powered Generation",
+  badge: "Cover Letter Studio",
   title: "Cover Letter Generator",
-  description: "Create personalized, compelling cover letters in seconds with AI assistance"
+  description: "Build a polished first draft that reads tailored, not templated. Add the role, paste the job description, and refine from a clean AI starting point."
 } as const;
 
 export const JOB_DETAILS_CARD_STYLES = {
-  card: "border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300",
+  card: "overflow-hidden rounded-[1.5rem] border border-zinc-200/80 bg-white/85 shadow-xl shadow-zinc-200/40 backdrop-blur-xl transition-colors dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-black/20",
   header: {
-    container: "flex items-center gap-3",
+    container: "flex items-start gap-3",
     icon: {
-      wrapper: "size-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-lg",
-      icon: "size-5 text-white"
+      wrapper: "flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-500 text-white shadow-lg shadow-violet-500/25",
+      icon: "size-5"
     },
-    title: "text-xl",
-    description: "text-sm"
+    title: "text-lg font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white sm:text-xl",
+    description: "mt-1 text-sm leading-5 text-zinc-600 dark:text-zinc-400"
   },
-  content: "space-y-5",
-  inputGroup: "space-y-2 group",
-  inputGrid: "grid grid-cols-2 gap-4",
+  content: "space-y-5 p-4 sm:space-y-6 sm:p-5",
+  inputGroup: "space-y-2.5 group min-w-0",
+  inputGrid: "grid gap-4 md:grid-cols-2",
   inputWrapper: "relative",
-  input: "h-11 bg-white dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 rounded-xl focus:border-violet-500 dark:focus:border-violet-500 focus:ring-4 focus:ring-violet-500/20 transition-all duration-300",
-  textarea: "bg-white dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 rounded-xl focus:border-violet-500 dark:focus:border-violet-500 focus:ring-4 focus:ring-violet-500/20 transition-all duration-300 resize-none",
-  focusGlow: "absolute inset-0 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 opacity-0 group-focus-within:opacity-100 -z-10 blur-xl transition-opacity duration-300",
+  input: "h-12 rounded-xl border-zinc-200 bg-white/90 px-4 shadow-sm focus-visible:ring-1 focus-visible:ring-zinc-950 dark:border-zinc-800 dark:bg-zinc-950/80 dark:focus-visible:ring-white",
+  textarea: "rounded-xl border-zinc-200 bg-white/90 px-4 py-3 text-sm leading-6 shadow-sm focus-visible:ring-1 focus-visible:ring-zinc-950 dark:border-zinc-800 dark:bg-zinc-950/80 dark:focus-visible:ring-white resize-none",
+  focusGlow: "pointer-events-none absolute inset-0 -z-10 rounded-xl opacity-0 blur-lg transition-opacity duration-200 group-focus-within:opacity-100 bg-[radial-gradient(circle_at_center,_rgba(139,92,246,0.10),transparent_70%)] dark:bg-[radial-gradient(circle_at_center,_rgba(139,92,246,0.12),transparent_70%)]",
   label: "text-sm font-medium text-zinc-700 dark:text-zinc-300",
-  hint: "text-xs text-zinc-500 dark:text-zinc-500 flex items-center gap-1",
+  error: "text-sm text-red-600 dark:text-red-400",
+  hint: "flex items-start gap-1.5 text-xs leading-5 text-zinc-500 dark:text-zinc-500",
   hintIcon: "size-3",
   select: {
-    trigger: "h-11 bg-white dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 rounded-xl"
+    trigger: "h-12 rounded-xl border-zinc-200 bg-white/90 px-4 shadow-sm focus:ring-1 focus:ring-zinc-950 data-[placeholder]:text-zinc-400 dark:border-zinc-800 dark:bg-zinc-950/80 dark:focus:ring-white"
   }
 } as const;
 
 export const RESUME_UPLOAD_STYLES = {
-  wrapper: "space-y-2",
+  wrapper: "space-y-2.5",
   label: "text-sm font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-2",
   labelIcon: "size-4",
-  hint: "text-xs text-zinc-500 dark:text-zinc-500",
+  hint: "text-xs leading-5 text-zinc-500 dark:text-zinc-500",
   uploadArea: {
     wrapper: "relative group",
-    label: "flex flex-col items-center justify-center p-8 border-2 border-dashed border-violet-300 dark:border-violet-700 rounded-xl cursor-pointer hover:border-violet-500 dark:hover:border-violet-500 hover:bg-violet-50 dark:hover:bg-violet-950/30 transition-all duration-300",
+    label: "flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-violet-300 bg-zinc-50/70 px-5 py-8 text-center transition-all duration-200 hover:border-violet-400 hover:bg-white dark:border-violet-900/60 dark:bg-zinc-950/70 dark:hover:border-violet-700 dark:hover:bg-zinc-950 sm:px-6",
     icon: {
-      wrapper: "size-12 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center mb-3 shadow-lg group-hover:scale-110 transition-transform duration-300",
-      icon: "size-6 text-white"
+      wrapper: "mb-3 flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-500 text-white shadow-lg shadow-violet-500/25 transition-transform duration-200 group-hover:scale-[1.03]",
+      icon: "size-5"
     },
-    title: "text-sm font-medium text-zinc-900 dark:text-white mb-1",
-    description: "text-xs text-zinc-500 dark:text-zinc-500",
-    glow: "absolute inset-0 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 opacity-0 group-hover:opacity-10 blur-xl transition-opacity duration-300 -z-10"
+    title: "text-sm font-medium text-zinc-900 dark:text-white",
+    description: "mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-500",
+    glow: "pointer-events-none absolute inset-0 -z-10 rounded-xl opacity-0 blur-xl transition-opacity duration-200 group-hover:opacity-100 bg-[radial-gradient(circle_at_center,_rgba(139,92,246,0.10),transparent_68%)] dark:bg-[radial-gradient(circle_at_center,_rgba(139,92,246,0.14),transparent_68%)]"
   },
   uploadedFile: {
-    container: "p-4 rounded-xl bg-gradient-to-br from-emerald-50/50 to-teal-50/50 dark:from-emerald-950/20 dark:to-teal-950/20 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between",
-    content: "flex items-center gap-3",
+    container: "flex items-center justify-between gap-3 rounded-xl border border-emerald-200/80 bg-emerald-50/70 p-3.5 dark:border-emerald-900/60 dark:bg-emerald-950/20",
+    content: "min-w-0 flex items-center gap-3",
     icon: {
-      wrapper: "size-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg",
+      wrapper: "flex size-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 shadow-lg shadow-emerald-500/20",
       icon: "size-5 text-white"
     },
-    fileName: "font-medium text-zinc-900 dark:text-white text-sm",
-    status: "text-xs text-emerald-600 dark:text-emerald-400",
-    removeButton: "hover:bg-red-100 dark:hover:bg-red-950/30",
+    fileName: "truncate text-sm font-medium text-zinc-900 dark:text-white",
+    status: "text-xs text-emerald-700 dark:text-emerald-400",
+    removeButton: "shrink-0 rounded-xl hover:bg-red-100 dark:hover:bg-red-950/30",
     removeIcon: "size-4 text-red-500"
   }
 } as const;
 
 export const GENERATE_BUTTON_STYLES = {
-  base: "w-full h-12 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-semibold rounded-xl shadow-lg shadow-violet-500/50 dark:shadow-violet-900/50 transform hover:scale-[1.02] transition-all duration-300",
+  base: "w-full rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 px-5 text-white shadow-lg shadow-violet-500/30 hover:from-violet-700 hover:via-fuchsia-700 hover:to-cyan-700 h-12 text-sm font-semibold",
   spinner: "size-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2",
   icon: "size-5 mr-2"
 } as const;
 
 export const HOW_IT_WORKS_STYLES = {
-  card: "border-0 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-600 shadow-2xl shadow-violet-500/50 dark:shadow-violet-900/50",
-  title: "text-white text-xl",
-  content: "space-y-4",
+  card: "overflow-hidden rounded-[1.5rem] border border-zinc-200/80 bg-white/85 shadow-xl shadow-zinc-200/40 backdrop-blur-xl transition-colors dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-black/20",
+  title: "text-base font-semibold text-zinc-950 dark:text-zinc-50",
+  content: "space-y-3",
   step: {
-    container: "flex items-start gap-4",
+    container: "flex items-start gap-3 rounded-2xl border border-zinc-200/70 bg-zinc-50/80 p-3.5 dark:border-zinc-800/70 dark:bg-zinc-950/60",
     icon: {
-      wrapper: "size-10 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 shadow-lg",
-      icon: "size-5 text-white"
+      wrapper: "flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 text-white shadow-lg shadow-violet-500/20",
+      icon: "size-4"
     },
-    title: "font-semibold text-white",
-    description: "text-sm text-violet-100"
+    title: "text-sm font-semibold text-zinc-900 dark:text-zinc-100",
+    description: "mt-1 text-sm leading-5 text-zinc-600 dark:text-zinc-400"
   }
 } as const;
 
 export const AI_FEATURES_STYLES = {
-  card: "border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-xl",
+  card: "overflow-hidden rounded-[1.5rem] border border-zinc-200/80 bg-white/85 shadow-xl shadow-zinc-200/40 backdrop-blur-xl transition-colors dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-black/20",
   header: {
     container: "flex items-center gap-2",
-    icon: "size-5 text-violet-600 dark:text-violet-400",
-    title: "text-lg"
+    icon: "size-4.5 text-violet-500 dark:text-violet-300",
+    title: "text-base font-semibold text-zinc-950 dark:text-zinc-50"
   },
-  content: "space-y-3",
+  content: "space-y-2.5",
   feature: {
-    container: "flex items-start gap-3 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-950/50 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition-colors duration-200",
+    container: "flex items-start gap-3 rounded-2xl border border-zinc-200/70 bg-zinc-50/80 p-3.5 transition-colors duration-200 hover:bg-white dark:border-zinc-800/70 dark:bg-zinc-950/60 dark:hover:bg-zinc-950",
     icon: {
-      wrapper: "size-8 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg",
+      wrapper: "flex size-8 shrink-0 items-center justify-center rounded-xl shadow-sm",
       icon: "size-4 text-white"
     },
-    text: "text-sm text-zinc-700 dark:text-zinc-300 pt-1"
+    text: "pt-0.5 text-sm leading-5 text-zinc-700 dark:text-zinc-300"
   }
 } as const;
 
 export const GENERATED_LETTER_STYLES = {
-  card: "border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300",
+  card: "overflow-hidden rounded-[1.5rem] border border-zinc-200/80 bg-white/85 shadow-xl shadow-zinc-200/40 backdrop-blur-xl transition-colors dark:border-zinc-800 dark:bg-zinc-950/80 dark:shadow-black/20",
   header: {
-    wrapper: "flex items-center justify-between",
-    left: "flex items-center gap-3",
+    wrapper: "flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between",
+    left: "flex min-w-0 items-start gap-3",
     icon: {
-      wrapper: "size-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center shadow-lg",
+      wrapper: "flex size-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-cyan-500 text-white shadow-lg shadow-violet-500/25",
       icon: "size-5 text-white"
     },
-    title: "text-xl",
-    description: "",
-    newButton: "hover:bg-violet-100 dark:hover:bg-violet-950/30",
+    title: "text-lg font-semibold text-zinc-950 dark:text-zinc-50",
+    description: "mt-1 text-sm leading-6 text-zinc-600 dark:text-zinc-400",
+    newButton: "w-full rounded-xl border-zinc-300 bg-white/80 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950/70 dark:hover:bg-zinc-900 sm:w-auto",
     newButtonIcon: "size-4 mr-2"
   },
   content: "space-y-4",
-  textareaWrapper: "bg-white dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 rounded-xl p-6",
-  textarea: "min-h-[500px] bg-transparent border-0 p-0 text-sm leading-relaxed resize-none focus-visible:ring-0",
-  buttonGrid: "grid grid-cols-2 gap-3",
-  downloadButton: "bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white shadow-lg",
-  downloadButtonAlt: "border-2 border-violet-200 dark:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/30",
-  copyButton: "w-full border-2 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-950",
+  textareaWrapper: "rounded-[1rem] border border-zinc-200/80 bg-zinc-50/70 p-4 dark:border-zinc-800/80 dark:bg-zinc-950/80 sm:p-5",
+  textarea: "min-h-[320px] sm:min-h-[420px] bg-transparent border-0 p-0 text-sm leading-7 text-zinc-800 dark:text-zinc-200 resize-none focus-visible:ring-0",
+  buttonGrid: "grid gap-3 sm:grid-cols-2",
+  downloadButton: "rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 text-white shadow-lg shadow-violet-500/30 hover:from-violet-700 hover:via-fuchsia-700 hover:to-cyan-700",
+  downloadButtonAlt: "rounded-xl border-zinc-300 bg-white/80 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950/70 dark:hover:bg-zinc-900",
+  copyButton: "w-full rounded-xl border-zinc-300 bg-white/80 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950/70 dark:hover:bg-zinc-900",
   buttonIcon: "size-4 mr-2"
 } as const;
 

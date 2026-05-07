@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import {
   invalidateDetailAndList,
   removeDetailAndInvalidateList,
@@ -39,6 +40,10 @@ export const useDeleteResume = () => {
         RESUME_KEYS.detail(deletedId),
         RESUME_KEYS.lists()
       );
+      toast.success("Resume deleted.");
+    },
+    onError: () => {
+      toast.error("Failed to delete resume. Please try again.");
     },
   });
 };

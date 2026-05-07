@@ -42,16 +42,29 @@ public class ResumeFileFactory {
         FileUploadResult uploadResult = fileStorageService.uploadFileBytes(pdfBytes, name + ".pdf");
         log.info("Uploaded generated PDF to storage: {}", uploadResult.getUrl());
 
-        return buildResumeRecord(name, user, uploadResult);
-    }
-
-    private Resume buildResumeRecord(String name, User user, FileUploadResult uploadResult) {
         return Resume.builder()
                 .user(user)
                 .name(name)
                 .fileUrl(uploadResult.getUrl())
                 .cloudinaryPublicId(uploadResult.getPublicId())
-                .status(Resume.Status.DRAFT)
+                .status(Resume.Status.PUBLISHED)
+                .build();
+    }
+
+    public Resume createOptimizedResume(String name,
+                                        String content,
+                                        Integer score,
+                                        User user,
+                                        FileUploadResult uploadResult) {
+        return Resume.builder()
+                .user(user)
+                .name(name)
+                .content(content)
+                .fileUrl(uploadResult != null ? uploadResult.getUrl() : null)
+                .cloudinaryPublicId(uploadResult != null ? uploadResult.getPublicId() : null)
+                .score(score != null ? score : 0)
+                .status(Resume.Status.OPTIMIZED)
+                .wordCount(content != null ? TextUtils.calculateWordCount(content) : null)
                 .build();
     }
 

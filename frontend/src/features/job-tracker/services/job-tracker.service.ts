@@ -1,23 +1,24 @@
 import { apiClient } from '@/shared/services/api-client';
 import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
-import type { Job, JobStatus } from '../types/job.types';
-
-const ENDPOINTS = API_ENDPOINTS.JOBS;
+import type { CreateJobRequest, Job, JobStatus, UpdateJobRequest } from '../types/job.types';
+import { parseCreateJobRequest, parseUpdateJobRequest } from '../utils/job-tracker.validation';
 
 export const fetchJobs = async (): Promise<Job[]> => {
-  return apiClient.get<Job[]>(ENDPOINTS.LIST);
+  return apiClient.get<Job[]>(API_ENDPOINTS.JOBS.LIST);
 };
 
 export const fetchJobById = async (id: number): Promise<Job> => {
-  return apiClient.get<Job>(ENDPOINTS.GET(id));
+  return apiClient.get<Job>(API_ENDPOINTS.JOBS.GET(id));
 };
 
-export const createJob = async (jobData: Omit<Job, 'id'>): Promise<Job> => {
-  return apiClient.post<Job, Omit<Job, 'id'>>(ENDPOINTS.CREATE, jobData);
+export const createJob = async (jobData: CreateJobRequest): Promise<Job> => {
+  const validatedJobData = parseCreateJobRequest(jobData);
+  return apiClient.post<Job, CreateJobRequest>(API_ENDPOINTS.JOBS.CREATE, validatedJobData);
 };
 
-export const updateJob = async (id: number, updates: Partial<Job>): Promise<Job> => {
-  return apiClient.patch<Job, Partial<Job>>(ENDPOINTS.UPDATE(id), updates);
+export const updateJob = async (id: number, updates: UpdateJobRequest): Promise<Job> => {
+  const validatedUpdates = parseUpdateJobRequest(updates);
+  return apiClient.patch<Job, UpdateJobRequest>(API_ENDPOINTS.JOBS.UPDATE(id), validatedUpdates);
 };
 
 export const updateJobStatus = async (id: number, status: JobStatus): Promise<Job> => {
@@ -25,13 +26,5 @@ export const updateJobStatus = async (id: number, status: JobStatus): Promise<Jo
 };
 
 export const deleteJob = async (id: number): Promise<void> => {
-  return apiClient.delete<void>(ENDPOINTS.DELETE(id));
-};
-
-export const fetchJobsByStatus = async (status: JobStatus): Promise<Job[]> => {
-  return apiClient.get<Job[]>(ENDPOINTS.BY_STATUS(status));
-};
-
-export const searchJobs = async (query: string): Promise<Job[]> => {
-  return apiClient.get<Job[]>(ENDPOINTS.SEARCH, { q: query });
+  await apiClient.delete(API_ENDPOINTS.JOBS.DELETE(id));
 };

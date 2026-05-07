@@ -4,11 +4,21 @@ import { OptimizationUploadView } from "./OptimizationUploadView";
 import type { ResumeOptimization } from "../../services/resume.service";
 import type { ResumeTemplate } from "../../types/resume-builder.types";
 import type { ReactNode } from "react";
+import type {
+  ResumeOptimizerCoverLetterOptions,
+  ResumeOptimizerSource,
+} from "../../types/resume-optimizer.types";
 
 interface OptimizerWorkspaceProps {
-  onOptimize: (file: File, jobDescription: string, template: ResumeTemplate) => void;
+  onOptimize: (
+    source: ResumeOptimizerSource,
+    jobDescription: string,
+    template: ResumeTemplate,
+    coverLetter?: ResumeOptimizerCoverLetterOptions
+  ) => void;
   onStartOver: () => void;
   optimizing: boolean;
+  errorMessage?: string | null;
   result: ResumeOptimization | null;
   view: "upload" | "result";
 }
@@ -17,6 +27,7 @@ export function OptimizerWorkspace({
   onOptimize,
   onStartOver,
   optimizing,
+  errorMessage,
   result,
   view,
 }: OptimizerWorkspaceProps) {
@@ -24,7 +35,11 @@ export function OptimizerWorkspace({
     <AnimatePresence mode="wait">
       {view === "upload" ? (
         <OptimizerViewFrame key="upload">
-          <OptimizationUploadView onOptimize={onOptimize} optimizing={optimizing} />
+          <OptimizationUploadView
+            onOptimize={onOptimize}
+            optimizing={optimizing}
+            errorMessage={errorMessage}
+          />
         </OptimizerViewFrame>
       ) : result ? (
         <OptimizerViewFrame key="result">

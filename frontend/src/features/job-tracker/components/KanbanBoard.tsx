@@ -5,10 +5,12 @@ import type { Job, JobStatus } from "../types/job.types";
 interface KanbanBoardProps {
   jobs: Job[];
   onDrop: (jobId: number, newStatus: JobStatus) => void;
+  onEdit: (job: Job) => void;
   onDelete: (jobId: number) => void;
+  emptyMessage: string;
 }
 
-export function KanbanBoard({ jobs, onDrop, onDelete }: KanbanBoardProps) {
+export function KanbanBoard({ jobs, onDrop, onEdit, onDelete, emptyMessage }: KanbanBoardProps) {
   return (
     <div className="overflow-x-auto pb-6">
       <div className="flex gap-6 min-w-max">
@@ -18,8 +20,9 @@ export function KanbanBoard({ jobs, onDrop, onDelete }: KanbanBoardProps) {
             column={column}
             jobs={jobs.filter((job) => job.status === column.id)}
             onDrop={onDrop}
+            onEdit={onEdit}
             onDelete={onDelete}
-            columns={KANBAN_COLUMNS}
+            emptyMessage={emptyMessage || `No jobs in ${column.title}`}
           />
         ))}
       </div>

@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import {
   invalidateDetailAndList,
   removeDetailAndInvalidateList,
@@ -7,6 +8,7 @@ import * as coverLetterService from '../services/cover-letter.service';
 import type {
   CoverLetterRequest,
   CoverLetter,
+  GenerateCoverLetterFromFilePayload,
 } from '../services/cover-letter.service';
 
 export const COVER_LETTER_KEYS = {
@@ -43,6 +45,18 @@ export const useGenerateCoverLetter = () => {
   });
 };
 
+export const useGenerateCoverLetterFromFile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: GenerateCoverLetterFromFilePayload) =>
+      coverLetterService.generateCoverLetterFromFile(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: COVER_LETTER_KEYS.lists() });
+    },
+  });
+};
+
 export const useUpdateCoverLetter = () => {
   const queryClient = useQueryClient();
 
@@ -70,6 +84,10 @@ export const useDeleteCoverLetter = () => {
         COVER_LETTER_KEYS.detail(deletedId),
         COVER_LETTER_KEYS.lists()
       );
+      toast.success("Cover letter deleted.");
+    },
+    onError: () => {
+      toast.error("Failed to delete cover letter. Please try again.");
     },
   });
 };

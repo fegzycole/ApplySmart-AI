@@ -3,8 +3,6 @@ package ai.applysmart.dto.job;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 public class UpdateJobRequest {
     private String company;
@@ -18,5 +16,5 @@ public class UpdateJobRequest {
     private String notes;
     private String salary;
     private String location;
-    private LocalDateTime applicationDeadline;
+    private String applicationDeadline;
 }

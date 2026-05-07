@@ -1,2 +1,2 @@
-export { DangerZone } from './DangerZone';
-export { DangerAction } from './DangerAction';
+export { DangerZone } from "./DangerZone";
+export { DeleteAccountAction } from "./DeleteAccountAction";

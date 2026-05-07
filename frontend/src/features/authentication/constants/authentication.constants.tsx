@@ -102,6 +102,13 @@ export const VERIFY_EMAIL_FIELD: FormFieldConfig = {
   placeholder: "Enter 6-digit code"
 } as const;
 
+export const TWO_FACTOR_LOGIN_FIELD: FormFieldConfig = {
+  id: "code",
+  label: "Security Code",
+  type: "text",
+  placeholder: "Enter 6-digit code"
+} as const;
+
 export const AUTH_CONTENT = {
   login: {
     title: "Welcome back",
@@ -110,6 +117,12 @@ export const AUTH_CONTENT = {
     footer: "Don't have an account?",
     footerLink: "Sign up",
     footerLinkPath: "/signup"
+  },
+  loginTwoFactor: {
+    title: "Verify your sign-in",
+    description: "Enter the current 6-digit code from your authenticator app to finish signing in.",
+    submitButton: "Verify and Sign In",
+    backButton: "Back to Sign In"
   },
   signup: {
     title: "Create your account",

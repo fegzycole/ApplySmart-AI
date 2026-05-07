@@ -63,6 +63,9 @@ public class User extends BaseEntity implements UserDetails {
     @Column(name = "image_url")
     private String imageUrl;
 
+    @Column(name = "profile_image_public_id")
+    private String profileImagePublicId;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Resume> resumes;
 

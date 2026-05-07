@@ -21,6 +21,15 @@ public class AuthResponseFactory {
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .user(userDtoMapper.toDto(user))
+                .requiresTwoFactor(false)
+                .build();
+    }
+
+    public AuthResponse twoFactorRequired(String email, String challengeToken) {
+        return AuthResponse.builder()
+                .requiresTwoFactor(true)
+                .challengeEmail(email)
+                .twoFactorChallengeToken(challengeToken)
                 .build();
     }
 

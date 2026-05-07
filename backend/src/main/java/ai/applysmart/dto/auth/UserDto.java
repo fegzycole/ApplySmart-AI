@@ -18,6 +18,7 @@ public class UserDto {
     private String email;
     private String firstName;
     private String lastName;
+    private String imageUrl;
     private String role;
     private Boolean emailVerified;
     private Boolean twoFactorEnabled;

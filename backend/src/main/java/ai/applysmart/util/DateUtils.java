@@ -1,6 +1,9 @@
 package ai.applysmart.util;
 
+import ai.applysmart.exception.BadRequestException;
+
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -38,6 +41,19 @@ public final class DateUtils {
 
     public static double calculatePercentage(long numerator, long denominator) {
         return denominator > 0 ? (numerator * 100.0 / denominator) : 0.0;
+    }
+
+    public static LocalDateTime parseOptionalLocalDateTime(String value, String fieldName) {
+        String normalizedValue = TextUtils.trimToNull(value);
+        if (normalizedValue == null) {
+            return null;
+        }
+
+        try {
+            return LocalDateTime.parse(normalizedValue);
+        } catch (DateTimeParseException exception) {
+            throw new BadRequestException("Invalid " + fieldName + " date-time value", exception);
+        }
     }
 
     private static String formatTimeUnit(long value, String unit) {

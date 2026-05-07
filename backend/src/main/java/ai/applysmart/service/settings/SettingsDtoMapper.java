@@ -39,10 +39,17 @@ public class SettingsDtoMapper {
     }
 
     public SecuritySettingsDto toSecuritySettingsDto(User user) {
+        boolean hasPassword = user.getPassword() != null && !user.getPassword().isEmpty();
+        boolean twoFactorEnabled = hasPassword && Boolean.TRUE.equals(user.getTwoFactorEnabled());
+        boolean twoFactorSetupPending = hasPassword
+                && !twoFactorEnabled
+                && user.getTwoFactorSecret() != null
+                && !user.getTwoFactorSecret().isBlank();
+
         return SecuritySettingsDto.builder()
-                .twoFactorEnabled(user.getTwoFactorEnabled())
-                .hasPassword(user.getPassword() != null && !user.getPassword().isEmpty())
-                .activeSessions(null)
+                .twoFactorEnabled(twoFactorEnabled)
+                .hasPassword(hasPassword)
+                .twoFactorSetupPending(twoFactorSetupPending)
                 .build();
     }
 }

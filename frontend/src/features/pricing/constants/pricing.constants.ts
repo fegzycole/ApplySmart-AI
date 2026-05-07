@@ -24,17 +24,6 @@ export const NAVIGATION_STYLES = {
   }
 } as const;
 
-export const PRICING_HEADER_STYLES = {
-  container: "pt-20 pb-12 px-4 sm:px-6 lg:px-8",
-  wrapper: "max-w-7xl mx-auto text-center",
-  title: "text-4xl sm:text-5xl lg:text-6xl font-bold text-zinc-900 dark:text-white mb-4",
-  description: "text-xl text-zinc-600 dark:text-zinc-400 mb-8",
-  tabs: {
-    container: "inline-flex",
-    badge: "ml-2 px-2 py-0.5 bg-indigo-100 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 text-xs rounded-full"
-  }
-} as const;
-
 export const PRICING_HEADER_CONTENT = {
   title: "Simple, Transparent Pricing",
   description: "Choose the plan that's right for your job search journey",

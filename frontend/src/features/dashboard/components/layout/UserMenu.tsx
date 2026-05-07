@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { ChevronDown, LogOut, Moon, Settings, Sun } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { UserAvatar } from "@/shared/components/UserAvatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,17 +18,23 @@ export function UserMenu() {
     isLoggingOut,
     logout,
     toggleTheme,
+    userFirstName,
+    userLastName,
     userFullName,
-    userInitials,
+    userImageUrl,
   } = useUserMenu();
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-2">
-          <div className="size-8 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
-            <span className="text-white font-semibold text-sm">{userInitials}</span>
-          </div>
+          <UserAvatar
+            firstName={userFirstName}
+            lastName={userLastName}
+            imageUrl={userImageUrl}
+            className="size-8 rounded-full"
+            textClassName="text-sm font-semibold"
+          />
           <span className="hidden md:block text-sm font-medium">{userFullName}</span>
           <ChevronDown className="size-4 text-zinc-500" />
         </Button>

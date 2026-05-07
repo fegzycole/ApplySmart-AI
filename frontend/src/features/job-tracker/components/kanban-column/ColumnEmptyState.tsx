@@ -1,9 +1,13 @@
 import { KANBAN_COLUMN_STYLES } from "../../constants/job-tracker.constants";
 
-export function ColumnEmptyState() {
+interface ColumnEmptyStateProps {
+  message: string;
+}
+
+export function ColumnEmptyState({ message }: ColumnEmptyStateProps) {
   return (
     <div className={KANBAN_COLUMN_STYLES.emptyState}>
-      Drop jobs here
+      {message}
     </div>
   );
 }

@@ -2,14 +2,15 @@ import { useDrag } from "react-dnd";
 import { Card } from "@/shared/components/ui/card";
 import type { Job } from "../types/job.types";
 import { JOB_CARD_STYLES } from "../constants/job-tracker.constants";
-import { JobCardHeader, JobCardNotes, JobCardActions } from "./job-card";
+import { JobCardActions, JobCardHeader, JobCardMeta, JobCardNotes } from "./job-card";
 
 interface JobCardProps {
   job: Job;
+  onEdit: (job: Job) => void;
   onDelete: (id: number) => void;
 }
 
-export function JobCard({ job, onDelete }: JobCardProps) {
+export function JobCard({ job, onEdit, onDelete }: JobCardProps) {
   const [{ isDragging }, drag] = useDrag<Job, void, { isDragging: boolean }>({
     type: "JOB",
     item: job,
@@ -25,18 +26,17 @@ export function JobCard({ job, onDelete }: JobCardProps) {
   return (
     <div ref={drag as unknown as React.Ref<HTMLDivElement>}>
       <Card className={cardClassName}>
-        <div className={JOB_CARD_STYLES.topBar} />
-        <div className={JOB_CARD_STYLES.hoverOverlay} />
-
+        <div className={JOB_CARD_STYLES.ambientGlow} />
+        <div className={JOB_CARD_STYLES.hairline} />
         <div className={JOB_CARD_STYLES.content}>
-          <JobCardHeader role={job.role} company={job.company} />
+          <JobCardHeader role={job.role} company={job.company} location={job.location} />
+          <JobCardMeta salary={job.salary} applicationDeadline={job.applicationDeadline} />
           <JobCardNotes notes={job.notes} />
-
-          <div className={JOB_CARD_STYLES.date.container}>
-            <span>{job.date}</span>
-          </div>
-
-          <JobCardActions link={job.link} onDelete={() => onDelete(job.id)} />
+          <JobCardActions
+            link={job.link}
+            onEdit={() => onEdit(job)}
+            onDelete={() => onDelete(job.id)}
+          />
         </div>
       </Card>
     </div>

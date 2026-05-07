@@ -4,3 +4,4 @@ export { FormInputField } from './FormInputField';
 export { TextareaField } from './TextareaField';
 export { GenerateButton } from './GenerateButton';
 export { ToneSelector } from './ToneSelector';
+export { CoverLetterFormErrorSummary } from './CoverLetterFormErrorSummary';

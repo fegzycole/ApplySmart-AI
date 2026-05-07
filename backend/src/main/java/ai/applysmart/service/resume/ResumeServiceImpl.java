@@ -1,5 +1,7 @@
 package ai.applysmart.service.resume;
 
+import ai.applysmart.dto.coverletter.CoverLetterRequest;
+import ai.applysmart.dto.coverletter.CoverLetterResponseDto;
 import ai.applysmart.dto.resume.BuildResumeFromDataRequest;
 import ai.applysmart.dto.resume.OptimizeResumeRequest;
 import ai.applysmart.dto.resume.RenderResumePdfRequest;
@@ -13,6 +15,9 @@ import ai.applysmart.exception.FileProcessingException;
 import ai.applysmart.exception.ResourceNotFoundException;
 import ai.applysmart.repository.ResumeRepository;
 import ai.applysmart.service.ai.ClaudeService;
+import ai.applysmart.service.coverletter.CoverLetterService;
+import ai.applysmart.util.TextUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,7 +39,10 @@ public class ResumeServiceImpl implements ResumeService {
     private final ResumeFileFactory resumeFileFactory;
     private final ResumeBuildWorkflow resumeBuildWorkflow;
     private final ResumeOptimizationWorkflow optimizationWorkflow;
+    private final ResumeOptimizationCoverLetterRequestFactory optimizationCoverLetterRequestFactory;
+    private final CoverLetterService coverLetterService;
     private final ResumeDtoMapper resumeDtoMapper;
+    private final ObjectMapper objectMapper;
 
     @Override
     public List<ResumeDto> getAllResumes(User user) {
@@ -45,10 +53,15 @@ public class ResumeServiceImpl implements ResumeService {
     }
 
     @Override
-    public Page<ResumeDto> getAllResumes(User user, Pageable pageable) {
+    public Page<ResumeDto> getAllResumes(User user, Pageable pageable, String query, String documentKind) {
         log.info("Fetching paginated resumes for user: {} (page: {}, size: {})",
                 user.getId(), pageable.getPageNumber(), pageable.getPageSize());
-        return resumeRepository.findByUserOrderByUpdatedAtDesc(user, pageable)
+        return resumeRepository.findDocumentPageByUser(
+                        user.getId(),
+                        TextUtils.trimToNull(query),
+                        TextUtils.trimToNull(documentKind),
+                        pageable
+                )
                 .map(resumeDtoMapper::toDto);
     }
 
@@ -98,10 +111,10 @@ public class ResumeServiceImpl implements ResumeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Resume not found"));
 
         requireResumeContent(resume);
-        ResumeOptimizationDto optimization = optimizationWorkflow.optimizeStoredResume(resume, request);
-        resumeRepository.save(resume);
+        ResumeOptimizationArtifacts optimizationArtifacts = optimizationWorkflow.optimizeStoredResume(resume, request);
+        Resume optimizedResume = resumeRepository.save(optimizationArtifacts.getOptimizedResume());
 
-        return optimization;
+        return attachCoverLetterIfRequested(optimizationArtifacts.getOptimization(), request, optimizedResume, user);
     }
 
     @Override
@@ -118,8 +131,14 @@ public class ResumeServiceImpl implements ResumeService {
 
     @Override
     @Transactional
-    public ResumeOptimizationDto optimizeUploadedFile(MultipartFile file, String jobDescription, String template, User user) {
-        return optimizationWorkflow.optimizeUploadedFile(file, jobDescription, template, user);
+    public ResumeOptimizationDto optimizeUploadedFile(MultipartFile file, OptimizeResumeRequest request, User user) {
+        Resume originalResume = resumeFileFactory.createUploadedResume(file, user);
+        resumeRepository.save(originalResume);
+
+        ResumeOptimizationArtifacts optimizationArtifacts = optimizationWorkflow.optimizeUploadedFile(file, request, user);
+        Resume optimizedResume = resumeRepository.save(optimizationArtifacts.getOptimizedResume());
+
+        return attachCoverLetterIfRequested(optimizationArtifacts.getOptimization(), request, optimizedResume, user);
     }
 
     @Override
@@ -135,6 +154,11 @@ public class ResumeServiceImpl implements ResumeService {
                     request.getName(),
                     user
             );
+            try {
+                resume.setContent(objectMapper.writeValueAsString(request));
+            } catch (Exception e) {
+                log.warn("Could not serialize resume data for storage on resume: {}", resume.getName(), e);
+            }
             resume = resumeRepository.save(resume);
             log.info("Created structured resume with ID: {}", resume.getId());
 
@@ -160,5 +184,28 @@ public class ResumeServiceImpl implements ResumeService {
         if (resume.getContent() == null || resume.getContent().isBlank()) {
             throw new BadRequestException("Resume content is empty");
         }
+    }
+
+    private ResumeOptimizationDto attachCoverLetterIfRequested(
+            ResumeOptimizationDto optimization,
+            OptimizeResumeRequest request,
+            Resume optimizedResume,
+            User user
+    ) {
+        CoverLetterRequest coverLetterRequest =
+                optimizationCoverLetterRequestFactory.build(request, optimizedResume);
+        if (coverLetterRequest == null) {
+            return optimization;
+        }
+
+        CoverLetterResponseDto coverLetter = coverLetterService.generateCoverLetter(coverLetterRequest, user);
+        return ResumeOptimizationDto.builder()
+                .originalScore(optimization.getOriginalScore())
+                .optimizedScore(optimization.getOptimizedScore())
+                .changes(optimization.getChanges())
+                .content(optimization.getContent())
+                .fileUrl(optimization.getFileUrl())
+                .coverLetter(coverLetter)
+                .build();
     }
 }

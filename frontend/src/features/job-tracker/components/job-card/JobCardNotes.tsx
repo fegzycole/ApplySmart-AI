@@ -1,7 +1,7 @@
 import { JOB_CARD_STYLES } from "../../constants/job-tracker.constants";
 
 interface JobCardNotesProps {
-  notes: string;
+  notes: string | null;
 }
 
 export function JobCardNotes({ notes }: JobCardNotesProps) {

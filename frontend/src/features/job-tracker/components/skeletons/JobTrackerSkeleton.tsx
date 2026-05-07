@@ -1,7 +1,7 @@
 import { Skeleton } from "@/shared/components/ui/skeleton";
 
 export function JobTrackerSkeleton() {
-  const columns = 4;
+  const columns = 5;
   const cardsPerColumn = 3;
 
   return (

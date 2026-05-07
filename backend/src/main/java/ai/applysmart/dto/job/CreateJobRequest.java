@@ -4,8 +4,6 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
 public class CreateJobRequest {
     @NotBlank(message = "Company is required")
@@ -14,6 +12,7 @@ public class CreateJobRequest {
     @NotBlank(message = "Role is required")
     private String role;
 
+    @NotBlank(message = "Job posting URL is required")
     @Pattern(regexp = "^(https?://)?([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})(:[0-9]{1,5})?(/.*)?$",
              message = "Invalid URL format")
     private String link;
@@ -22,5 +21,5 @@ public class CreateJobRequest {
     private String notes;
     private String salary;
     private String location;
-    private LocalDateTime applicationDeadline;
+    private String applicationDeadline;
 }

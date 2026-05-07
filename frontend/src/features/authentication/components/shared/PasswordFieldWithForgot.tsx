@@ -8,9 +8,16 @@ interface PasswordFieldWithForgotProps {
   placeholder: string;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  error?: string;
 }
 
-export function PasswordFieldWithForgot({ id, placeholder, value, onChange }: PasswordFieldWithForgotProps) {
+export function PasswordFieldWithForgot({
+  id,
+  placeholder,
+  value,
+  onChange,
+  error,
+}: PasswordFieldWithForgotProps) {
   return (
     <div className={FORM_FIELD_STYLES.wrapper}>
       <div className="flex justify-between items-center mb-2">
@@ -29,9 +36,16 @@ export function PasswordFieldWithForgot({ id, placeholder, value, onChange }: Pa
           value={value}
           onChange={onChange}
           className={FORM_FIELD_STYLES.input}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${id}-error` : undefined}
         />
         <div className={FORM_FIELD_STYLES.focusGlow} />
       </div>
+      {error ? (
+        <p id={`${id}-error`} className="text-xs text-red-600 dark:text-red-400">
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

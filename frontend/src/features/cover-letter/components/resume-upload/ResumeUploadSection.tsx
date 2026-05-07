@@ -4,7 +4,7 @@ import { Upload, X, FileCheck } from "lucide-react";
 import { RESUME_UPLOAD_STYLES } from "../../constants/cover-letter.constants";
 
 interface ResumeUploadSectionProps {
-  uploadedFile: string | null;
+  uploadedFile: File | null;
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemoveFile: () => void;
 }
@@ -49,7 +49,7 @@ export function ResumeUploadSection({ uploadedFile, onFileUpload, onRemoveFile }
               <FileCheck className={RESUME_UPLOAD_STYLES.uploadedFile.icon.icon} />
             </div>
             <div>
-              <p className={RESUME_UPLOAD_STYLES.uploadedFile.fileName}>{uploadedFile}</p>
+              <p className={RESUME_UPLOAD_STYLES.uploadedFile.fileName}>{uploadedFile.name}</p>
               <p className={RESUME_UPLOAD_STYLES.uploadedFile.status}>Successfully uploaded</p>
             </div>
           </div>

@@ -22,6 +22,7 @@ public class CoverLetterInstructionsBuilder {
         - Closing: Express interest in next steps
         - Professional formatting suitable for PDF generation
         - Do not include address headers (will be added separately)
+        - Do not use em dashes or en dashes anywhere; use regular hyphens if needed
         """;
 
     public String build(String tone) {

@@ -2,6 +2,7 @@ package ai.applysmart.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -39,6 +40,14 @@ public class CoverLetter extends BaseEntity {
 
     @Column(name = "word_count")
     private Integer wordCount;
+
+    @Pattern(regexp = "^(https?://)?([a-zA-Z0-9.-]+\\.[a-zA-Z]{2,})(:[0-9]{1,5})?(/.*)?$",
+             message = "Invalid URL format")
+    @Column(name = "file_url", length = 500)
+    private String fileUrl;
+
+    @Column(name = "cloudinary_public_id", length = 255)
+    private String cloudinaryPublicId;
 
     @Column(name = "linked_resume_id")
     private Long linkedResumeId;

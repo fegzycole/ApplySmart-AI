@@ -31,13 +31,15 @@ public class ResumeController {
     @Operation(summary = "Get all resumes for authenticated user with pagination support")
     public ResponseEntity<?> getAllResumes(
             @AuthenticationPrincipal User user,
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String documentKind,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
         log.info("Get all resumes request from user: {} (page: {}, size: {})", user.getId(), page, size);
         return ControllerUtils.handlePaginatedRequest(
                 page,
                 size,
-                pageable -> resumeService.getAllResumes(user, pageable),
+                pageable -> resumeService.getAllResumes(user, pageable, query, documentKind),
                 () -> resumeService.getAllResumes(user)
         );
     }
@@ -98,13 +100,12 @@ public class ResumeController {
     @Operation(summary = "Upload and optimize resume file for job description with template selection")
     public ResponseEntity<ResumeOptimizationDto> optimizeUploadedFile(
             @RequestPart("file") MultipartFile file,
-            @RequestPart("jobDescription") String jobDescription,
-            @RequestParam(required = false, defaultValue = "MODERN") String template,
+            @Valid @RequestPart("request") OptimizeResumeRequest request,
             @AuthenticationPrincipal User user) {
         log.info("Optimize uploaded file request from user: {} - File: {}, Job desc length: {}, Template: {}",
-                user.getId(), file.getOriginalFilename(), jobDescription.length(), template);
+                user.getId(), file.getOriginalFilename(), request.getJobDescription().length(), request.getTemplate());
 
-        ResumeOptimizationDto optimization = resumeService.optimizeUploadedFile(file, jobDescription, template, user);
+        ResumeOptimizationDto optimization = resumeService.optimizeUploadedFile(file, request, user);
         return ResponseEntity.ok(optimization);
     }
 

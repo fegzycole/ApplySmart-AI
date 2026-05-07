@@ -1,4 +1,4 @@
-import type { ResumeData, ResumeTemplate } from "../types/resume-builder.types";
+import type { ResumeData, ResumeTemplate, WorkExperience, Education, Certification, Project } from "../types/resume-builder.types";
 
 interface ParsedResumePayload {
   personalInfo: ResumeData["personalInfo"];
@@ -78,4 +78,57 @@ export function buildResumePayload(data: ResumeData, name: string): BuildResumeF
 
 export function buildResumePdfPayload(data: ResumeData, name: string): RenderResumePdfPayload {
   return buildResumePayload(data, name);
+}
+
+// Parses content stored by the backend (serialized BuildResumeFromDataRequest) back into ResumeData.
+// Returns null if the content is not a valid builder payload (e.g. uploaded/optimized resume plain text).
+export function contentToResumeData(content: string): ResumeData | null {
+  try {
+    const payload = JSON.parse(content) as { template?: ResumeTemplate; resumeData?: ParsedResumePayload };
+    if (!payload.resumeData?.personalInfo) return null;
+
+    const d = payload.resumeData;
+    return {
+      template: payload.template ?? "MODERN",
+      personalInfo: d.personalInfo,
+      summary: d.summary ?? "",
+      workExperience: (d.workExperience ?? []).map((exp): WorkExperience => ({
+        id: crypto.randomUUID(),
+        company: exp.company ?? "",
+        position: exp.position ?? "",
+        location: exp.location ?? "",
+        startDate: exp.startDate ?? "",
+        endDate: exp.endDate === "Present" ? "" : (exp.endDate ?? ""),
+        current: exp.endDate === "Present",
+        responsibilities: exp.responsibilities ?? [],
+      })),
+      education: (d.education ?? []).map((edu): Education => ({
+        id: crypto.randomUUID(),
+        institution: edu.institution ?? "",
+        degree: edu.degree ?? "",
+        field: edu.field ?? "",
+        location: edu.location ?? "",
+        startDate: edu.startDate ?? "",
+        graduationDate: edu.graduationDate === "Present" ? "" : (edu.graduationDate ?? ""),
+        current: edu.graduationDate === "Present",
+        gpa: edu.gpa ?? "",
+      })),
+      skills: d.skills ?? [],
+      certifications: (d.certifications ?? []).map((cert): Certification => ({
+        id: crypto.randomUUID(),
+        name: cert.name ?? "",
+        issuer: cert.issuer ?? "",
+        date: cert.date ?? "",
+      })),
+      projects: (d.projects ?? []).map((proj): Project => ({
+        id: crypto.randomUUID(),
+        name: proj.name ?? "",
+        description: proj.description ?? "",
+        technologies: proj.technologies ?? [],
+        link: proj.link ?? "",
+      })),
+    };
+  } catch {
+    return null;
+  }
 }

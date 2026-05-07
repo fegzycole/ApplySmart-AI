@@ -17,15 +17,6 @@ export const DASHBOARD_PAGE_STYLES = {
   bottomGrid: "grid lg:grid-cols-3 gap-4 lg:gap-6"
 } as const;
 
-export const DASHBOARD_HEADER_STYLES = {
-  container: "mb-6 lg:mb-8",
-  title: {
-    base: "text-3xl sm:text-4xl font-bold mb-2",
-    gradient: "bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 bg-clip-text text-transparent"
-  },
-  description: "text-zinc-600 dark:text-zinc-400 text-sm sm:text-base lg:text-lg"
-} as const;
-
 export const DASHBOARD_HEADER_CONTENT = {
   title: "Dashboard",
   description: "Welcome back! Here's your job search overview"

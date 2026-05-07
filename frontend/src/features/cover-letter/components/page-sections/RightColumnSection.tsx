@@ -1,12 +1,12 @@
 import { COVER_LETTER_PAGE_STYLES } from "../../constants/cover-letter.constants";
 import { HowItWorksCard, AIFeaturesCard } from "../info-cards";
 import { GeneratedLetterCard } from "../generated-output";
-import type { GeneratedCoverLetter } from "../../services/cover-letter.service";
+import type { CoverLetter } from "../../services/cover-letter.service";
 
 interface RightColumnSectionProps {
   generated: boolean;
   onNewLetter: () => void;
-  generatedLetter?: GeneratedCoverLetter;
+  generatedLetter?: CoverLetter;
 }
 
 export function RightColumnSection({ generated, onNewLetter, generatedLetter }: RightColumnSectionProps) {

@@ -19,6 +19,10 @@ public interface VerificationCodeRepository extends JpaRepository<VerificationCo
     void deleteByEmailAndType(String email, VerificationCode.CodeType type);
 
     @Modifying
+    @Query("DELETE FROM VerificationCode v WHERE v.email = :email")
+    void deleteByEmail(String email);
+
+    @Modifying
     @Query("DELETE FROM VerificationCode v WHERE v.expiresAt < :now")
     void deleteExpiredCodes(LocalDateTime now);
 }

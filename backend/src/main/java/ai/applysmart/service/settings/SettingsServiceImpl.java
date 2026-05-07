@@ -2,24 +2,19 @@ package ai.applysmart.service.settings;
 
 import ai.applysmart.dto.settings.BillingDto;
 import ai.applysmart.dto.settings.ChangePasswordRequest;
-import ai.applysmart.dto.settings.NotificationPreferenceDto;
+import ai.applysmart.dto.settings.DeleteAccountRequest;
+import ai.applysmart.dto.settings.EnableTwoFactorRequest;
 import ai.applysmart.dto.settings.ProfileDto;
 import ai.applysmart.dto.settings.SecuritySettingsDto;
-import ai.applysmart.dto.settings.SessionDto;
+import ai.applysmart.dto.settings.TwoFactorSetupDto;
 import ai.applysmart.dto.settings.UpdateProfileRequest;
 import ai.applysmart.entity.User;
-import ai.applysmart.exception.UnsupportedFeatureException;
 import ai.applysmart.repository.UserRepository;
-import ai.applysmart.service.settings.SettingsService;
-import ai.applysmart.service.settings.AccountSecurityManager;
-import ai.applysmart.service.settings.NotificationPreferenceProvider;
-import ai.applysmart.service.settings.SettingsDtoMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @Service
@@ -29,8 +24,9 @@ public class SettingsServiceImpl implements SettingsService {
 
     private final UserRepository userRepository;
     private final SettingsDtoMapper settingsDtoMapper;
+    private final ProfileImageManager profileImageManager;
     private final AccountSecurityManager accountSecurityManager;
-    private final NotificationPreferenceProvider notificationPreferenceProvider;
+    private final AccountDeletionManager accountDeletionManager;
 
     @Override
     public ProfileDto getProfile(User user) {
@@ -52,6 +48,15 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
+    @Transactional
+    public ProfileDto updateProfileImage(MultipartFile file, User user) {
+        log.info("Updating profile image for user: {}", user.getId());
+
+        User updatedUser = profileImageManager.updateProfileImage(file, user);
+        return settingsDtoMapper.toProfileDto(updatedUser);
+    }
+
+    @Override
     public BillingDto getBillingInfo(User user) {
         log.info("Fetching billing info for user: {}", user.getId());
 
@@ -66,13 +71,6 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public List<SessionDto> getActiveSessions(User user) {
-        log.info("Fetching active sessions for user: {}", user.getId());
-
-        throw new UnsupportedFeatureException("Session tracking requires persisted session records");
-    }
-
-    @Override
     @Transactional
     public void changePassword(ChangePasswordRequest request, User user) {
         log.info("Changing password for user: {}", user.getId());
@@ -83,10 +81,18 @@ public class SettingsServiceImpl implements SettingsService {
 
     @Override
     @Transactional
-    public void enableTwoFactor(User user) {
+    public TwoFactorSetupDto setupTwoFactor(User user) {
+        log.info("Preparing two-factor authenticator setup for user: {}", user.getId());
+
+        return accountSecurityManager.setupTwoFactor(user);
+    }
+
+    @Override
+    @Transactional
+    public void enableTwoFactor(EnableTwoFactorRequest request, User user) {
         log.info("Enabling two-factor authentication for user: {}", user.getId());
 
-        accountSecurityManager.enableTwoFactor(user);
+        accountSecurityManager.enableTwoFactor(request, user);
         log.info("Two-factor authentication enabled for user: {}", user.getId());
     }
 
@@ -100,18 +106,11 @@ public class SettingsServiceImpl implements SettingsService {
     }
 
     @Override
-    public List<NotificationPreferenceDto> getNotificationPreferences(User user) {
-        log.info("Fetching notification preferences for user: {}", user.getId());
-
-        return notificationPreferenceProvider.getDefaults();
-    }
-
-    @Override
     @Transactional
-    public void deleteAccount(User user) {
+    public void deleteAccount(DeleteAccountRequest request, User user) {
         log.info("Deleting account for user: {}", user.getId());
 
-        userRepository.delete(user);
+        accountDeletionManager.deleteAccount(request, user);
 
         log.info("Account deleted for user: {}", user.getId());
     }

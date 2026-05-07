@@ -52,19 +52,27 @@ export class ApiClient {
     }
   }
 
-  private async handleResponse<T>(response: Response): Promise<T> {
+  private handleUnauthorizedResponse(usedAuth: boolean) {
+    if (!usedAuth) {
+      return;
+    }
+
+    this.clearAuthToken();
+
+    const currentPath = window.location.pathname;
+    const publicPaths = ['/login', '/signup', '/verify-email', '/password-reset', '/auth/oauth2/callback', '/'];
+
+    if (!publicPaths.includes(currentPath)) {
+      window.location.href = '/login';
+    }
+  }
+
+  private async handleResponse<T>(response: Response, usedAuth: boolean): Promise<T> {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
 
       if (response.status === 401) {
-        this.clearAuthToken();
-
-        const currentPath = window.location.pathname;
-        const publicPaths = ['/login', '/signup', '/verify-email', '/password-reset', '/auth/oauth2/callback', '/'];
-
-        if (!publicPaths.includes(currentPath)) {
-          window.location.href = '/login';
-        }
+        this.handleUnauthorizedResponse(usedAuth);
       }
 
       throw new ApiError(
@@ -118,7 +126,7 @@ export class ApiClient {
       headers: this.headers,
     });
 
-    return this.handleResponse<T>(response);
+    return this.handleResponse<T>(response, Boolean(this.headers['Authorization']));
   }
 
   async post<T, D = unknown>(endpoint: string, data?: D, customTimeout?: number): Promise<T> {
@@ -142,7 +150,7 @@ export class ApiClient {
       customTimeout
     );
 
-    return this.handleResponse<T>(response);
+    return this.handleResponse<T>(response, Boolean(headers['Authorization']));
   }
 
   async postBlob<D = unknown>(endpoint: string, data?: D, customTimeout?: number): Promise<Blob> {
@@ -158,6 +166,10 @@ export class ApiClient {
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
+
+      if (response.status === 401) {
+        this.handleUnauthorizedResponse(Boolean(this.headers['Authorization']));
+      }
 
       throw new ApiError(
         error.message || `HTTP Error ${response.status}`,
@@ -182,6 +194,10 @@ export class ApiClient {
     if (!response.ok) {
       const error = await response.json().catch(() => ({}));
 
+      if (response.status === 401) {
+        this.handleUnauthorizedResponse(Boolean(this.headers['Authorization']));
+      }
+
       throw new ApiError(
         error.message || `HTTP Error ${response.status}`,
         response.status,
@@ -199,7 +215,7 @@ export class ApiClient {
       body: data ? JSON.stringify(data) : undefined,
     });
 
-    return this.handleResponse<T>(response);
+    return this.handleResponse<T>(response, Boolean(this.headers['Authorization']));
   }
 
   async patch<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
@@ -209,16 +225,17 @@ export class ApiClient {
       body: data ? JSON.stringify(data) : undefined,
     });
 
-    return this.handleResponse<T>(response);
+    return this.handleResponse<T>(response, Boolean(this.headers['Authorization']));
   }
 
-  async delete<T>(endpoint: string): Promise<T> {
+  async delete<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
     const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
       method: 'DELETE',
       headers: this.headers,
+      body: data ? JSON.stringify(data) : undefined,
     });
 
-    return this.handleResponse<T>(response);
+    return this.handleResponse<T>(response, Boolean(this.headers['Authorization']));
   }
 
   setAuthToken(token: string) {

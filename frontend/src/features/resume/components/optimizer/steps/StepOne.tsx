@@ -1,17 +1,40 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Tabs, TabsContent } from "@/shared/components/ui/tabs";
 import { StepHeader } from "../StepHeader";
+import { ExistingResumePicker } from "../ExistingResumePicker";
 import { FileUploadZone } from "../FileUploadZone";
 import { FileCard } from "../FileCard";
+import { ResumeSourceTabs } from "../ResumeSourceTabs";
+import { SelectedResumeCard } from "../SelectedResumeCard";
+import type { Resume } from "../../../services/resume.service";
+import type { ResumeOptimizerSourceMode } from "../../../types/resume-optimizer.types";
 
 interface StepOneProps {
   file: File | null;
-  savedFileName: string | null;
+  existingResumes: Resume[];
+  existingResumesLoading: boolean;
+  selectedResume: Resume | null;
+  sourceMode: ResumeOptimizerSourceMode;
   onFileSelect: (file: File) => void;
   onFileRemove: () => void;
+  onResumeSelect: (resumeId: number) => void;
+  onSelectedResumeClear: () => void;
+  onSourceModeChange: (mode: ResumeOptimizerSourceMode) => void;
 }
 
-export function StepOne({ file, savedFileName, onFileSelect, onFileRemove }: StepOneProps) {
+export function StepOne({
+  file,
+  existingResumes,
+  existingResumesLoading,
+  selectedResume,
+  sourceMode,
+  onFileSelect,
+  onFileRemove,
+  onResumeSelect,
+  onSelectedResumeClear,
+  onSourceModeChange,
+}: StepOneProps) {
   const [dragActive, setDragActive] = useState(false);
 
   const handleDragEnter = (e: React.DragEvent) => {
@@ -56,28 +79,44 @@ export function StepOne({ file, savedFileName, onFileSelect, onFileRemove }: Ste
       className="space-y-6"
     >
       <StepHeader
-        title="Upload Your Resume"
-        description="Start by uploading your current resume in PDF or DOCX format"
+        title="Choose Your Resume Source"
+        description="Select a saved resume from your workspace or upload a fresh file to optimize"
       />
 
-      {!file && savedFileName && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">
-          Draft restored. Re-upload <span className="font-medium">{savedFileName}</span> to continue with your saved job description and template.
-        </div>
-      )}
+      <Tabs value={sourceMode} onValueChange={(value) => onSourceModeChange(value as ResumeOptimizerSourceMode)}>
+        <ResumeSourceTabs />
 
-      {!file ? (
-        <FileUploadZone
-          onFileSelect={onFileSelect}
-          dragActive={dragActive}
-          onDragEnter={handleDragEnter}
-          onDragLeave={handleDragLeave}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-        />
-      ) : (
-        <FileCard file={file} onRemove={onFileRemove} />
-      )}
+        <TabsContent value="upload" className="mt-5 space-y-4">
+          {!file ? (
+            <FileUploadZone
+              onFileSelect={onFileSelect}
+              dragActive={dragActive}
+              onDragEnter={handleDragEnter}
+              onDragLeave={handleDragLeave}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+            />
+          ) : (
+            <FileCard file={file} onRemove={onFileRemove} />
+          )}
+        </TabsContent>
+
+        <TabsContent value="existing" className="mt-5 space-y-4">
+          {selectedResume ? (
+            <SelectedResumeCard
+              resume={selectedResume}
+              onClear={onSelectedResumeClear}
+            />
+          ) : null}
+
+          <ExistingResumePicker
+            resumes={existingResumes}
+            loading={existingResumesLoading}
+            selectedResumeId={selectedResume?.id ?? null}
+            onSelect={onResumeSelect}
+          />
+        </TabsContent>
+      </Tabs>
     </motion.div>
   );
 }

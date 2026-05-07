@@ -1,13 +1,9 @@
-import { User, Bell, CreditCard, Shield } from "lucide-react";
-import {
-  type SettingsTab,
-  type NotificationSetting,
-} from "../types/settings.types";
+import { User, CreditCard, Shield } from "lucide-react";
+import { type SettingsTab } from "../types/settings.types";
 import { FEATURE_FLAGS } from "@/shared/config/feature-flags";
 
 const ALL_TABS: SettingsTab[] = [
   { id: "profile", label: "Profile", icon: User },
-  { id: "notifications", label: "Notifications", icon: Bell },
   { id: "billing", label: "Billing", icon: CreditCard },
   { id: "security", label: "Security", icon: Shield },
 ];
@@ -16,58 +12,10 @@ export const SETTINGS_TABS: SettingsTab[] = ALL_TABS.filter(
   tab => tab.id !== "billing" || FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED
 );
 
-export const NOTIFICATION_SETTINGS: NotificationSetting[] = [
-  {
-    id: "email-notifications",
-    title: "Email Notifications",
-    description: "Receive email updates about your applications",
-    defaultChecked: true,
-    gradient:
-      "from-violet-50/50 to-fuchsia-50/50 dark:from-violet-950/20 dark:to-fuchsia-950/20",
-    border: "border-violet-100 dark:border-violet-900",
-  },
-  {
-    id: "application-reminders",
-    title: "Application Reminders",
-    description: "Get reminders to follow up on applications",
-    defaultChecked: true,
-    gradient:
-      "from-cyan-50/50 to-teal-50/50 dark:from-cyan-950/20 dark:to-teal-950/20",
-    border: "border-cyan-100 dark:border-cyan-900",
-  },
-  {
-    id: "job-recommendations",
-    title: "Job Recommendations",
-    description: "Receive AI-powered job recommendations",
-    defaultChecked: true,
-    gradient:
-      "from-fuchsia-50/50 to-pink-50/50 dark:from-fuchsia-950/20 dark:to-pink-950/20",
-    border: "border-fuchsia-100 dark:border-fuchsia-900",
-  },
-  {
-    id: "weekly-summary",
-    title: "Weekly Summary",
-    description: "Get a weekly summary of your job search progress",
-    defaultChecked: false,
-    gradient:
-      "from-amber-50/50 to-orange-50/50 dark:from-amber-950/20 dark:to-orange-950/20",
-    border: "border-amber-100 dark:border-amber-900",
-  },
-  {
-    id: "marketing-emails",
-    title: "Marketing Emails",
-    description: "Receive tips, articles, and product updates",
-    defaultChecked: false,
-    gradient:
-      "from-slate-50/50 to-zinc-50/50 dark:from-slate-950/20 dark:to-zinc-950/20",
-    border: "border-slate-100 dark:border-slate-900",
-  },
-];
-
-export const PROFILE_FIELDS = [
-  { id: "firstName", label: "First Name", defaultValue: "John" },
-  { id: "lastName", label: "Last Name", defaultValue: "Doe" },
-];
-
-export const TRIGGER_STYLES =
-  "flex items-center gap-2 data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-900 data-[state=active]:shadow-lg rounded-lg transition-all duration-300";
+export const SETTINGS_TAB_LIST_STYLES = {
+  wrapper: "w-full rounded-[1.75rem] border border-zinc-200/80 bg-white/80 p-2 shadow-sm backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-900/75 lg:sticky lg:top-6",
+  list: "flex h-auto w-full flex-col items-stretch justify-start gap-2 bg-transparent p-0",
+  trigger: "h-auto cursor-pointer justify-start gap-3 rounded-2xl border border-transparent px-4 py-3 text-left transition-colors hover:border-zinc-200 hover:bg-zinc-50/80 dark:hover:border-zinc-700 dark:hover:bg-zinc-800/60 data-[state=active]:border-violet-200 data-[state=active]:bg-gradient-to-r data-[state=active]:from-violet-50 data-[state=active]:to-cyan-50 data-[state=active]:text-zinc-950 data-[state=active]:shadow-sm dark:data-[state=active]:border-violet-900 dark:data-[state=active]:from-violet-950/40 dark:data-[state=active]:to-cyan-950/20 dark:data-[state=active]:text-zinc-50",
+  icon: "size-4",
+  label: "font-medium",
+} as const;

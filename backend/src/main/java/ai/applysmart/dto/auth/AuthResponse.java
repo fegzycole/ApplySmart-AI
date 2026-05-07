@@ -17,4 +17,7 @@ public class AuthResponse {
     @Builder.Default
     private String tokenType = "Bearer";
     private UserDto user;
+    private Boolean requiresTwoFactor;
+    private String challengeEmail;
+    private String twoFactorChallengeToken;
 }

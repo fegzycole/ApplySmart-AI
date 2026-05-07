@@ -14,11 +14,26 @@ public class ResumeDtoMapper {
                 .content(resume.getContent())
                 .fileUrl(resume.getFileUrl())
                 .score(resume.getScore())
-                .status(resume.getStatus().name().toLowerCase())
+                .documentKind(toDocumentKind(resume))
                 .wordCount(resume.getWordCount())
                 .atsScore(resume.getAtsScore())
                 .lastModified(resume.getUpdatedAt())
                 .createdAt(resume.getCreatedAt())
                 .build();
+    }
+
+    private String toDocumentKind(Resume resume) {
+        if (resume.getStatus() == Resume.Status.OPTIMIZED) {
+            return "optimized";
+        }
+
+        if (resume.getStatus() == Resume.Status.PUBLISHED
+                || (resume.getStatus() == Resume.Status.DRAFT
+                && resume.getContent() == null
+                && resume.getFileUrl() != null)) {
+            return "built";
+        }
+
+        return "original";
     }
 }

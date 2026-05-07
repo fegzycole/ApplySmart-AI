@@ -1,6 +1,8 @@
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import type { CoverLetter } from "@/features/cover-letter/services/cover-letter.service";
+import { CoverLetterResultCard } from "./CoverLetterResultCard";
 import { ResultHeader } from "./ResultHeader";
 import { ScoreComparison } from "./ScoreComparison";
 import { ChangesList } from "./ChangesList";
@@ -11,7 +13,8 @@ interface OptimizationResultProps {
     originalScore: number;
     optimizedScore: number;
     changes: string[];
-    fileUrl: string;
+    fileUrl?: string;
+    coverLetter?: CoverLetter;
   };
   onStartOver: () => void;
 }
@@ -19,7 +22,7 @@ interface OptimizationResultProps {
 export function OptimizationResultView({ result, onStartOver }: OptimizationResultProps) {
   return (
     <div className="min-w-0 max-w-6xl mx-auto space-y-6 sm:space-y-8">
-      <ResultHeader />
+      <ResultHeader includesCoverLetter={Boolean(result.coverLetter)} />
 
       <ScoreComparison
         originalScore={result.originalScore}
@@ -28,8 +31,12 @@ export function OptimizationResultView({ result, onStartOver }: OptimizationResu
 
       <div className="grid min-w-0 gap-6 lg:grid-cols-5">
         <ChangesList changes={result.changes} />
-        <PdfPreview fileUrl={result.fileUrl} />
+        {result.fileUrl ? <PdfPreview fileUrl={result.fileUrl} /> : null}
       </div>
+
+      {result.coverLetter ? (
+        <CoverLetterResultCard coverLetter={result.coverLetter} />
+      ) : null}
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}

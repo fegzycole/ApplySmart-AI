@@ -28,10 +28,16 @@ public interface JobRepository extends JpaRepository<Job, Long> {
 
     @Query("SELECT j FROM Job j WHERE j.user = :user AND " +
            "(LOWER(j.company) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
-           "LOWER(j.role) LIKE LOWER(CONCAT('%', :query, '%')))")
+           "LOWER(j.role) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(COALESCE(j.location, '')) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
+           "LOWER(COALESCE(j.notes, '')) LIKE LOWER(CONCAT('%', :query, '%')))")
     List<Job> searchJobs(@Param("user") User user, @Param("query") String query);
 
     @Modifying
     @Query("UPDATE Job j SET j.deleted = true WHERE j.id = :id AND j.user = :user")
     void softDelete(@Param("id") Long id, @Param("user") User user);
+
+    @Modifying
+    @Query(value = "DELETE FROM jobs WHERE user_id = :userId", nativeQuery = true)
+    void deleteAllByUserId(@Param("userId") Long userId);
 }

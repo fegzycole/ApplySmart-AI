@@ -3,9 +3,12 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { Button } from "@/shared/components/ui/button";
 import { useFormState } from "@/shared/hooks/useFormState";
-import { ControlledFormField } from "../shared";
+import { AuthFormErrorSummary, ControlledFormField } from "../shared";
 import { FORM_STYLES, SIGNUP_FIELDS } from "../../constants";
 import { useSignup } from "../../hooks/useAuthQueries";
+import { getAuthServerFeedback } from "../../utils/auth-errors";
+import { getAuthErrorSummary, validateSignupData } from "../../utils/auth-validation";
+import { useState } from "react";
 
 const initialValues = {
   firstName: "",
@@ -16,14 +19,33 @@ const initialValues = {
 
 export function SignupForm() {
   const navigate = useNavigate();
-  const { values, handleChange, hasEmptyRequiredFields } = useFormState(initialValues);
+  const { values, handleChange } = useFormState(initialValues);
   const signupMutation = useSignup();
+  const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof typeof initialValues, string>>>({});
+  const [formErrors, setFormErrors] = useState<string[]>([]);
+
+  const handleFieldChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const field = event.target.id as keyof typeof initialValues;
+    handleChange(event);
+    setFieldErrors((currentErrors) => {
+      if (!currentErrors[field]) {
+        return currentErrors;
+      }
+
+      const nextErrors = { ...currentErrors };
+      delete nextErrors[field];
+      return nextErrors;
+    });
+    setFormErrors([]);
+  };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
 
-    if (hasEmptyRequiredFields(["firstName", "lastName", "email", "password"])) {
-      toast.error("Please fill in all fields");
+    const validation = validateSignupData(values);
+    if (validation) {
+      setFieldErrors(validation.fieldErrors);
+      setFormErrors(getAuthErrorSummary(validation));
       return;
     }
 
@@ -31,19 +53,23 @@ export function SignupForm() {
       const response = await signupMutation.mutateAsync(values);
       toast.success(response.message);
       navigate("/verify-email", { state: { email: values.email } });
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to create account");
+    } catch (error) {
+      const serverFeedback = getAuthServerFeedback(error, ["firstName", "lastName", "email", "password"]);
+      setFieldErrors(serverFeedback.fieldErrors);
+      setFormErrors(serverFeedback.formErrors);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className={FORM_STYLES.form}>
+    <form noValidate onSubmit={handleSubmit} className={FORM_STYLES.form}>
+      <AuthFormErrorSummary messages={formErrors} />
       {SIGNUP_FIELDS.map((field) => (
         <ControlledFormField
           key={field.id}
           {...field}
           value={values[field.id as keyof typeof values]}
-          onChange={handleChange}
+          onChange={handleFieldChange}
+          error={fieldErrors[field.id as keyof typeof fieldErrors]}
         />
       ))}
       <Button

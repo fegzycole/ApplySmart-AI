@@ -57,4 +57,13 @@ public final class TextUtils {
     public static boolean isNotBlank(String text) {
         return !isBlank(text);
     }
+
+    public static String trimToNull(String text) {
+        if (text == null) {
+            return null;
+        }
+
+        String trimmed = text.trim();
+        return trimmed.isEmpty() ? null : trimmed;
+    }
 }

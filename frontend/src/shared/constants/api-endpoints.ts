@@ -1,6 +1,7 @@
 export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/auth/login',
+    LOGIN_2FA_VERIFY: '/auth/login/2fa/verify',
     SIGNUP: '/auth/signup',
     LOGOUT: '/auth/logout',
     RESET_PASSWORD: '/auth/reset-password',
@@ -25,6 +26,7 @@ export const API_ENDPOINTS = {
   },
   COVER_LETTERS: {
     GENERATE: '/cover-letters/generate',
+    GENERATE_FROM_FILE: '/cover-letters/generate-from-file',
     LIST: '/cover-letters',
     GET: (id: number) => `/cover-letters/${id}`,
     UPDATE: (id: number) => `/cover-letters/${id}`,
@@ -51,6 +53,7 @@ export const API_ENDPOINTS = {
   },
   SETTINGS: {
     PROFILE: '/settings/profile',
+    PROFILE_PHOTO: '/settings/profile/photo',
     BILLING: {
       PLAN: '/settings/billing/plan',
       PAYMENT_METHOD: '/settings/billing/payment-method',
@@ -59,14 +62,11 @@ export const API_ENDPOINTS = {
     },
     SECURITY: {
       MAIN: '/settings/security',
-      SESSIONS: '/settings/security/sessions',
-      REVOKE_SESSION: (deviceName: string) => `/settings/security/sessions/${deviceName}`,
       CHANGE_PASSWORD: '/settings/security/password',
+      SETUP_2FA: '/settings/security/2fa/setup',
       ENABLE_2FA: '/settings/security/2fa/enable',
       DISABLE_2FA: '/settings/security/2fa/disable',
     },
-    NOTIFICATIONS: '/settings/notifications',
-    UPDATE_NOTIFICATION: (settingId: string) => `/settings/notifications/${settingId}`,
     ACCOUNT: {
       DELETE: '/settings/account/delete',
       EXPORT: '/settings/account/export',

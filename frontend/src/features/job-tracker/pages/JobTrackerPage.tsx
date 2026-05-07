@@ -1,13 +1,32 @@
-import { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { TrackerHeader, AddJobDialog, KanbanBoard } from "../components";
+import {
+  JobFormDialog,
+  JobTrackerEmptyState,
+  JobTrackerErrorState,
+  KanbanBoard,
+  TrackerHeader,
+} from "../components";
 import { JobTrackerSkeleton } from "../components/skeletons";
 import { useJobTracker } from "../hooks/useJobTracker";
 
 export function JobTrackerPage() {
-  const { jobs, isLoading, handleDrop, deleteJob, addJob } = useJobTracker();
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const {
+    jobs,
+    totalJobs,
+    isLoading,
+    isSaving,
+    error,
+    dialogOpen,
+    editingJob,
+    openCreateDialog,
+    openEditDialog,
+    closeDialog,
+    submitJob,
+    handleDrop,
+    deleteJob,
+    refetchJobs,
+  } = useJobTracker();
 
   if (isLoading) {
     return <JobTrackerSkeleton />;
@@ -15,24 +34,34 @@ export function JobTrackerPage() {
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="p-4 lg:p-8 min-h-screen bg-gradient-to-br from-zinc-50 via-white to-violet-50/30 dark:from-zinc-950 dark:via-zinc-900 dark:to-violet-950/10">
-        <div className="max-w-[1800px] mx-auto">
-          <TrackerHeader onAddClick={() => setDialogOpen(true)} />
+      <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-violet-50/30 p-4 dark:from-zinc-950 dark:via-zinc-900 dark:to-violet-950/10 lg:p-8">
+        <div className="mx-auto max-w-[1800px]">
+          <TrackerHeader onAddClick={openCreateDialog} />
 
-          <KanbanBoard
-            jobs={jobs}
-            onDrop={handleDrop}
-            onDelete={deleteJob}
-          />
+          {error ? (
+            <JobTrackerErrorState onRetry={() => void refetchJobs()} />
+          ) : totalJobs === 0 ? (
+            <JobTrackerEmptyState onAddClick={openCreateDialog} />
+          ) : (
+            <KanbanBoard
+              jobs={jobs}
+              onDrop={handleDrop}
+              onEdit={openEditDialog}
+              onDelete={(jobId) => void deleteJob(jobId)}
+              emptyMessage=""
+            />
+          )}
 
-          <div className="h-1 w-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500 rounded-full mt-8 opacity-20" />
+          <div className="mt-8 h-1 w-full rounded-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500 opacity-20" />
         </div>
       </div>
 
-      <AddJobDialog
+      <JobFormDialog
         open={dialogOpen}
-        onOpenChange={setDialogOpen}
-        onAdd={addJob}
+        job={editingJob}
+        isPending={isSaving}
+        onOpenChange={closeDialog}
+        onSubmit={submitJob}
       />
     </DndProvider>
   );

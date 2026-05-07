@@ -1,13 +1,13 @@
-import { Eye, Download, Loader2 } from "lucide-react";
+import { Eye, Loader2, Save } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 
 interface PreviewHeaderProps {
-  onDownload: () => void;
-  downloading: boolean;
+  onSave: () => void;
+  saving: boolean;
   disabled: boolean;
 }
 
-export function PreviewHeader({ onDownload, downloading, disabled }: PreviewHeaderProps) {
+export function PreviewHeader({ onSave, saving, disabled }: PreviewHeaderProps) {
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between p-4 bg-gradient-to-r from-violet-500/10 via-fuchsia-500/10 to-cyan-500/10 rounded-2xl border border-violet-200 dark:border-violet-800">
       <div className="flex items-center gap-3">
@@ -22,12 +22,12 @@ export function PreviewHeader({ onDownload, downloading, disabled }: PreviewHead
       <Button
         size="sm"
         className="w-full sm:w-auto rounded-lg bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700"
-        onClick={onDownload}
-        disabled={disabled || downloading}
+        onClick={onSave}
+        disabled={disabled || saving}
       >
-        {downloading
-          ? <><Loader2 className="size-4 mr-1 animate-spin" />Downloading...</>
-          : <><Download className="size-4 mr-1" />Download</>}
+        {saving
+          ? <><Loader2 className="size-4 mr-1 animate-spin" />Saving...</>
+          : <><Save className="size-4 mr-1" />Save Resume</>}
       </Button>
     </div>
   );

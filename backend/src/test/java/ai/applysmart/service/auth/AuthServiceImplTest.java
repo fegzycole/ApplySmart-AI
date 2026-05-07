@@ -44,6 +44,12 @@ class AuthServiceImplTest {
     private OAuth2LoginCodeService oAuth2LoginCodeService;
 
     @Mock
+    private TwoFactorLoginWorkflow twoFactorLoginWorkflow;
+
+    @Mock
+    private TwoFactorLoginChallengeService twoFactorLoginChallengeService;
+
+    @Mock
     private UserDtoMapper userDtoMapper;
 
     @Mock
@@ -58,6 +64,8 @@ class AuthServiceImplTest {
                 passwordResetWorkflow,
                 emailVerificationWorkflow,
                 oAuth2LoginCodeService,
+                twoFactorLoginWorkflow,
+                twoFactorLoginChallengeService,
                 userDtoMapper,
                 authResponseFactory
         );

@@ -8,10 +8,22 @@ interface TextareaFieldProps {
   label: string;
   placeholder: string;
   minHeight: string;
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
   hint?: string;
 }
 
-export function TextareaField({ id, label, placeholder, minHeight, hint }: TextareaFieldProps) {
+export function TextareaField({
+  id,
+  label,
+  placeholder,
+  minHeight,
+  value,
+  onChange,
+  error,
+  hint,
+}: TextareaFieldProps) {
   return (
     <div className={JOB_DETAILS_CARD_STYLES.inputGroup}>
       <Label htmlFor={id} className={JOB_DETAILS_CARD_STYLES.label}>
@@ -20,11 +32,16 @@ export function TextareaField({ id, label, placeholder, minHeight, hint }: Texta
       <div className={JOB_DETAILS_CARD_STYLES.inputWrapper}>
         <Textarea
           id={id}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
           placeholder={placeholder}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? `${id}-error` : undefined}
           className={`${minHeight} ${JOB_DETAILS_CARD_STYLES.textarea}`}
         />
         <div className={JOB_DETAILS_CARD_STYLES.focusGlow} />
       </div>
+      {error ? <p id={`${id}-error`} className={JOB_DETAILS_CARD_STYLES.error}>{error}</p> : null}
       {hint && (
         <p className={JOB_DETAILS_CARD_STYLES.hint}>
           <Lightbulb className={JOB_DETAILS_CARD_STYLES.hintIcon} />

@@ -1,5 +1,6 @@
 package ai.applysmart.dto.resume;
 
+import ai.applysmart.dto.coverletter.CoverLetterResponseDto;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,4 +14,5 @@ public class ResumeOptimizationDto {
     private List<String> changes;
     private String content;
     private String fileUrl;
+    private CoverLetterResponseDto coverLetter;
 }

@@ -1,24 +1,21 @@
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Mail } from "lucide-react";
 
-export const PROFILE_FIELDS = [
+export const PROFILE_EDITABLE_FIELDS = [
   {
-    id: "email",
-    label: "Email Address",
-    type: "email",
-    defaultValue: "",
-    icon: Mail
+    id: "firstName",
+    label: "First Name",
+    placeholder: "John",
   },
   {
-    id: "phone",
-    label: "Phone Number",
-    type: "tel",
-    defaultValue: "",
-    icon: Phone
+    id: "lastName",
+    label: "Last Name",
+    placeholder: "Doe",
   },
-  {
-    id: "location",
-    label: "Location",
-    defaultValue: "",
-    icon: MapPin
-  }
 ];
+
+export const PROFILE_EMAIL_FIELD = {
+  id: "email",
+  label: "Email Address",
+  type: "email",
+  icon: Mail,
+} as const;

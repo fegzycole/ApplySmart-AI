@@ -1,37 +1,37 @@
-import { Star, Zap, Target, CheckCircle2, XCircle } from "lucide-react";
+import { BriefcaseBusiness, CheckCircle2, Star, Target, XCircle, Zap } from "lucide-react";
 import type { Column } from "../types/job.types";
 
 export const KANBAN_COLUMNS: Column[] = [
   {
-    id: "saved",
+    id: "SAVED",
     title: "Saved",
     gradient: "from-slate-400 to-zinc-500",
     icon: Star,
     accentColor: "bg-slate-500"
   },
   {
-    id: "applied",
+    id: "APPLIED",
     title: "Applied",
     gradient: "from-amber-400 to-orange-500",
     icon: Zap,
     accentColor: "bg-amber-500"
   },
   {
-    id: "interview",
+    id: "INTERVIEW",
     title: "Interview",
     gradient: "from-violet-500 to-fuchsia-600",
     icon: Target,
     accentColor: "bg-violet-500"
   },
   {
-    id: "offer",
+    id: "OFFER",
     title: "Offer",
     gradient: "from-emerald-400 to-teal-500",
     icon: CheckCircle2,
     accentColor: "bg-emerald-500"
   },
   {
-    id: "rejected",
+    id: "REJECTED",
     title: "Rejected",
     gradient: "from-red-400 to-rose-500",
     icon: XCircle,
@@ -41,37 +41,38 @@ export const KANBAN_COLUMNS: Column[] = [
 
 export const JOB_CARD_STYLES = {
   card: {
-    base: "border-0 bg-white dark:bg-zinc-900 shadow-lg hover:shadow-xl transition-all duration-300 cursor-move group relative overflow-hidden",
-    dragging: "opacity-50"
+    base: "group relative overflow-hidden rounded-[1.35rem] border border-white/80 bg-[linear-gradient(155deg,rgba(255,255,255,0.98),rgba(248,250,252,0.94))] shadow-[0_10px_30px_rgba(15,23,42,0.06)] ring-1 ring-zinc-950/5 transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-violet-200/80 hover:shadow-[0_18px_40px_rgba(109,40,217,0.14)] dark:border-zinc-800/80 dark:bg-[linear-gradient(155deg,rgba(24,24,27,0.98),rgba(9,9,11,0.96))] dark:ring-white/5 dark:hover:border-violet-900/80 dark:hover:shadow-[0_18px_40px_rgba(76,29,149,0.28)] cursor-move",
+    dragging: "opacity-50 shadow-none"
   },
-  topBar: "absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-500",
-  hoverOverlay: "absolute inset-0 bg-gradient-to-r from-violet-500/0 via-fuchsia-500/0 to-cyan-500/0 group-hover:from-violet-500/5 group-hover:via-fuchsia-500/5 group-hover:to-cyan-500/5 transition-all duration-300 pointer-events-none",
-  content: "p-4 relative z-10",
-  icon: {
-    wrapper: "size-10 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-lg flex-shrink-0",
-    icon: "size-5 text-white"
-  },
+  ambientGlow: "pointer-events-none absolute -right-10 -top-10 size-24 rounded-full bg-gradient-to-br from-fuchsia-200/60 via-violet-200/40 to-cyan-200/20 blur-2xl transition-opacity duration-200 group-hover:opacity-90 dark:from-fuchsia-500/20 dark:via-violet-500/20 dark:to-cyan-400/10",
+  hairline: "pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-zinc-300/90 to-transparent dark:via-zinc-700/80",
+  content: "relative space-y-3 p-4",
   header: {
-    container: "flex items-start gap-3 mb-3",
-    textContainer: "flex-1 min-w-0",
-    role: "font-semibold text-zinc-900 dark:text-white mb-1 line-clamp-1 group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors",
-    company: "text-sm text-zinc-600 dark:text-zinc-400 line-clamp-1"
+    container: "space-y-1.5",
+    role: "line-clamp-2 text-[15px] font-semibold leading-5 tracking-[-0.01em] text-zinc-950 dark:text-zinc-50",
+    companyRow: "flex flex-wrap items-center gap-x-2 gap-y-1 text-sm",
+    company: "font-medium text-zinc-700 dark:text-zinc-300",
+    separator: "text-zinc-300 dark:text-zinc-700",
+    location: "text-zinc-500 dark:text-zinc-400"
   },
-  notes: "text-xs text-zinc-600 dark:text-zinc-400 mb-3 line-clamp-2 px-3 py-2 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700",
-  date: {
-    container: "flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-500 mb-3"
+  notes: "line-clamp-3 rounded-2xl bg-zinc-950/[0.03] px-3 py-2.5 text-sm leading-5 text-zinc-600 dark:bg-white/[0.04] dark:text-zinc-300",
+  meta: {
+    list: "flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-zinc-500 dark:text-zinc-400",
+    item: "inline-flex items-center gap-1 rounded-full bg-white/80 px-2 py-1 ring-1 ring-zinc-950/5 dark:bg-white/[0.03] dark:ring-white/8",
+    separator: "text-zinc-300 dark:text-zinc-700"
   },
   actions: {
-    container: "flex items-center gap-2",
-    linkWrapper: "flex-1",
-    viewButton: "w-full text-xs border-2 border-violet-200 dark:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/30",
-    deleteButton: "size-8 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-950/30 opacity-0 group-hover:opacity-100 transition-opacity",
-    icon: "size-3 mr-1.5"
+    container: "flex items-center justify-end gap-2 pt-1",
+    linkWrapper: "shrink-0",
+    viewButton: "h-8 rounded-full border-white/70 bg-zinc-950 px-3 text-xs font-medium text-white shadow-sm hover:bg-zinc-800 hover:text-white dark:border-zinc-700 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 dark:hover:text-zinc-950",
+    editButton: "size-8 rounded-full bg-white/70 text-zinc-500 ring-1 ring-zinc-950/5 hover:bg-white hover:text-zinc-900 dark:bg-white/[0.04] dark:text-zinc-400 dark:ring-white/8 dark:hover:bg-white/[0.08] dark:hover:text-zinc-100",
+    deleteButton: "size-8 rounded-full bg-white/70 text-zinc-500 ring-1 ring-zinc-950/5 hover:bg-white hover:text-red-600 dark:bg-white/[0.04] dark:text-zinc-400 dark:ring-white/8 dark:hover:bg-white/[0.08] dark:hover:text-red-300",
+    icon: "size-3.5"
   }
 } as const;
 
 export const KANBAN_COLUMN_STYLES = {
-  container: "flex-1 min-w-[280px] flex flex-col",
+  container: "flex-1 min-w-[280px] max-w-sm flex flex-col",
   header: {
     wrapper: "mb-4 p-3 rounded-xl backdrop-blur-xl shadow-lg border border-white/20",
     content: "flex items-center gap-2",
@@ -86,19 +87,21 @@ export const KANBAN_COLUMN_STYLES = {
     }
   },
   dropZone: {
-    base: "flex-1 p-4 rounded-xl border-2 border-dashed backdrop-blur-xl transition-all duration-300 space-y-3 min-h-[400px]",
+    base: "flex-1 p-4 rounded-xl border-2 border-dashed backdrop-blur-xl transition-all duration-300 space-y-3 min-h-[320px]",
     default: "border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/30",
     hover: "border-violet-500 bg-violet-50/50 dark:bg-violet-950/20"
   },
-  emptyState: "flex items-center justify-center h-32 text-zinc-400 dark:text-zinc-600 text-sm"
+  emptyState: "flex h-32 flex-col items-center justify-center text-center text-zinc-400 dark:text-zinc-600 text-sm"
 } as const;
 
-export const ADD_JOB_DIALOG_STYLES = {
-  content: "max-w-md",
-  form: "space-y-4",
-  fieldWrapper: "",
+export const JOB_FORM_DIALOG_STYLES = {
+  content: "max-w-2xl p-4 sm:p-6",
+  form: "space-y-5",
+  fieldGrid: "grid gap-4 sm:grid-cols-2",
+  fullWidthField: "sm:col-span-2",
+  fieldWrapper: "space-y-2",
   actions: {
-    container: "flex gap-2",
+    container: "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
     cancelButton: "flex-1",
     submitButton: "flex-1 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white"
   }
@@ -120,6 +123,21 @@ export const FORM_FIELD_CONFIG = {
     placeholder: "https://...",
     type: "url" as const
   },
+  location: {
+    label: "Location",
+    placeholder: "Remote, Hybrid...",
+    type: "text" as const
+  },
+  salary: {
+    label: "Compensation",
+    placeholder: "$120k - $140k",
+    type: "text" as const
+  },
+  applicationDeadline: {
+    label: "Application Deadline",
+    placeholder: "",
+    type: "datetime-local" as const
+  },
   notes: {
     label: "Notes (Optional)",
     placeholder: "Add any notes about this application...",
@@ -128,30 +146,39 @@ export const FORM_FIELD_CONFIG = {
   }
 } as const;
 
-export const TRACKER_HEADER_STYLES = {
-  container: "mb-8",
-  wrapper: "flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6",
-  contentSection: "",
-  badge: {
-    container: "inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-violet-500/10 via-fuchsia-500/10 to-cyan-500/10 border border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300 text-xs sm:text-sm mb-4",
-    icon: "size-4",
-    text: "font-medium"
-  },
-  title: {
-    container: "text-3xl sm:text-4xl font-bold mb-2",
-    gradient: "bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 bg-clip-text text-transparent"
-  },
-  description: "text-zinc-600 dark:text-zinc-400 text-sm sm:text-base lg:text-lg",
-  button: {
-    base: "h-auto px-6 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white shadow-lg hover:shadow-xl transition-all duration-300",
-    icon: "size-5 mr-2",
-    text: "font-semibold"
-  }
-} as const;
-
 export const TRACKER_HEADER_CONTENT = {
   badge: "Kanban Board",
   title: "Job Application Tracker",
-  description: "Visualize your job search pipeline",
+  description: "Move every application through your pipeline from saved to offer",
   buttonText: "Add New Application"
 } as const;
+
+export const JOB_TRACKER_EMPTY_STATE_STYLES = {
+  wrapper: "rounded-3xl border border-dashed border-zinc-300 bg-white/85 px-6 py-12 text-center shadow-sm dark:border-zinc-700 dark:bg-zinc-900/70",
+  iconWrapper: "mx-auto mb-4 flex size-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-lg",
+  icon: "size-7",
+  title: "text-xl font-semibold text-zinc-950 dark:text-zinc-50",
+  description: "mx-auto mt-2 max-w-xl text-sm text-zinc-600 dark:text-zinc-400",
+  button: "mt-6 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white hover:from-violet-700 hover:to-fuchsia-700",
+};
+
+export const JOB_TRACKER_EMPTY_STATE_CONTENT = {
+  title: "No applications yet",
+  description: "Add your first application to start tracking saved roles, active interviews, offers, and rejections in one place.",
+};
+
+export const JOB_TRACKER_ERROR_STATE_STYLES = {
+  wrapper: "rounded-3xl border border-red-200 bg-red-50/70 px-6 py-12 text-center dark:border-red-950 dark:bg-red-950/20",
+  title: "text-lg font-semibold text-red-900 dark:text-red-200",
+  description: "mt-2 text-sm text-red-700 dark:text-red-300",
+  button: "mt-6",
+};
+
+export const JOB_TRACKER_ERROR_STATE_CONTENT = {
+  title: "Job tracker unavailable",
+  description: "We couldn't load your applications right now. Try again in a moment.",
+};
+
+export const JOB_TRACKER_ICONS = {
+  empty: BriefcaseBusiness,
+};

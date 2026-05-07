@@ -1,29 +1,31 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/components/ui/card";
-import { DangerAction } from "./DangerAction";
-import { DANGER_ZONE_CONFIG, DANGEROUS_ACTIONS } from "../../constants/danger-zone.constants";
+import { AlertTriangle } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { DeleteAccountAction } from "./DeleteAccountAction";
 
-export function DangerZone() {
-  const Icon = DANGER_ZONE_CONFIG.icon;
+interface DangerZoneProps {
+  isReady: boolean;
+}
 
+export function DangerZone({ isReady }: DangerZoneProps) {
   return (
-    <Card className={DANGER_ZONE_CONFIG.cardClassName}>
-      <CardHeader>
+    <Card className="overflow-hidden rounded-[1.5rem] border border-red-200/80 bg-red-50/80 shadow-sm dark:border-red-950/70 dark:bg-red-950/20 sm:rounded-[1.75rem]">
+      <CardHeader className="px-4 pb-4 pt-5 sm:px-6 sm:pt-6">
         <div className="flex items-center gap-3">
-          <div className={`size-10 rounded-xl bg-gradient-to-br ${DANGER_ZONE_CONFIG.iconGradient} flex items-center justify-center shadow-lg`}>
-            <Icon className="size-5 text-white" />
+          <div className="flex size-10 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-rose-600 shadow-lg">
+            <AlertTriangle className="size-5 text-white" />
           </div>
-          <div>
-            <CardTitle className="text-xl text-red-600 dark:text-red-400">
-              {DANGER_ZONE_CONFIG.title}
+          <div className="min-w-0">
+            <CardTitle className="text-lg text-red-600 dark:text-red-400 sm:text-xl">
+              Danger Zone
             </CardTitle>
-            <CardDescription>{DANGER_ZONE_CONFIG.description}</CardDescription>
+            <CardDescription className="mt-1 text-sm leading-6">
+              Irreversible actions for your account and stored data.
+            </CardDescription>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {DANGEROUS_ACTIONS.map((action) => (
-          <DangerAction key={action.id} {...action} />
-        ))}
+      <CardContent className="px-4 pb-4 pt-0 sm:px-6 sm:pb-6">
+        <DeleteAccountAction isReady={isReady} />
       </CardContent>
     </Card>
   );

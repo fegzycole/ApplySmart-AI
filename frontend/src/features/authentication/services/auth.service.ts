@@ -6,6 +6,7 @@ import type {
   SignupData,
   PasswordResetRequest,
   OAuthCodeExchangeRequest,
+  TwoFactorLoginVerifyRequest,
   AuthResponse,
   SignupResponse,
   VerifyEmailRequest,
@@ -34,6 +35,18 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
 
   persistAuthenticatedSession(response);
 
+  return response;
+};
+
+export const verifyTwoFactorLogin = async (
+  data: TwoFactorLoginVerifyRequest,
+): Promise<AuthResponse> => {
+  const response = await apiClient.post<AuthResponse, TwoFactorLoginVerifyRequest>(
+    ENDPOINTS.LOGIN_2FA_VERIFY,
+    data,
+  );
+
+  persistAuthenticatedSession(response);
   return response;
 };
 

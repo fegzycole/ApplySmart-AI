@@ -95,7 +95,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         if (StringUtils.hasText(oAuth2UserInfo.getLastName())) {
             existingUser.setLastName(oAuth2UserInfo.getLastName());
         }
-        if (StringUtils.hasText(oAuth2UserInfo.getImageUrl())) {
+        if (!StringUtils.hasText(existingUser.getProfileImagePublicId())
+                && StringUtils.hasText(oAuth2UserInfo.getImageUrl())) {
             existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
         }
 

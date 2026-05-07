@@ -13,7 +13,7 @@ public class ResumeDto {
     private String content;
     private String fileUrl;
     private Integer score;
-    private String status;
+    private String documentKind;
     private Integer wordCount;
     private Integer atsScore;
     private LocalDateTime lastModified;

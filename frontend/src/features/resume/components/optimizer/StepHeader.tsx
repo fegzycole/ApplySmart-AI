@@ -5,11 +5,11 @@ interface StepHeaderProps {
 
 export function StepHeader({ title, description }: StepHeaderProps) {
   return (
-    <div className="text-center space-y-3 mb-8">
-      <h2 className="text-xl sm:text-3xl font-bold text-zinc-900 dark:text-white">
+    <div className="mb-8 space-y-3 text-center">
+      <h2 className="text-xl font-bold tracking-[-0.03em] text-zinc-900 dark:text-white sm:text-3xl">
         {title}
       </h2>
-      <p className="text-sm sm:text-base text-zinc-600 dark:text-zinc-400">
+      <p className="mx-auto max-w-2xl text-sm leading-7 text-zinc-600 dark:text-zinc-400 sm:text-base">
         {description}
       </p>
     </div>

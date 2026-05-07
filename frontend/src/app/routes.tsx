@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter, Navigate } from "react-router";
 import { ErrorBoundary } from "@/shared/components";
 import { ProtectedRoute, PublicRoute } from "@/shared/components/guards";
 import { ROUTES } from "@/shared/constants";
@@ -17,10 +17,10 @@ import { AppLayout, DashboardHomePage } from "@/features/dashboard";
 import {
   ResumeOptimizerPage,
   ResumeBuilderPageV2,
-  ResumesPage
 } from "@/features/resume";
 
 import { CoverLetterGeneratorPage } from "@/features/cover-letter";
+import { DocumentsPage } from "@/features/documents";
 import { JobTrackerPage } from "@/features/job-tracker";
 import { SettingsPage } from "@/features/settings";
 import { PricingPage } from "@/features/pricing";
@@ -86,7 +86,8 @@ export const router = createBrowserRouter([
       { index: true, element: <DashboardHomePage /> },
       { path: "resume-optimizer", element: <ResumeOptimizerPage /> },
       { path: "resume-builder", element: <ResumeBuilderPageV2 /> },
-      { path: "resumes", element: <ResumesPage /> },
+      { path: "documents", element: <DocumentsPage /> },
+      { path: "resumes", element: <Navigate to={ROUTES.DASHBOARD.DOCUMENTS} replace /> },
       { path: "cover-letter", element: <CoverLetterGeneratorPage /> },
       { path: "job-tracker", element: <JobTrackerPage /> },
       { path: "analytics", element: <DashboardHomePage /> },

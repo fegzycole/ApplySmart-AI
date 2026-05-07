@@ -2,7 +2,7 @@ import { useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
 import { useCurrentUser, useLogout } from "@/features/authentication/hooks/useAuthQueries";
-import { getFullName, getInitials } from "@/shared/utils/user.utils";
+import { getFullName } from "@/shared/utils/user.utils";
 
 export function useUserMenu() {
   const navigate = useNavigate();
@@ -10,8 +10,10 @@ export function useUserMenu() {
   const { data: user } = useCurrentUser();
   const logoutMutation = useLogout();
 
-  const userInitials = user ? getInitials(user.firstName, user.lastName) : "U";
+  const userFirstName = user?.firstName ?? "User";
+  const userLastName = user?.lastName ?? "";
   const userFullName = user ? getFullName(user.firstName, user.lastName) : "User";
+  const userImageUrl = user?.imageUrl ?? null;
   const isDarkTheme = theme === "dark";
 
   const toggleTheme = () => {
@@ -33,7 +35,9 @@ export function useUserMenu() {
     isLoggingOut: logoutMutation.isPending,
     logout,
     toggleTheme,
+    userFirstName,
+    userLastName,
     userFullName,
-    userInitials,
+    userImageUrl,
   };
 }

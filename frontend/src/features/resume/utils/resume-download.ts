@@ -11,13 +11,17 @@ export function triggerBrowserDownload(blob: Blob, filename: string) {
   URL.revokeObjectURL(objectUrl);
 }
 
-export function getResumeDownloadFilename(fileUrl: string) {
+export function getDocumentDownloadFilename(fileUrl: string, fallbackFilename: string) {
   const pathname = fileUrl.split("#")[0]?.split("?")[0] ?? "";
   const rawFilename = pathname.split("/").pop();
 
   if (!rawFilename) {
-    return "optimized-resume.pdf";
+    return fallbackFilename;
   }
 
   return decodeURIComponent(rawFilename);
+}
+
+export function getResumeDownloadFilename(fileUrl: string) {
+  return getDocumentDownloadFilename(fileUrl, "optimized-resume.pdf");
 }

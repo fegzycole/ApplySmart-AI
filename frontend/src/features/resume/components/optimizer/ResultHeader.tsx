@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
 
-export function ResultHeader() {
+interface ResultHeaderProps {
+  includesCoverLetter?: boolean;
+}
+
+export function ResultHeader({ includesCoverLetter = false }: ResultHeaderProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
@@ -22,7 +26,9 @@ export function ResultHeader() {
         </span>
       </h1>
       <p className="text-sm sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
-        Your resume has been optimized with AI-powered keyword matching and formatting
+        {includesCoverLetter
+          ? "Your resume and matching cover letter are ready to download."
+          : "Your resume has been optimized with AI-powered keyword matching and formatting"}
       </p>
     </motion.div>
   );

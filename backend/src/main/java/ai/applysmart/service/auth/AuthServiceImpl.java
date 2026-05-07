@@ -6,6 +6,7 @@ import ai.applysmart.dto.auth.PasswordResetRequest;
 import ai.applysmart.dto.auth.ResetPasswordRequest;
 import ai.applysmart.dto.auth.SignupRequest;
 import ai.applysmart.dto.auth.SignupResponse;
+import ai.applysmart.dto.auth.TwoFactorLoginVerifyRequest;
 import ai.applysmart.dto.auth.UserDto;
 import ai.applysmart.dto.auth.VerifyEmailRequest;
 import ai.applysmart.entity.User;
@@ -37,6 +38,8 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordResetWorkflow passwordResetWorkflow;
     private final EmailVerificationWorkflow emailVerificationWorkflow;
     private final OAuth2LoginCodeService oAuth2LoginCodeService;
+    private final TwoFactorLoginWorkflow twoFactorLoginWorkflow;
+    private final TwoFactorLoginChallengeService twoFactorLoginChallengeService;
     private final UserDtoMapper userDtoMapper;
     private final AuthResponseFactory authResponseFactory;
 
@@ -55,7 +58,16 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse login(LoginRequest loginRequest) {
         log.info("Attempting to authenticate user: {}", loginRequest.getEmail());
 
-        AuthTokens tokens = authTokenManager.authenticate(loginRequest);
+        User user = authTokenManager.authenticateUser(loginRequest);
+        log.info("Successfully authenticated primary credentials for user ID: {}", user.getId());
+
+        if (Boolean.TRUE.equals(user.getTwoFactorEnabled())) {
+            String challengeToken = twoFactorLoginChallengeService.issueChallenge(user);
+            log.info("Two-factor challenge issued for user ID: {}", user.getId());
+            return authResponseFactory.twoFactorRequired(user.getEmail(), challengeToken);
+        }
+
+        AuthTokens tokens = authTokenManager.issueForUser(user);
         log.info("Successfully authenticated user with ID: {}", tokens.user().getId());
 
         return authResponseFactory.authenticated(tokens.accessToken(), tokens.refreshToken(), tokens.user());
@@ -81,6 +93,17 @@ public class AuthServiceImpl implements AuthService {
         AuthTokens tokens = authTokenManager.issueForUser(user);
 
         log.info("Successfully exchanged OAuth code for user ID: {}", userId);
+        return authResponseFactory.authenticated(tokens.accessToken(), tokens.refreshToken(), tokens.user());
+    }
+
+    @Override
+    public AuthResponse verifyTwoFactorLogin(TwoFactorLoginVerifyRequest request) {
+        log.info("Verifying two-factor login challenge");
+
+        User user = twoFactorLoginWorkflow.verifyChallenge(request);
+        AuthTokens tokens = authTokenManager.issueForUser(user);
+
+        log.info("Successfully completed two-factor login for user ID: {}", user.getId());
         return authResponseFactory.authenticated(tokens.accessToken(), tokens.refreshToken(), tokens.user());
     }
 

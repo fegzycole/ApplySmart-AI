@@ -1,18 +1,21 @@
 package ai.applysmart.controller;
 
 import ai.applysmart.dto.common.ApiResponse;
+import ai.applysmart.dto.settings.DeleteAccountRequest;
 import ai.applysmart.entity.User;
 import ai.applysmart.exception.UnsupportedFeatureException;
 import ai.applysmart.service.settings.SettingsService;
 import ai.applysmart.util.ControllerUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,9 +30,11 @@ public class SettingsAccountController {
 
     @DeleteMapping("/account/delete")
     @Operation(summary = "Delete user account")
-    public ResponseEntity<ApiResponse<Void>> deleteAccount(@AuthenticationPrincipal User user) {
+    public ResponseEntity<ApiResponse<Void>> deleteAccount(
+            @Valid @RequestBody DeleteAccountRequest request,
+            @AuthenticationPrincipal User user) {
         log.info("Delete account request from user: {}", user.getId());
-        settingsService.deleteAccount(user);
+        settingsService.deleteAccount(request, user);
         return ResponseEntity.ok(ControllerUtils.successResponse("Account deleted successfully"));
     }
 
