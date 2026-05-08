@@ -11,4 +11,8 @@ public class RecentApplicationDto {
     private String role;
     private String status;
     private String date;
+    private String updatedAt;
+    private String location;
+    private String deadline;
+    private Boolean stale;
 }

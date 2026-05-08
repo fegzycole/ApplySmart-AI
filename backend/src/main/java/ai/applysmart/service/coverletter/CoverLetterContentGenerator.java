@@ -8,6 +8,7 @@ import ai.applysmart.exception.ResourceNotFoundException;
 import ai.applysmart.repository.ResumeRepository;
 import ai.applysmart.service.ai.ClaudeService;
 import ai.applysmart.service.file.FileParserService;
+import ai.applysmart.util.JobDescriptionValidationRules;
 import ai.applysmart.util.TextUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -80,8 +81,9 @@ public class CoverLetterContentGenerator {
     }
 
     private void validateRequest(String jobDescription, String company, String position) {
-        if (TextUtils.isBlank(jobDescription)) {
-            throw new BadRequestException("Job description is required");
+        String jobDescriptionValidationError = JobDescriptionValidationRules.findValidationError(jobDescription);
+        if (jobDescriptionValidationError != null) {
+            throw new BadRequestException(jobDescriptionValidationError);
         }
 
         if (TextUtils.isBlank(company)) {

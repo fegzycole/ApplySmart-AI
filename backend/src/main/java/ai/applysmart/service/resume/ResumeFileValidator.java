@@ -1,6 +1,7 @@
 package ai.applysmart.service.resume;
 
 import ai.applysmart.exception.BadRequestException;
+import ai.applysmart.util.JobDescriptionValidationRules;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,8 +21,9 @@ public class ResumeFileValidator {
 
     public void requireOptimizationInput(MultipartFile file, String jobDescription) {
         requireNonEmptyFile(file);
-        if (jobDescription == null || jobDescription.isBlank()) {
-            throw new BadRequestException("Job description is required");
+        String validationError = JobDescriptionValidationRules.findValidationError(jobDescription);
+        if (validationError != null) {
+            throw new BadRequestException(validationError);
         }
     }
 

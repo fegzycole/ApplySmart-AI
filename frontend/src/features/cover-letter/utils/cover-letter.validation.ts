@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getJobDescriptionValidationMessage } from "@/shared/utils/job-description.validation";
 import type { CoverLetterFormData } from "../types/cover-letter.types";
 
 export interface CoverLetterValidationFeedback {
@@ -6,11 +7,21 @@ export interface CoverLetterValidationFeedback {
   formErrors: string[];
 }
 
+const jobDescriptionSchema = z.string().superRefine((value, context) => {
+  const validationMessage = getJobDescriptionValidationMessage(value);
+  if (validationMessage) {
+    context.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: validationMessage,
+    });
+  }
+});
+
 const coverLetterSchema = z.object({
   company: z.string().trim().min(1, "Company is required"),
   position: z.string().trim().min(1, "Position is required"),
   tone: z.enum(["professional", "enthusiastic", "formal", "friendly"]),
-  jobDescription: z.string().trim().min(1, "Job description is required"),
+  jobDescription: jobDescriptionSchema,
   highlights: z.string(),
 });
 

@@ -1,35 +1,26 @@
-import { StatCardSkeleton, ChartSkeleton, CardSkeleton } from "@/shared/components/skeletons";
 import { DASHBOARD_PAGE_STYLES } from "../../constants/dashboard.constants";
 
 export function DashboardSkeleton() {
   return (
-    <div className={DASHBOARD_PAGE_STYLES.wrapper}>
-      <div className="mb-8">
-        <div className="h-8 w-48 bg-accent animate-pulse rounded-md mb-2" />
-        <div className="h-4 w-64 bg-accent animate-pulse rounded-md" />
-      </div>
-
-      <div className={DASHBOARD_PAGE_STYLES.statsGrid}>
-        {Array.from({ length: 4 }).map((_, i) => (
-          <StatCardSkeleton key={i} />
-        ))}
-      </div>
-
-      <div className={DASHBOARD_PAGE_STYLES.mainContentGrid}>
-        <ChartSkeleton />
-        <ChartSkeleton />
-      </div>
-
-      <div className={DASHBOARD_PAGE_STYLES.velocitySection}>
-        <ChartSkeleton />
-      </div>
-
-      <div className={DASHBOARD_PAGE_STYLES.bottomGrid}>
-        <div className="lg:col-span-2">
-          <CardSkeleton />
+    <div className={DASHBOARD_PAGE_STYLES.container}>
+      <div className={DASHBOARD_PAGE_STYLES.wrapper}>
+        <div className="h-56 animate-pulse rounded-[1.75rem] bg-zinc-200/70 dark:bg-zinc-800/70" />
+        <div className="h-80 animate-pulse rounded-[2rem] bg-zinc-200/70 dark:bg-zinc-800/70" />
+        <div className={DASHBOARD_PAGE_STYLES.metricsGrid}>
+          {Array.from({ length: 4 }).map((_, index) => (
+            <div
+              key={index}
+              className="h-40 animate-pulse rounded-[1.6rem] bg-zinc-200/70 dark:bg-zinc-800/70"
+            />
+          ))}
         </div>
-        <div>
-          <CardSkeleton />
+        <div className={DASHBOARD_PAGE_STYLES.topPanels}>
+          <div className="h-[26rem] animate-pulse rounded-[1.75rem] bg-zinc-200/70 dark:bg-zinc-800/70" />
+          <div className="h-[26rem] animate-pulse rounded-[1.75rem] bg-zinc-200/70 dark:bg-zinc-800/70" />
+        </div>
+        <div className={DASHBOARD_PAGE_STYLES.bottomPanels}>
+          <div className="h-[28rem] animate-pulse rounded-[1.75rem] bg-zinc-200/70 dark:bg-zinc-800/70" />
+          <div className="h-[28rem] animate-pulse rounded-[1.75rem] bg-zinc-200/70 dark:bg-zinc-800/70" />
         </div>
       </div>
     </div>

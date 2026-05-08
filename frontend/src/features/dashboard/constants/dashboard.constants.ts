@@ -1,156 +1,98 @@
-import { Bookmark, Send, Users, CheckCircle } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
-
-export const STAGE_ICON_MAP: Record<string, LucideIcon> = {
-  "Saved": Bookmark,
-  "Applied": Send,
-  "Interview": Users,
-  "Offer": CheckCircle,
-} as const;
+import { BriefcaseBusiness, FileText, WandSparkles } from "lucide-react";
+import type {
+  DashboardAction,
+  DashboardApplicationStatus,
+} from "../types/dashboard.types";
 
 export const DASHBOARD_PAGE_STYLES = {
-  container: "p-4 sm:p-6 lg:p-8 overflow-x-hidden",
-  wrapper: "max-w-7xl mx-auto",
-  statsGrid: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 lg:mb-8",
-  mainContentGrid: "grid lg:grid-cols-3 gap-4 lg:gap-6 mb-6 items-start",
-  velocitySection: "mb-6",
-  bottomGrid: "grid lg:grid-cols-3 gap-4 lg:gap-6"
+  container:
+    "min-h-screen overflow-x-hidden bg-gradient-to-br from-zinc-50 via-white to-violet-50/30 px-4 py-4 dark:from-zinc-950 dark:via-zinc-900 dark:to-violet-950/10 sm:px-6 sm:py-6 lg:px-8 lg:py-8",
+  wrapper: "mx-auto max-w-7xl space-y-6 lg:space-y-8",
+  metricsGrid: "grid gap-4 sm:grid-cols-2 xl:grid-cols-4",
+  topPanels: "grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] xl:gap-6",
+  midPanels: "grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] xl:gap-6",
+  bottomPanels: "grid gap-4 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] xl:gap-6",
 } as const;
 
 export const DASHBOARD_HEADER_CONTENT = {
   title: "Dashboard",
-  description: "Welcome back! Here's your job search overview"
+  description:
+    "See your application momentum, document readiness, and the work that needs attention in one focused job-search workspace.",
 } as const;
 
-export const QUICK_ACTIONS_STYLES = {
-  card: "border-0 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-600 shadow-2xl shadow-violet-500/50 dark:shadow-violet-900/50",
-  title: "text-white text-lg sm:text-xl",
-  content: "space-y-3",
-  button: "w-full justify-start bg-white/20 hover:bg-white/30 text-white border-0 backdrop-blur-sm text-sm",
-  icon: "size-4 mr-2"
-} as const;
-
-export const QUICK_ACTIONS = {
-  ADD_APPLICATION: {
-    label: "Add New Application",
-    path: "/jobs/new",
-    description: "Track a new job application"
+export const DASHBOARD_ACTIONS: DashboardAction[] = [
+  {
+    label: "Track Application",
+    description: "Log a new role in your pipeline.",
+    path: "/app/job-tracker",
+    icon: BriefcaseBusiness,
   },
-  OPTIMIZE_RESUME: {
+  {
+    label: "Build Resume",
+    description: "Create a polished resume from scratch.",
+    path: "/app/resume-builder",
+    icon: FileText,
+  },
+  {
     label: "Optimize Resume",
-    path: "/resumes",
-    description: "Improve your resume with AI"
+    description: "Tailor a resume to a job description.",
+    path: "/app/resume-optimizer",
+    icon: WandSparkles,
   },
-  GENERATE_COVER_LETTER: {
-    label: "Generate Cover Letter",
-    path: "/cover-letters/generate",
-    description: "Create a tailored cover letter"
-  }
+];
+
+export const DASHBOARD_STATUS_META: Record<
+  DashboardApplicationStatus,
+  { label: string; className: string }
+> = {
+  saved: {
+    label: "Saved",
+    className:
+      "border-zinc-200 bg-zinc-100 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300",
+  },
+  applied: {
+    label: "Applied",
+    className:
+      "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300",
+  },
+  interview: {
+    label: "Interview",
+    className:
+      "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-900 dark:bg-violet-950/40 dark:text-violet-300",
+  },
+  offer: {
+    label: "Offer",
+    className:
+      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300",
+  },
+  rejected: {
+    label: "Rejected",
+    className:
+      "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300",
+  },
+};
+
+export const DASHBOARD_PIPELINE_COLORS: Record<string, string> = {
+  Saved: "#64748b",
+  Applied: "#f59e0b",
+  Interview: "#8b5cf6",
+  Offer: "#10b981",
+};
+
+export const DASHBOARD_DOCUMENT_COLORS = {
+  originalResumes: "#94a3b8",
+  optimizedResumes: "#8b5cf6",
+  builtResumes: "#06b6d4",
+  coverLetters: "#10b981",
 } as const;
 
-
-export const RECENT_APPLICATIONS_STYLES = {
-  card: "border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300",
-  header: {
-    wrapper: "pb-4",
-    container: "flex flex-col sm:flex-row sm:items-start justify-between gap-3",
-    title: "text-lg sm:text-xl",
-    description: "text-xs sm:text-sm",
-    button: "border-violet-200 dark:border-violet-800 hover:bg-violet-50 dark:hover:bg-violet-950/30 self-start sm:self-center"
-  },
-  content: "space-y-3",
-  item: {
-    container: "flex items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-0 bg-gradient-to-r from-violet-50/50 to-fuchsia-50/50 dark:from-violet-950/20 dark:to-fuchsia-950/20 hover:shadow-lg transition-all duration-300",
-    icon: {
-      wrapper: "size-10 sm:size-12 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center flex-shrink-0 shadow-lg",
-      icon: "size-5 sm:size-6 text-white"
-    },
-    content: "flex-1 min-w-0",
-    company: "font-semibold text-sm sm:text-base text-zinc-900 dark:text-white truncate",
-    role: "text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 truncate",
-    footer: "flex items-center gap-2 mt-2",
-    date: "text-xs text-zinc-500 dark:text-zinc-500"
-  },
-  status: {
-    base: "inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-white text-xs font-medium shadow-lg",
-    saved: "bg-gradient-to-r from-slate-500 to-zinc-500",
-    interview: "bg-gradient-to-r from-violet-500 to-fuchsia-500",
-    applied: "bg-gradient-to-r from-amber-400 to-orange-500",
-    offer: "bg-gradient-to-r from-emerald-500 to-green-500",
-    rejected: "bg-gradient-to-r from-red-500 to-rose-500",
-    icon: "size-3"
-  }
-} as const;
-
-
-export const APPLICATION_FUNNEL_STYLES = {
-  card: "border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300",
-  header: {
-    wrapper: "pb-4",
-    container: "flex items-start gap-3",
-    icon: {
-      wrapper: "size-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center shadow-lg flex-shrink-0",
-      icon: "size-5 text-white"
-    },
-    content: "min-w-0",
-    title: "text-lg sm:text-xl",
-    description: "text-xs sm:text-sm"
-  },
-  content: "space-y-6 py-2",
-  stage: {
-    container: "relative",
-    connector: "absolute left-[23px] top-[60px] w-0.5 h-6 bg-gradient-to-b from-zinc-300 to-zinc-200 dark:from-zinc-600 dark:to-zinc-700",
-    wrapper: "flex items-start gap-3 relative group",
-    icon: {
-      base: "relative z-10 size-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 group-hover:scale-110 flex-shrink-0",
-      icon: "size-5 text-white"
-    },
-    content: "flex-1 min-w-0",
-    header: "mb-2",
-    title: "font-semibold text-sm text-zinc-900 dark:text-zinc-100 mb-1 truncate",
-    valueContainer: "flex items-baseline gap-2",
-    value: "text-2xl sm:text-3xl font-bold tabular-nums",
-    percentage: "text-xs font-medium text-zinc-500 dark:text-zinc-400",
-    progressBar: {
-      container: "h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden",
-      fill: "h-full rounded-full transition-all duration-500"
-    }
-  },
-  metrics: {
-    container: "mt-6 pt-6 border-t border-zinc-200 dark:border-zinc-700 grid grid-cols-2 gap-3",
-    card: "text-center p-3 rounded-xl",
-    value: "text-lg sm:text-xl font-bold bg-clip-text text-transparent",
-    label: "text-xs text-zinc-600 dark:text-zinc-400 mt-1"
-  }
-} as const;
-
-
-
-
-export const FUNNEL_COLOR_MAP = {
-  violet: {
-    icon: "bg-gradient-to-br from-violet-500 to-fuchsia-500",
-    text: "text-violet-600 dark:text-violet-400",
-    progress: "bg-gradient-to-r from-violet-500 to-fuchsia-500"
-  },
-  fuchsia: {
-    icon: "bg-gradient-to-br from-fuchsia-500 to-pink-500",
-    text: "text-fuchsia-600 dark:text-fuchsia-400",
-    progress: "bg-gradient-to-r from-fuchsia-500 to-pink-500"
-  },
-  cyan: {
-    icon: "bg-gradient-to-br from-cyan-500 to-teal-500",
-    text: "text-cyan-600 dark:text-cyan-400",
-    progress: "bg-gradient-to-r from-cyan-500 to-teal-500"
-  },
-  teal: {
-    icon: "bg-gradient-to-br from-teal-500 to-emerald-500",
-    text: "text-teal-600 dark:text-teal-400",
-    progress: "bg-gradient-to-r from-teal-500 to-emerald-500"
-  },
-  emerald: {
-    icon: "bg-gradient-to-br from-emerald-500 to-green-500",
-    text: "text-emerald-600 dark:text-emerald-400",
-    progress: "bg-gradient-to-r from-emerald-500 to-green-500"
-  }
+export const DASHBOARD_INSIGHT_TONE_STYLES = {
+  violet:
+    "border-violet-200 bg-violet-50/80 text-violet-800 dark:border-violet-900 dark:bg-violet-950/30 dark:text-violet-200",
+  cyan:
+    "border-cyan-200 bg-cyan-50/80 text-cyan-800 dark:border-cyan-900 dark:bg-cyan-950/30 dark:text-cyan-200",
+  emerald:
+    "border-emerald-200 bg-emerald-50/80 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-200",
+  amber:
+    "border-amber-200 bg-amber-50/80 text-amber-800 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-200",
 } as const;

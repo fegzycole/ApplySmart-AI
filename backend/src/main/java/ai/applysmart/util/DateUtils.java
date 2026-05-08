@@ -39,6 +39,28 @@ public final class DateUtils {
         return formatTimeUnit(daysBetween, "day");
     }
 
+    public static String formatDeadline(LocalDateTime dateTime) {
+        LocalDateTime now = LocalDateTime.now();
+        long daysUntil = ChronoUnit.DAYS.between(now.toLocalDate(), dateTime.toLocalDate());
+
+        if (daysUntil == 0) {
+            return "Due today";
+        }
+        if (daysUntil == 1) {
+            return "Due tomorrow";
+        }
+        if (daysUntil > 1) {
+            return "Due in " + daysUntil + " days";
+        }
+
+        long overdueDays = Math.abs(daysUntil);
+        if (overdueDays == 1) {
+            return "Overdue by 1 day";
+        }
+
+        return "Overdue by " + overdueDays + " days";
+    }
+
     public static double calculatePercentage(long numerator, long denominator) {
         return denominator > 0 ? (numerator * 100.0 / denominator) : 0.0;
     }

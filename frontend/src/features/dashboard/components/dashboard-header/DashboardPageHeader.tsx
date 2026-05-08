@@ -6,7 +6,7 @@ export function DashboardPageHeader() {
   return (
     <WorkspacePageHeader
       className="mb-6 lg:mb-8"
-      badge="Search Overview"
+      badge="Job Search Command Center"
       badgeIcon={LayoutDashboard}
       title={DASHBOARD_HEADER_CONTENT.title}
       description={DASHBOARD_HEADER_CONTENT.description}

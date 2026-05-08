@@ -18,11 +18,13 @@ import { CoverLetterDocumentPreview } from "./CoverLetterDocumentPreview";
 interface CoverLetterDocumentCardProps {
   coverLetter: CoverLetter;
   onDelete: (coverLetter: CoverLetter) => void;
+  onPreview: (coverLetter: CoverLetter) => void;
 }
 
 export function CoverLetterDocumentCard({
   coverLetter,
   onDelete,
+  onPreview,
 }: CoverLetterDocumentCardProps) {
   const [downloading, setDownloading] = useState(false);
 
@@ -105,7 +107,14 @@ export function CoverLetterDocumentCard({
         </CardContent>
 
         <div className={DOCUMENT_CARD_STYLES.previewShell}>
-          <CoverLetterDocumentPreview coverLetter={coverLetter} />
+          <button
+            type="button"
+            className={DOCUMENT_CARD_STYLES.previewButton}
+            onClick={() => onPreview(coverLetter)}
+            aria-label={`Open preview for ${coverLetter.company} cover letter`}
+          >
+            <CoverLetterDocumentPreview coverLetter={coverLetter} />
+          </button>
         </div>
       </div>
     </Card>

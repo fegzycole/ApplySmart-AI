@@ -26,6 +26,10 @@ export interface DocumentsTabData {
   original: Resume[];
 }
 
+export type DocumentsPreviewTarget =
+  | { type: "resume"; resume: Resume }
+  | { type: "coverLetter"; coverLetter: CoverLetter };
+
 export interface DocumentsTabPaginationState {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;

@@ -25,6 +25,8 @@ export const DOCUMENT_CARD_STYLES = {
   footer: "border-t border-zinc-200/80 pt-3 dark:border-zinc-800/80",
   previewShell:
     "border-t border-zinc-200/80 bg-zinc-50/70 p-3 dark:border-zinc-800 dark:bg-zinc-950/60 lg:flex lg:items-center lg:justify-center lg:border-l lg:border-t-0",
+  previewButton:
+    "group block w-full cursor-pointer rounded-[1.1rem] text-left transition duration-200 hover:scale-[1.01] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/70 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-50 dark:focus-visible:ring-offset-zinc-950",
   previewFrame:
     "mx-auto w-full max-w-[12.5rem] overflow-hidden rounded-[1rem] border border-zinc-200/80 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950",
   previewPaper:

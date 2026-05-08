@@ -1,11 +1,9 @@
-export { AppLayout } from './layout';
-
-export { StatCard } from './stats';
-
-export { SuccessMetricsChart } from './charts';
-export { ApplicationVelocityChart } from './charts';
-export { ApplicationFunnel } from './charts';
-
-export { QuickActionsCard } from './quick-actions';
-
-export { RecentApplicationsSection } from './recent-applications';
+export { AppLayout } from "./layout";
+export { DashboardHeroPanel } from "./overview/DashboardHeroPanel";
+export { DashboardMetricGrid } from "./overview/DashboardMetricGrid";
+export { ApplicationVelocityPanel } from "./panels/ApplicationVelocityPanel";
+export { OutcomeTrendPanel } from "./panels/OutcomeTrendPanel";
+export { PipelineSnapshotPanel } from "./panels/PipelineSnapshotPanel";
+export { DocumentCoveragePanel } from "./panels/DocumentCoveragePanel";
+export { DashboardInsightsPanel } from "./panels/DashboardInsightsPanel";
+export { RecentApplicationsPanel } from "./panels/RecentApplicationsPanel";

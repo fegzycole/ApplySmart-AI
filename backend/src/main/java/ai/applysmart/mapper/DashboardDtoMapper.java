@@ -2,6 +2,7 @@ package ai.applysmart.mapper;
 
 import ai.applysmart.dto.dashboard.*;
 import ai.applysmart.entity.Job;
+import ai.applysmart.service.dashboard.DashboardJobMetrics;
 import ai.applysmart.util.DateUtils;
 import org.springframework.stereotype.Component;
 
@@ -88,6 +89,11 @@ public class DashboardDtoMapper {
                 .role(job.getRole())
                 .status(job.getStatus().name().toLowerCase())
                 .date(DateUtils.formatRelativeDate(job.getCreatedAt()))
+                .updatedAt(DateUtils.formatRelativeDate(job.getUpdatedAt()))
+                .location(job.getLocation())
+                .deadline(job.getApplicationDeadline() == null ? null : DateUtils.formatDeadline(job.getApplicationDeadline()))
+                .stale(DashboardJobMetrics.isInFlightStatus(job)
+                        && job.getUpdatedAt().isBefore(java.time.LocalDateTime.now().minusDays(14)))
                 .build();
     }
 

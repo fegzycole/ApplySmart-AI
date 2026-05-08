@@ -34,8 +34,8 @@ export function NavigationLinks({ onNavigate, variant }: NavigationLinksProps) {
 
 function getNavigationLinkClassName(isDesktop: boolean, active: boolean) {
   const baseClassName = isDesktop
-    ? "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
-    : "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-all";
+    ? "flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all"
+    : "flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-all";
 
   if (active) {
     return isDesktop

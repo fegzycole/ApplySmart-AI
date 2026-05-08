@@ -4,7 +4,6 @@ import {
   FolderOpen,
   LayoutDashboard,
   Mail,
-  Settings,
   Target,
 } from "lucide-react";
 
@@ -15,7 +14,6 @@ export const APP_NAVIGATION = [
   { name: "My Documents", href: "/app/documents", icon: FolderOpen },
   { name: "Cover Letter", href: "/app/cover-letter", icon: Mail },
   { name: "Job Tracker", href: "/app/job-tracker", icon: Briefcase },
-  { name: "Settings", href: "/app/settings", icon: Settings },
 ] as const;
 
 export function isActiveRoute(pathname: string, href: string) {

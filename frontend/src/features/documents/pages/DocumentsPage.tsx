@@ -7,6 +7,7 @@ import {
 } from "../constants/documents.constants";
 import {
   CoverLetterDeleteDialog,
+  DocumentPreviewDialog,
   DocumentsEmptyState,
   DocumentsOverviewCards,
   DocumentsPageHeader,
@@ -32,6 +33,10 @@ export function DocumentsPage() {
     coverLetterToDelete,
     setCoverLetterToDelete,
     deleteCoverLetter,
+    previewTarget,
+    openResumePreview,
+    openCoverLetterPreview,
+    closePreview,
   } = useDocumentsManager();
 
   if (isLoading) {
@@ -73,6 +78,8 @@ export function DocumentsPage() {
                       coverLetters={tab.id === "coverLetters" ? documentsByTab.coverLetters : undefined}
                       onDeleteResume={setResumeToDelete}
                       onDeleteCoverLetter={setCoverLetterToDelete}
+                      onPreviewResume={openResumePreview}
+                      onPreviewCoverLetter={openCoverLetterPreview}
                     />
                   ) : (
                     <DocumentsEmptyState hasSearchQuery={Boolean(searchQuery.trim())} />
@@ -103,6 +110,15 @@ export function DocumentsPage() {
             }
           }}
           onConfirm={deleteCoverLetter}
+        />
+
+        <DocumentPreviewDialog
+          previewTarget={previewTarget}
+          onOpenChange={(open) => {
+            if (!open) {
+              closePreview();
+            }
+          }}
         />
       </div>
     </div>

@@ -1,15 +1,14 @@
 package ai.applysmart.service.dashboard;
 
 import ai.applysmart.dto.dashboard.*;
+import ai.applysmart.entity.CoverLetter;
 import ai.applysmart.entity.Job;
+import ai.applysmart.entity.Resume;
 import ai.applysmart.entity.User;
 import ai.applysmart.mapper.DashboardDtoMapper;
+import ai.applysmart.repository.CoverLetterRepository;
 import ai.applysmart.repository.JobRepository;
-import ai.applysmart.service.dashboard.DashboardService;
-import ai.applysmart.service.dashboard.DashboardConversionCalculator;
-import ai.applysmart.service.dashboard.DashboardFunnelCalculator;
-import ai.applysmart.service.dashboard.DashboardStatsCalculator;
-import ai.applysmart.service.dashboard.DashboardTrendCalculator;
+import ai.applysmart.repository.ResumeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,22 +24,30 @@ import java.util.stream.Collectors;
 public class DashboardServiceImpl implements DashboardService {
 
     private final JobRepository jobRepository;
+    private final ResumeRepository resumeRepository;
+    private final CoverLetterRepository coverLetterRepository;
     private final DashboardDtoMapper dtoMapper;
     private final DashboardStatsCalculator statsCalculator;
     private final DashboardFunnelCalculator funnelCalculator;
     private final DashboardConversionCalculator conversionCalculator;
     private final DashboardTrendCalculator trendCalculator;
+    private final DashboardOverviewCalculator overviewCalculator;
+    private final DashboardDocumentStatsCalculator documentStatsCalculator;
 
     @Override
     public DashboardDataDto getDashboardData(User user) {
         log.info("Fetching dashboard data for user: {}", user.getId());
         List<Job> jobs = findJobsForUser(user);
+        List<Resume> resumes = resumeRepository.findByUserOrderByUpdatedAtDesc(user);
+        List<CoverLetter> coverLetters = coverLetterRepository.findByUserOrderByCreatedAtDesc(user);
 
         return DashboardDataDto.builder()
-                .stats(statsCalculator.calculate(jobs))
+                .overview(overviewCalculator.calculate(jobs))
+                .documents(documentStatsCalculator.calculate(resumes, coverLetters, jobs))
                 .recentApplications(mapRecentApplications(jobs))
                 .funnel(funnelCalculator.calculate(jobs))
-                .metrics(conversionCalculator.calculate(jobs))
+                .successMetrics(trendCalculator.calculateSuccessMetrics(jobs))
+                .applicationVelocity(trendCalculator.calculateApplicationVelocity(jobs))
                 .build();
     }
 

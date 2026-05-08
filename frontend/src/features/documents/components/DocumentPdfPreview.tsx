@@ -3,9 +3,26 @@ import { DOCUMENT_CARD_STYLES } from "../constants/documents.constants";
 interface DocumentPdfPreviewProps {
   title: string;
   url: string;
+  variant?: "modal" | "thumbnail";
 }
 
-export function DocumentPdfPreview({ title, url }: DocumentPdfPreviewProps) {
+export function DocumentPdfPreview({
+  title,
+  url,
+  variant = "thumbnail",
+}: DocumentPdfPreviewProps) {
+  if (variant === "modal") {
+    return (
+      <div className="h-full overflow-hidden rounded-[1.35rem] border border-zinc-200/80 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+        <iframe
+          src={`${url}#toolbar=0&navpanes=0&scrollbar=0`}
+          title={title}
+          className="h-full w-full border-0"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className={DOCUMENT_CARD_STYLES.previewFrame}>
       <div className="relative h-[15.5rem] overflow-hidden bg-zinc-50 dark:bg-zinc-950">

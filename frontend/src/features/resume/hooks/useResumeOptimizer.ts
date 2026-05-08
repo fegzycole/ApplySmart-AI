@@ -3,7 +3,6 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { invalidateQueries } from "@/shared/lib/query-cache";
 import { COVER_LETTER_KEYS } from "@/features/cover-letter/hooks/useCoverLetterQueries";
-import { ApiError } from "@/shared/services/api-client";
 import {
   optimizeResume,
   uploadAndOptimizeResume,
@@ -16,6 +15,7 @@ import type {
   ResumeOptimizerSource,
 } from "../types/resume-optimizer.types";
 import { RESUME_KEYS } from "./useResumeQueries";
+import { getResumeOptimizerErrorMessage } from "../utils/resume-optimizer.errors";
 
 export function useResumeOptimizer() {
   const queryClient = useQueryClient();
@@ -39,15 +39,11 @@ export function useResumeOptimizer() {
 
       setResult(optimizationResult);
       await Promise.all([
-        invalidateQueries(queryClient, RESUME_KEYS.lists()),
-        invalidateQueries(queryClient, COVER_LETTER_KEYS.lists()),
+        invalidateQueries(queryClient, RESUME_KEYS.all),
+        invalidateQueries(queryClient, COVER_LETTER_KEYS.all),
       ]);
     } catch (error) {
-      const message = error instanceof ApiError
-        ? error.message
-        : error instanceof Error
-          ? error.message
-          : "Failed to optimize resume. Please try again.";
+      const message = getResumeOptimizerErrorMessage(error);
       setErrorMessage(message);
       toast.error(message);
     } finally {

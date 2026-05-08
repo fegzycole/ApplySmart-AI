@@ -47,12 +47,13 @@ public class DashboardTrendCalculator {
 
         List<Job> monthJobs = DashboardJobMetrics.filterByCreatedAt(jobs, monthStart, monthEnd);
         long totalApplied = DashboardJobMetrics.countAppliedJobs(monthJobs);
+        long responded = DashboardJobMetrics.countRespondedApplications(monthJobs);
         long interviews = DashboardJobMetrics.countInterviewsAndOffers(monthJobs);
         long offers = DashboardJobMetrics.countOffers(monthJobs);
 
         return SuccessMetricDto.builder()
                 .month(formatter.format(monthStart))
-                .responseRate(DateUtils.calculatePercentage(interviews, totalApplied))
+                .responseRate(DateUtils.calculatePercentage(responded, totalApplied))
                 .interviewRate(DateUtils.calculatePercentage(interviews, totalApplied))
                 .offerRate(DateUtils.calculatePercentage(offers, totalApplied))
                 .build();

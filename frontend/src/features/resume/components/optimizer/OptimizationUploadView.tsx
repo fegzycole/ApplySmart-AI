@@ -1,5 +1,6 @@
 import { AnimatePresence } from "framer-motion";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import { getJobDescriptionStats, getJobDescriptionValidationMessage } from "@/shared/utils/job-description.validation";
 import { ProgressSteps } from "./ProgressSteps";
 import { StepOne } from "./steps/StepOne";
 import { StepTwo } from "./steps/StepTwo";
@@ -11,6 +12,7 @@ import type {
   ResumeOptimizerCoverLetterOptions,
   ResumeOptimizerSource,
 } from "../../types/resume-optimizer.types";
+import { validateResumeOptimizerInput } from "../../utils/resume-optimizer.validation";
 
 interface OptimizationUploadViewProps {
   onOptimize: (
@@ -28,6 +30,7 @@ export function OptimizationUploadView({
   optimizing,
   errorMessage,
 }: OptimizationUploadViewProps) {
+  const [jobDescriptionError, setJobDescriptionError] = useState<string | null>(null);
   const {
     step,
     setStep,
@@ -58,8 +61,38 @@ export function OptimizationUploadView({
     [existingResumes, selectedResumeId]
   );
 
+  const jobDescriptionStats = useMemo(
+    () => getJobDescriptionStats(jobDescription),
+    [jobDescription],
+  );
+  const jobDescriptionValidationMessage = useMemo(
+    () => getJobDescriptionValidationMessage(jobDescription),
+    [jobDescription],
+  );
+
+  const handleJobDescriptionChange = (value: string) => {
+    setJobDescription(value);
+
+    if (jobDescriptionError) {
+      setJobDescriptionError(null);
+    }
+  };
+
+  const handleStepTwoNext = () => {
+    const validation = validateResumeOptimizerInput(jobDescription);
+    if (validation?.fieldErrors.jobDescription) {
+      setJobDescriptionError(validation.fieldErrors.jobDescription);
+      return;
+    }
+
+    setStep(3);
+  };
+
   const handleSubmit = () => {
-    if (!jobDescription.trim()) {
+    const validation = validateResumeOptimizerInput(jobDescription);
+    if (validation?.fieldErrors.jobDescription) {
+      setJobDescriptionError(validation.fieldErrors.jobDescription);
+      setStep(2);
       return;
     }
 
@@ -80,7 +113,7 @@ export function OptimizationUploadView({
     }
   };
 
-  const canProceedToStep3 = jobDescription.trim().length > 50;
+  const canProceedToStep3 = jobDescriptionValidationMessage === null;
 
   return (
     <div className="min-w-0 max-w-5xl mx-auto rounded-[2rem] border border-zinc-200/80 bg-white/75 p-4 shadow-xl shadow-zinc-200/40 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/75 dark:shadow-black/20 sm:p-6 lg:p-8">
@@ -105,9 +138,11 @@ export function OptimizationUploadView({
         {step === 2 && (
           <StepTwo
             jobDescription={jobDescription}
-            onJobDescriptionChange={setJobDescription}
+            jobDescriptionError={jobDescriptionError}
+            jobDescriptionStats={jobDescriptionStats}
+            onJobDescriptionChange={handleJobDescriptionChange}
             onBack={() => setStep(1)}
-            onNext={() => setStep(3)}
+            onNext={handleStepTwoNext}
             canProceed={canProceedToStep3}
           />
         )}

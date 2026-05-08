@@ -1,67 +1,95 @@
 import type { LucideIcon } from "lucide-react";
 
-export type ApplicationStatus = "saved" | "applied" | "interview" | "offer" | "rejected";
+export type DashboardApplicationStatus =
+  | "saved"
+  | "applied"
+  | "interview"
+  | "offer"
+  | "rejected";
 
-export interface Application {
+export interface DashboardRecentApplication {
   id: number;
   company: string;
   role: string;
-  status: ApplicationStatus;
+  status: DashboardApplicationStatus;
   date: string;
+  updatedAt: string;
+  location: string | null;
+  deadline: string | null;
+  stale: boolean;
 }
 
-export interface StatCardData {
-  title: string;
-  value: string | number;
-  trend: {
-    value: string;
-    isPositive: boolean;
-  };
-  gradient: {
-    from: string;
-    to: string;
-  };
-  shadowColor: string;
-}
-
-export interface QuickAction {
-  label: string;
-  icon: LucideIcon;
-  path: string;
-  description?: string;
-}
-
-export interface FunnelStage {
+export interface DashboardFunnelStage {
   name: string;
   value: number;
   color: string;
   percentage: number;
-  icon?: LucideIcon;
 }
 
-export interface ConversionMetric {
-  label: string;
-  value: string;
-  gradient: string;
-}
-
-export interface SuccessMetric {
+export interface DashboardSuccessMetric {
   month: string;
   responseRate: number;
   interviewRate: number;
   offerRate: number;
 }
 
-export interface ApplicationVelocity {
+export interface DashboardApplicationVelocity {
   week: string;
   fullWeek: string;
   applications: number;
   target: number;
 }
 
+export interface DashboardOverview {
+  totalApplications: number;
+  activeApplications: number;
+  savedApplications: number;
+  interviews: number;
+  offers: number;
+  rejections: number;
+  uniqueCompanies: number;
+  staleApplications: number;
+  upcomingDeadlines: number;
+  applicationsThisWeek: number;
+  applicationsThisMonth: number;
+  responseRate: number;
+  offerRate: number;
+}
+
+export interface DashboardDocumentStats {
+  totalResumes: number;
+  originalResumes: number;
+  optimizedResumes: number;
+  builtResumes: number;
+  coverLetters: number;
+}
+
 export interface DashboardData {
-  stats: StatCardData[];
-  recentApplications: Application[];
-  funnel: FunnelStage[];
-  metrics: ConversionMetric[];
+  overview: DashboardOverview;
+  documents: DashboardDocumentStats;
+  recentApplications: DashboardRecentApplication[];
+  funnel: DashboardFunnelStage[];
+  successMetrics: DashboardSuccessMetric[];
+  applicationVelocity: DashboardApplicationVelocity[];
+}
+
+export interface DashboardAction {
+  label: string;
+  description: string;
+  path: string;
+  icon: LucideIcon;
+}
+
+export interface DashboardMetricCardData {
+  label: string;
+  value: string;
+  hint: string;
+}
+
+export interface DashboardInsight {
+  id: string;
+  label: string;
+  value: string;
+  description: string;
+  tone: "violet" | "cyan" | "emerald" | "amber";
 }

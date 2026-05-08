@@ -1,6 +1,7 @@
 export { CoverLetterDeleteDialog } from "./CoverLetterDeleteDialog";
 export { CoverLetterDocumentCard } from "./CoverLetterDocumentCard";
 export { CoverLetterDocumentPreview } from "./CoverLetterDocumentPreview";
+export { DocumentPreviewDialog } from "./DocumentPreviewDialog";
 export { DocumentPdfPreview } from "./DocumentPdfPreview";
 export { DocumentsEmptyState } from "./DocumentsEmptyState";
 export { DocumentsLoadMoreTrigger } from "./DocumentsLoadMoreTrigger";

@@ -14,6 +14,8 @@ interface DocumentsTabPanelProps {
   onLoadMore: () => void;
   onDeleteCoverLetter: (coverLetter: CoverLetter) => void;
   onDeleteResume: (resume: Resume) => void;
+  onPreviewCoverLetter: (coverLetter: CoverLetter) => void;
+  onPreviewResume: (resume: Resume) => void;
   resumes?: Resume[];
   title: string;
 }
@@ -27,6 +29,8 @@ export function DocumentsTabPanel({
   onLoadMore,
   onDeleteCoverLetter,
   onDeleteResume,
+  onPreviewCoverLetter,
+  onPreviewResume,
   resumes = [],
   title,
 }: DocumentsTabPanelProps) {
@@ -56,6 +60,7 @@ export function DocumentsTabPanel({
                 key={resume.id}
                 resume={resume}
                 onDelete={onDeleteResume}
+                onPreview={onPreviewResume}
               />
             ))
           : null}
@@ -66,6 +71,7 @@ export function DocumentsTabPanel({
                 key={coverLetter.id}
                 coverLetter={coverLetter}
                 onDelete={onDeleteCoverLetter}
+                onPreview={onPreviewCoverLetter}
               />
             ))
           : null}

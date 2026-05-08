@@ -19,6 +19,7 @@ import {
 import { DOCUMENT_TAB_META, DOCUMENT_TABS } from "../constants/documents.constants";
 import type {
   DocumentsOverview,
+  DocumentsPreviewTarget,
   DocumentsTabData,
   DocumentsTabId,
   DocumentsTabPaginationState,
@@ -35,6 +36,7 @@ export function useDocumentsManager() {
   const [activeTab, setActiveTab] = useState<DocumentsTabId>("original");
   const [resumeToDelete, setResumeToDelete] = useState<Resume | null>(null);
   const [coverLetterToDelete, setCoverLetterToDelete] = useState<CoverLetter | null>(null);
+  const [previewTarget, setPreviewTarget] = useState<DocumentsPreviewTarget | null>(null);
   const deferredSearchQuery = useDeferredValue(searchQuery.trim());
 
   const deleteResumeMutation = useDeleteResume();
@@ -162,6 +164,18 @@ export function useDocumentsManager() {
     });
   };
 
+  const openResumePreview = (resume: Resume) => {
+    setPreviewTarget({ type: "resume", resume });
+  };
+
+  const openCoverLetterPreview = (coverLetter: CoverLetter) => {
+    setPreviewTarget({ type: "coverLetter", coverLetter });
+  };
+
+  const closePreview = () => {
+    setPreviewTarget(null);
+  };
+
   return {
     activeTab,
     setActiveTab,
@@ -182,6 +196,10 @@ export function useDocumentsManager() {
     coverLetterToDelete,
     setCoverLetterToDelete,
     deleteCoverLetter,
+    previewTarget,
+    openResumePreview,
+    openCoverLetterPreview,
+    closePreview,
   };
 }
 

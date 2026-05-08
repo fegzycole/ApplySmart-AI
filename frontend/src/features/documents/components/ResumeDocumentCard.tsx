@@ -12,11 +12,13 @@ import { ResumeDocumentPreview } from "./ResumeDocumentPreview";
 
 interface ResumeDocumentCardProps {
   onDelete: (resume: Resume) => void;
+  onPreview: (resume: Resume) => void;
   resume: Resume;
 }
 
 export function ResumeDocumentCard({
   onDelete,
+  onPreview,
   resume,
 }: ResumeDocumentCardProps) {
   return (
@@ -57,7 +59,14 @@ export function ResumeDocumentCard({
         </CardContent>
 
         <div className={DOCUMENT_CARD_STYLES.previewShell}>
-          <ResumeDocumentPreview resume={resume} />
+          <button
+            type="button"
+            className={DOCUMENT_CARD_STYLES.previewButton}
+            onClick={() => onPreview(resume)}
+            aria-label={`Open preview for ${resume.name}`}
+          >
+            <ResumeDocumentPreview resume={resume} />
+          </button>
         </div>
       </div>
     </Card>

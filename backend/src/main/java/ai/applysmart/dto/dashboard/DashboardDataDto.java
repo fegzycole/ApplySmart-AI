@@ -8,8 +8,10 @@ import java.util.List;
 @Data
 @Builder
 public class DashboardDataDto {
-    private List<StatCardDto> stats;
+    private DashboardOverviewDto overview;
+    private DashboardDocumentStatsDto documents;
     private List<RecentApplicationDto> recentApplications;
     private List<FunnelStageDto> funnel;
-    private List<ConversionMetricDto> metrics;
+    private List<SuccessMetricDto> successMetrics;
+    private List<ApplicationVelocityDto> applicationVelocity;
 }
