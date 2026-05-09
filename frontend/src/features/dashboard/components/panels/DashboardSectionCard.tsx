@@ -19,17 +19,20 @@ export function DashboardSectionCard({
   contentClassName,
 }: DashboardSectionCardProps) {
   return (
-    <Card className={`overflow-hidden rounded-[2.5rem] border-zinc-200/50 bg-white shadow-2xl shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-950 dark:shadow-none ${className ?? ""}`}>
-      <CardHeader className="flex flex-row items-start justify-between gap-3 border-b border-zinc-100 px-4 py-4 sm:items-center sm:gap-4 sm:px-6 sm:py-6 dark:border-zinc-900 lg:px-8">
-        <div className="space-y-1 sm:space-y-1.5">
-          <CardTitle className="text-base font-bold tracking-tight text-zinc-950 sm:text-xl dark:text-zinc-50">
-            {title}
-          </CardTitle>
-          <p className="text-xs font-medium leading-relaxed text-zinc-500 sm:text-sm dark:text-zinc-400">{description}</p>
+    <Card className={`overflow-hidden rounded-[3rem] border-zinc-100 bg-white shadow-[0_40px_80px_-24px_rgba(0,0,0,0.06)] dark:border-zinc-800 dark:bg-zinc-900/60 backdrop-blur-3xl transition-all duration-700 hover:shadow-[0_48px_96px_-24px_rgba(0,0,0,0.1)] ${className ?? ""}`}>
+      <CardHeader className="flex flex-row items-start justify-between gap-6 px-6 py-8 sm:px-10 sm:py-10 dark:border-zinc-800 lg:px-12">
+        <div className="space-y-3 min-w-0">
+          <div className="flex items-center gap-3">
+             <div className="h-2 w-2 rounded-full bg-sky-500 animate-pulse shadow-[0_0_12px_rgba(14,165,233,0.6)]" />
+             <CardTitle className="text-xl font-black tracking-tighter text-zinc-900 sm:text-2xl lg:text-3xl dark:text-zinc-50 uppercase">
+               {title}
+             </CardTitle>
+          </div>
+          <p className="text-sm font-medium leading-relaxed text-zinc-500 sm:text-base dark:text-zinc-400 max-w-2xl">{description}</p>
         </div>
-        {action ? <div className="mt-0.5 shrink-0 sm:mt-0">{action}</div> : null}
+        {action ? <div className="shrink-0">{action}</div> : null}
       </CardHeader>
-      <CardContent className={`px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 ${contentClassName ?? ""}`}>{children}</CardContent>
+      <CardContent className={`px-6 pb-10 sm:px-10 sm:pb-12 lg:px-12 lg:pb-16 ${contentClassName ?? ""}`}>{children}</CardContent>
     </Card>
   );
 }

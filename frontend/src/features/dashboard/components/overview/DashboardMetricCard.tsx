@@ -1,37 +1,60 @@
+import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
-import { Card, CardContent } from "@/shared/components/ui/card";
 
 interface DashboardMetricCardProps {
   label: string;
   value: string;
   hint: string;
-  icon?: LucideIcon;
+  icon: LucideIcon;
 }
 
 export function DashboardMetricCard({ label, value, hint, icon: Icon }: DashboardMetricCardProps) {
   return (
-    <Card className="group relative overflow-hidden rounded-[2rem] border-border bg-card shadow-xl shadow-primary/5 transition-all hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/10 dark:shadow-none">
-      <CardContent className="relative space-y-3 p-4 sm:space-y-4 sm:p-5 lg:p-6">
+    <motion.div
+      whileHover={{ y: -8 }}
+      transition={{ type: "spring", stiffness: 400, damping: 25 }}
+      className="group relative overflow-hidden rounded-[2.5rem] border border-zinc-100 bg-white shadow-[0_32px_64px_-16px_rgba(0,0,0,0.06)] transition-all duration-700 hover:border-sky-500/30 hover:shadow-[0_48px_96px_-16px_rgba(0,0,0,0.1)] dark:border-zinc-800/40 dark:bg-zinc-900/40"
+    >
+      {/* Material Textures */}
+      <div className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+      <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+
+      <div className="relative z-10 space-y-4 p-5 sm:p-6 xl:p-8">
         <div className="flex items-start justify-between">
-          <p className="text-[0.6rem] font-bold uppercase tracking-[0.15em] text-muted-foreground transition-colors group-hover:text-primary sm:text-[0.65rem] sm:tracking-[0.2em]">
-            {label}
-          </p>
-          {Icon && (
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-secondary text-muted-foreground transition-all group-hover:bg-primary group-hover:text-primary-foreground">
-              <Icon className="size-4" />
+          <div className="space-y-1 min-w-0 flex-1 pr-2">
+             <p className="truncate text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400 group-hover:text-zinc-600 transition-colors dark:group-hover:text-zinc-300">
+               {label}
+             </p>
+             <div className="h-0.5 w-8 bg-sky-500/20 rounded-full group-hover:w-12 transition-all duration-700" />
+          </div>
+
+          <div className="relative shrink-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-zinc-900 text-white shadow-xl transition-all duration-700 group-hover:bg-sky-600 group-hover:rotate-12 dark:bg-zinc-800 xl:h-12 xl:w-12">
+              <Icon className="size-5 xl:size-6" />
             </div>
-          )}
+            <motion.div 
+              className="absolute inset-0 rounded-2xl bg-sky-500/20"
+              animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 4, repeat: Infinity }}
+            />
+          </div>
         </div>
 
-        <div className="space-y-1">
-          <span className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+        <div className="space-y-3">
+          <span className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 xl:text-4xl 2xl:text-5xl">
             {value}
           </span>
-          <p className="text-xs font-medium leading-relaxed text-muted-foreground transition-colors group-hover:text-foreground/80">
-            {hint}
-          </p>
+          <div className="flex items-start gap-3">
+            <div className="mt-[0.22rem] h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 animate-pulse" />
+            <p className="text-[11px] font-bold uppercase leading-[1.1] tracking-widest text-zinc-400 group-hover:text-zinc-600 transition-colors dark:group-hover:text-zinc-300">
+              {hint}
+            </p>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Internal System Readout - Reveal on Hover */}
+      <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sky-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+    </motion.div>
   );
 }

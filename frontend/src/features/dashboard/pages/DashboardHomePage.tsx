@@ -37,7 +37,7 @@ export function DashboardHomePage() {
         </motion.div>
 
         <div className={DASHBOARD_PAGE_STYLES.bentoGrid}>
-          {/* Top: Immersive Hero */}
+          {/* Top: Immersive Hero "Command Stage" */}
           <motion.div 
             variants={MISSION_CONTROL_ANIMATIONS.stagger.item}
             className={DASHBOARD_PAGE_STYLES.heroSection}
@@ -55,16 +55,16 @@ export function DashboardHomePage() {
 
             <motion.div 
               variants={MISSION_CONTROL_ANIMATIONS.stagger.item}
-              className="canvas-card rounded-[2.5rem] p-1 shadow-2xl shadow-zinc-200/50 dark:shadow-none"
+              className="canvas-card rounded-[3rem] p-1 shadow-[0_40px_80px_-24px_rgba(0,0,0,0.08)] dark:shadow-none"
             >
               <RecentApplicationsPanel applications={data.recentApplications} />
             </motion.div>
 
-            <div className="grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-2 xl:gap-8">
-              <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className="canvas-card rounded-[2.5rem] p-1">
+            <div className="grid grid-cols-1 gap-8 sm:gap-10 xl:grid-cols-2 xl:gap-12">
+              <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className="canvas-card rounded-[3rem] p-1">
                 <ApplicationVelocityPanel data={data.applicationVelocity} />
               </motion.div>
-              <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className="canvas-card rounded-[2.5rem] p-1">
+              <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className="canvas-card rounded-[3rem] p-1">
                 <OutcomeTrendPanel data={data.successMetrics} />
               </motion.div>
             </div>
@@ -89,3 +89,4 @@ export function DashboardHomePage() {
     </motion.div>
   );
 }
+

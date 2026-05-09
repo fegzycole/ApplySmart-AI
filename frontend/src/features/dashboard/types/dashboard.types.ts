@@ -84,7 +84,7 @@ export interface DashboardMetricCardData {
   label: string;
   value: string;
   hint: string;
-  icon?: LucideIcon;
+  icon: LucideIcon;
 }
 
 export interface DashboardInsight {
