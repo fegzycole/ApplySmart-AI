@@ -21,7 +21,7 @@ export function EducationSection() {
         <SectionHeader icon={GraduationCap} title="Academic Synthesis" stage="Stage 04" />
         <Button
           onClick={addEducation}
-          className="h-12 px-6 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+          className="h-12 w-full sm:w-auto px-6 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
         >
           <Plus className="size-5 mr-2" />
           Add Credentials
@@ -43,14 +43,14 @@ export function EducationSection() {
               label={`Academic Vector 0${index + 1}`}
               onDelete={() => deleteEducation(edu.id)}
             >
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                 <FormField
                   label="Institutional Entity"
                   placeholder="Microverse or University Name"
                   value={edu.institution}
                   onChange={(v) => updateEducation(edu.id, { institution: v })}
                 />
-                
+
                 <div className="space-y-2 group">
                   <Label
                     htmlFor={`education-credential-${edu.id}`}
@@ -66,7 +66,7 @@ export function EducationSection() {
                     onChange={(e) =>
                       updateEducation(edu.id, { degree: e.target.value })
                     }
-                    className="h-14 rounded-2xl border-2 border-border/50 bg-background/50 px-6 text-sm leading-relaxed backdrop-blur-2xl transition-all duration-300 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10 shadow-inner"
+                    className="h-13 sm:h-14 rounded-2xl border-2 border-border/50 bg-background/50 px-4 sm:px-6 text-sm leading-relaxed backdrop-blur-2xl transition-all duration-300 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10 shadow-inner"
                   />
                 </div>
 
@@ -76,7 +76,7 @@ export function EducationSection() {
                   value={edu.field}
                   onChange={(v) => updateEducation(edu.id, { field: v })}
                 />
-                
+
                 <FormField
                   label="Operational Location"
                   placeholder="City, State"
@@ -84,59 +84,55 @@ export function EducationSection() {
                   onChange={(v) => updateEducation(edu.id, { location: v })}
                 />
 
-                <div className="xl:col-span-2 space-y-6 rounded-[2.5rem] border-2 border-border/50 bg-card/50 p-8 backdrop-blur-2xl transition-all group-hover:bg-card/80">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-lg shadow-primary/5">
-                      <Calendar className="size-5" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold tracking-tight text-foreground">Program Timeline</p>
-                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">Temporal duration for this credential</p>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <MonthYearPicker
-                      label="Synthesis Start"
-                      value={edu.startDate}
-                      onChange={(v) =>
-                        updateEducation(edu.id, { startDate: v })
-                      }
-                    />
-                    <MonthYearPicker
-                      label="Synthesis Completion"
-                      value={edu.graduationDate}
-                      onChange={(v) =>
-                        updateEducation(edu.id, { graduationDate: v })
-                      }
-                      disabled={edu.current}
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-3 pt-2">
-                    <Checkbox
-                      id={`current-edu-${edu.id}`}
-                      checked={edu.current}
-                      onCheckedChange={(checked) =>
-                        updateEducation(edu.id, { current: checked === true })
-                      }
-                      className="h-6 w-6 rounded-lg border-2 border-primary/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <Label
-                      htmlFor={`current-edu-${edu.id}`}
-                      className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60 cursor-pointer hover:text-primary transition-colors"
-                    >
-                      Active Enrollment • Currently Synthesis Target
-                    </Label>
-                  </div>
-                </div>
-
                 <FormField
                   label="Performance Metric (GPA)"
                   placeholder="3.8"
                   value={edu.gpa}
                   onChange={(v) => updateEducation(edu.id, { gpa: v })}
                 />
+              </div>
+
+              <div className="space-y-4 sm:space-y-5 lg:space-y-6 rounded-[1.5rem] border-2 border-border/50 bg-card/50 p-4 sm:rounded-[2rem] sm:p-6 lg:rounded-[2.5rem] lg:p-8 backdrop-blur-2xl transition-all group-hover:bg-card/80">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-lg shadow-primary/5 sm:h-12 sm:w-12 sm:rounded-2xl">
+                    <Calendar className="size-4 sm:size-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold tracking-tight text-foreground">Program Timeline</p>
+                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">Temporal duration for this credential</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                  <MonthYearPicker
+                    label="Synthesis Start"
+                    value={edu.startDate}
+                    onChange={(v) => updateEducation(edu.id, { startDate: v })}
+                  />
+                  <MonthYearPicker
+                    label="Synthesis Completion"
+                    value={edu.graduationDate}
+                    onChange={(v) => updateEducation(edu.id, { graduationDate: v })}
+                    disabled={edu.current}
+                  />
+                </div>
+
+                <div className="flex items-center gap-3 pt-1">
+                  <Checkbox
+                    id={`current-edu-${edu.id}`}
+                    checked={edu.current}
+                    onCheckedChange={(checked) =>
+                      updateEducation(edu.id, { current: checked === true })
+                    }
+                    className="h-6 w-6 rounded-lg border-2 border-primary/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                  />
+                  <Label
+                    htmlFor={`current-edu-${edu.id}`}
+                    className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60 cursor-pointer hover:text-primary transition-colors"
+                  >
+                    Active Enrollment • Currently Synthesis Target
+                  </Label>
+                </div>
               </div>
             </ItemCard>
           ))}

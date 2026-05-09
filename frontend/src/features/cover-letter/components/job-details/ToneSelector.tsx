@@ -15,9 +15,9 @@ export function ToneSelector({ value, onChange }: ToneSelectorProps) {
         Narrative Tone
       </Label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger 
+        <SelectTrigger
           id="tone"
-          className="h-14 min-w-0 rounded-2xl border-2 border-border/50 bg-background/50 text-sm backdrop-blur-2xl transition-all duration-300 focus:ring-4 focus:ring-amber-500/10 data-[state=open]:border-amber-500 shadow-inner"
+          className="!h-13 min-w-0 rounded-2xl border-2 border-border/50 bg-background/50 px-4 text-sm leading-relaxed shadow-inner backdrop-blur-2xl transition-all duration-300 focus:ring-4 focus:ring-amber-500/10 focus:ring-offset-0 data-[state=open]:border-amber-500 sm:!h-14 sm:px-6"
         >
           <SelectValue placeholder="Select a tone" />
         </SelectTrigger>

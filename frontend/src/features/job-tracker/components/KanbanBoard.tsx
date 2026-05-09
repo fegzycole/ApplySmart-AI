@@ -15,7 +15,7 @@ export function KanbanBoard({ jobs, onDrop, onEdit, onDelete, emptyMessage }: Ka
     <div className="relative">
       {/* Scrollable Container with refined padding */}
       <div className="overflow-x-auto pb-12 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8 scrollbar-thin scrollbar-thumb-primary/10 hover:scrollbar-thumb-primary/20">
-        <div className="flex gap-8 min-w-max">
+        <div className="flex gap-4 min-w-max sm:gap-6 lg:gap-8">
           {KANBAN_COLUMNS.map((column) => (
             <KanbanColumn
               key={column.id}

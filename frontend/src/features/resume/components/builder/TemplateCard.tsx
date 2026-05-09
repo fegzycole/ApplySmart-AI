@@ -16,7 +16,7 @@ export function TemplateCard({ id, name, description, color, gradient, isSelecte
     <button
       type="button"
       onClick={() => onSelect(id)}
-      className={`group relative w-full rounded-[1.75rem] border-2 p-4 text-left transition-all sm:rounded-3xl ${
+      className={`group relative w-full rounded-[1.75rem] border-2 p-3 text-left transition-all sm:rounded-3xl sm:p-4 ${
         isSelected
           ? "border-primary bg-background shadow-2xl shadow-primary/10"
           : "border-border bg-background/50 hover:border-primary/30 hover:bg-background dark:bg-card/30 dark:hover:bg-card/50"
@@ -25,8 +25,8 @@ export function TemplateCard({ id, name, description, color, gradient, isSelecte
     >
       <div className={`pointer-events-none absolute inset-0 rounded-3xl ${gradient} transition-opacity ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-60"}`} />
 
-      <div className="relative z-10 flex items-start gap-3 sm:gap-4">
-        <div className={`relative aspect-[4/5] w-20 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br ${color} shadow-lg ring-1 ring-black/5 sm:w-24`}>
+      <div className="relative z-10 flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
+        <div className={`relative aspect-video w-full shrink-0 overflow-hidden rounded-xl bg-gradient-to-br ${color} shadow-lg ring-1 ring-black/5 sm:aspect-[4/5] sm:w-20 sm:rounded-2xl xl:w-24`}>
           <div className="absolute inset-[10%] rounded-lg bg-white/95 shadow-sm">
             <div className="flex h-full">
               <div className="w-[18%] bg-zinc-100" />

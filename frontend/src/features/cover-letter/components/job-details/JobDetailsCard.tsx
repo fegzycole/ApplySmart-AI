@@ -50,13 +50,13 @@ export function JobDetailsCard({
 }: JobDetailsCardProps) {
   return (
     <div className={SYNTHESIS_STAGE_STYLES.panel}>
-      <div className="p-10 sm:p-12">
+      <div className="p-4 sm:p-8 lg:p-10 xl:p-12">
         <JobDetailsCardHeader />
-        
-        <form noValidate onSubmit={onGenerate} className="mt-12 space-y-10">
+
+        <form noValidate onSubmit={onGenerate} className="mt-6 space-y-6 sm:mt-10 sm:space-y-8 lg:space-y-10">
           <CoverLetterFormErrorSummary messages={formErrors} />
 
-          <div className="grid gap-8 md:grid-cols-2">
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2 md:gap-8">
             <FormInputField
               id="company"
               label="Target Company"

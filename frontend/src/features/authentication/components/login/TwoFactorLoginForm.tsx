@@ -28,7 +28,7 @@ export function TwoFactorLoginForm({
     <form noValidate onSubmit={onSubmit} className={FORM_STYLES.form}>
       <AuthFormErrorSummary messages={formErrors} />
 
-      <div className="rounded-2xl border border-violet-200 bg-violet-50/80 px-4 py-4 text-sm leading-6 text-violet-900 dark:border-violet-900 dark:bg-violet-950/20 dark:text-violet-200">
+      <div className="rounded-xl sm:rounded-2xl border border-primary/20 bg-primary/5 px-4 py-3 text-sm leading-6 text-foreground dark:text-foreground">
         Enter the 6-digit code from your authenticator app for <span className="font-medium">{challengeEmail}</span>.
       </div>
 

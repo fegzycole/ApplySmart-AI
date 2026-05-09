@@ -18,7 +18,7 @@ export const SYNTHESIS_STAGE_STYLES = {
   },
   panel: "group relative overflow-hidden rounded-[2rem] border-2 border-white/60 bg-white/40 shadow-2xl backdrop-blur-3xl transition-all duration-500 hover:-translate-y-1 dark:border-zinc-800/40 dark:bg-zinc-900/40 sm:rounded-[3rem]",
   input: "h-13 min-w-0 rounded-2xl border-2 border-border/50 bg-background/50 px-4 text-sm leading-relaxed shadow-inner backdrop-blur-2xl transition-all duration-300 focus-visible:border-amber-500 focus-visible:ring-4 focus-visible:ring-amber-500/10 sm:h-14 sm:px-6",
-  textarea: "min-h-[160px] rounded-[2rem] border-2 border-border/50 bg-background/50 p-5 text-sm leading-relaxed shadow-inner backdrop-blur-2xl transition-all duration-300 focus-visible:border-amber-500 focus-visible:ring-4 focus-visible:ring-amber-500/10 resize-none sm:p-8",
+  textarea: "min-h-[140px] rounded-[1.5rem] border-2 border-border/50 bg-background/50 p-4 text-sm leading-relaxed shadow-inner backdrop-blur-2xl transition-all duration-300 focus-visible:border-amber-500 focus-visible:ring-4 focus-visible:ring-amber-500/10 resize-none sm:min-h-[160px] sm:rounded-[2rem] sm:p-6 lg:p-8",
   label: "text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500 ml-1 transition-all group-focus-within:text-amber-600 group-focus-within:tracking-[0.4em]",
 };
 
@@ -147,13 +147,13 @@ export const RESUME_UPLOAD_STYLES = {
 } as const;
 
 export const NARRATIVE_ARTIFACT_STYLES = {
-  wrapper: "group relative overflow-hidden rounded-[4rem] border-2 border-white/80 bg-white shadow-2xl transition-all duration-700 hover:-translate-y-2 dark:bg-zinc-900 dark:border-zinc-800",
+  wrapper: "group relative overflow-hidden rounded-[2rem] border-2 border-white/80 bg-white shadow-2xl transition-all duration-700 hover:-translate-y-2 dark:bg-zinc-900 dark:border-zinc-800 sm:rounded-[3rem] lg:rounded-[4rem]",
   aura: "absolute inset-0 bg-gradient-to-br from-amber-200/20 via-sky-200/10 to-transparent blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000",
   grain: "absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay",
-  body: "relative z-10 p-10 sm:p-12 space-y-10",
-  specimenFrame: "relative overflow-hidden rounded-[2rem] border-2 border-zinc-100 bg-zinc-50/50 p-5 dark:border-zinc-700/30 dark:bg-zinc-800/30 sm:rounded-[2.5rem] sm:p-10",
-  specimenContent: "text-base leading-[1.8] text-zinc-800 dark:text-zinc-200 font-medium",
-  actionDeck: "flex flex-wrap items-center justify-between gap-4 pt-8 border-t border-zinc-100 dark:border-zinc-800",
+  body: "relative z-10 p-5 space-y-6 sm:p-8 sm:space-y-8 lg:p-10 lg:space-y-10",
+  specimenFrame: "relative overflow-hidden rounded-[1.5rem] border-2 border-zinc-100 bg-zinc-50/50 p-4 dark:border-zinc-700/30 dark:bg-zinc-800/30 sm:rounded-[2rem] sm:p-6 lg:rounded-[2.5rem] lg:p-10",
+  specimenContent: "text-sm leading-[1.8] text-zinc-800 dark:text-zinc-200 font-medium sm:text-base",
+  actionDeck: "flex flex-wrap items-center justify-between gap-3 pt-5 border-t border-zinc-100 dark:border-zinc-800 sm:gap-4 sm:pt-8",
 } as const;
 
 export const GENERATED_LETTER_STYLES = {

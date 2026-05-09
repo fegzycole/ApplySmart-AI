@@ -48,17 +48,17 @@ export const KANBAN_COLUMNS: Column[] = [
 
 export const ARTIFACT_STYLES = {
   card: {
-    wrapper: "group relative overflow-hidden rounded-[3rem] border-2 border-white/40 bg-white/40 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] cursor-grab active:cursor-grabbing dark:bg-zinc-900/40 dark:border-zinc-800/40",
+    wrapper: "group relative overflow-hidden rounded-[2rem] border-2 border-white/40 bg-white/40 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:scale-[1.02] cursor-grab active:cursor-grabbing dark:bg-zinc-900/40 dark:border-zinc-800/40 sm:rounded-[2.5rem]",
     dragging: "opacity-40 scale-95 rotate-2 shadow-none",
-    aura: "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blur-[80px] -z-10",
+    aura: "absolute inset-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-700 blur-[80px] -z-10",
     grain: "absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay",
   },
   hero: {
-    role: "text-[28px] font-black tracking-tighter leading-[0.85] text-zinc-900 dark:text-zinc-50 group-hover:tracking-tight transition-all duration-500",
+    role: "text-[22px] font-black tracking-tighter leading-[0.9] text-zinc-900 dark:text-zinc-50 group-hover:tracking-tight transition-all duration-500 sm:text-[26px] sm:leading-[0.85]",
     seal: "flex h-12 w-12 items-center justify-center rounded-full text-lg font-black shadow-inner border border-white/20 dark:border-zinc-700/30",
   },
   controlBar: "flex items-center gap-2 rounded-2xl bg-white/60 p-2 backdrop-blur-md border border-white/40 dark:bg-zinc-800/60 dark:border-zinc-700/40 shadow-sm",
-  actionDeck: "absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-[0.22,1,0.36,1] bg-gradient-to-t from-white/80 to-transparent dark:from-zinc-900/80",
+  actionDeck: "absolute bottom-0 left-0 right-0 p-4 translate-y-0 sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-500 ease-[0.22,1,0.36,1] bg-gradient-to-t from-white/80 to-transparent dark:from-zinc-900/80",
 } as const;
 
 export const JOB_CARD_STYLES = {
@@ -93,13 +93,13 @@ export const JOB_CARD_STYLES = {
 } as const;
 
 export const KANBAN_COLUMN_STYLES = {
-  container: "flex-1 min-w-[340px] max-w-md flex flex-col group/column",
+  container: "flex-1 min-w-[300px] max-w-md flex flex-col group/column sm:min-w-[340px]",
   header: {
-    wrapper: "mb-8 p-5 rounded-[2.5rem] bg-white shadow-xl shadow-zinc-200/40 border border-zinc-100 transition-all group-hover/column:shadow-2xl group-hover/column:shadow-zinc-200/60 dark:bg-zinc-900 dark:border-zinc-800 dark:shadow-none",
+    wrapper: "mb-5 p-4 rounded-[1.75rem] bg-white shadow-xl shadow-zinc-200/40 border border-zinc-100 transition-all group-hover/column:shadow-2xl group-hover/column:shadow-zinc-200/60 dark:bg-zinc-900 dark:border-zinc-800 dark:shadow-none sm:mb-8 sm:p-5 sm:rounded-[2.5rem]",
     content: "flex items-center gap-5",
     icon: {
-      wrapper: "relative flex h-14 w-14 items-center justify-center rounded-[1.25rem] shadow-sm",
-      icon: "size-7"
+      wrapper: "relative flex h-11 w-11 shrink-0 items-center justify-center rounded-[1rem] shadow-sm sm:h-14 sm:w-14 sm:rounded-[1.25rem]",
+      icon: "size-5 sm:size-7"
     },
     text: {
       container: "flex-1 min-w-0",
@@ -108,7 +108,7 @@ export const KANBAN_COLUMN_STYLES = {
     }
   },
   dropZone: {
-    base: "flex-1 p-5 rounded-[3rem] border-2 border-dashed transition-all duration-500 space-y-5 min-h-[450px]",
+    base: "flex-1 p-4 rounded-[2rem] border-2 border-dashed transition-all duration-500 space-y-4 min-h-[400px] sm:p-5 sm:rounded-[3rem] sm:space-y-5 sm:min-h-[450px]",
     default: "border-zinc-100 bg-zinc-50/30 dark:border-zinc-800 dark:bg-zinc-900/10",
     hover: "border-sky-300 bg-sky-50/50 scale-[1.02] dark:border-sky-800 dark:bg-sky-950/10"
   },
@@ -116,15 +116,15 @@ export const KANBAN_COLUMN_STYLES = {
 } as const;
 
 export const JOB_FORM_DIALOG_STYLES = {
-  content: "max-w-2xl p-0 overflow-hidden rounded-[3.5rem] border-0 bg-white dark:bg-zinc-950 shadow-2xl shadow-zinc-900/20",
-  header: "p-10 pb-0",
-  form: "p-10 pt-8 space-y-8",
-  fieldGrid: "grid gap-6 sm:grid-cols-2",
+  content: "p-0 border-0 bg-white dark:bg-zinc-950 shadow-2xl shadow-zinc-900/20 overflow-y-auto top-auto bottom-0 left-0 right-0 translate-x-0 translate-y-0 max-h-[92dvh] w-full max-w-full rounded-t-[2rem] rounded-b-none sm:top-1/2 sm:bottom-auto sm:left-1/2 sm:right-auto sm:-translate-x-1/2 sm:-translate-y-1/2 sm:max-w-2xl sm:max-h-[90dvh] sm:rounded-[3rem] lg:rounded-[3.5rem]",
+  header: "p-5 pb-0 sm:p-8 sm:pb-0 lg:p-10 lg:pb-0",
+  form: "p-5 pt-5 space-y-5 sm:p-8 sm:pt-6 sm:space-y-7 lg:p-10 lg:pt-8 lg:space-y-8",
+  fieldGrid: "grid gap-4 sm:grid-cols-2 sm:gap-6",
   fullWidthField: "sm:col-span-2",
   actions: {
-    container: "flex flex-col-reverse gap-4 sm:flex-row sm:justify-end p-10 pt-0",
-    cancelButton: "h-14 px-8 rounded-2xl border-2 font-bold tracking-tight hover:bg-zinc-50 dark:hover:bg-zinc-900",
-    submitButton: "h-14 px-10 rounded-2xl bg-zinc-900 text-white font-bold tracking-tight shadow-xl shadow-zinc-900/20 hover:scale-105 active:scale-95 dark:bg-sky-600 dark:text-white dark:shadow-sky-900/20"
+    container: "flex flex-col-reverse gap-3 sm:flex-row sm:justify-end p-5 pt-0 sm:p-8 sm:pt-0 lg:p-10 lg:pt-0",
+    cancelButton: "h-12 px-6 rounded-xl border-2 font-bold tracking-tight hover:bg-zinc-50 dark:hover:bg-zinc-900 sm:h-14 sm:px-8 sm:rounded-2xl",
+    submitButton: "h-12 px-8 rounded-xl bg-zinc-900 text-white font-bold tracking-tight shadow-xl shadow-zinc-900/20 hover:scale-105 active:scale-95 dark:bg-sky-600 dark:text-white dark:shadow-sky-900/20 sm:h-14 sm:px-10 sm:rounded-2xl"
   }
 } as const;
 
@@ -175,12 +175,12 @@ export const TRACKER_HEADER_CONTENT = {
 } as const;
 
 export const JOB_TRACKER_EMPTY_STATE_STYLES = {
-  wrapper: "rounded-[4rem] p-24 text-center bg-white border border-zinc-100 shadow-2xl shadow-zinc-200/50 relative overflow-hidden group dark:bg-zinc-900 dark:border-zinc-800 dark:shadow-none",
-  iconWrapper: "relative mx-auto mb-12 flex h-32 w-32 items-center justify-center rounded-[3rem] bg-amber-50 text-amber-600 shadow-sm group-hover:scale-110 transition-transform duration-700 dark:bg-amber-900/20 dark:text-amber-400",
-  icon: "size-16",
-  title: "text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100",
-  description: "mx-auto mt-8 max-w-2xl text-xl font-medium text-zinc-500 leading-relaxed dark:text-zinc-400",
-  button: "mt-12 h-16 px-12 rounded-3xl bg-zinc-900 text-white font-bold tracking-tight shadow-2xl shadow-zinc-900/20 hover:scale-105 active:scale-95 transition-all dark:bg-sky-600 dark:shadow-sky-900/20",
+  wrapper: "rounded-[2rem] p-8 text-center bg-white border border-zinc-100 shadow-2xl shadow-zinc-200/50 relative overflow-hidden group dark:bg-zinc-900 dark:border-zinc-800 dark:shadow-none sm:rounded-[3rem] sm:p-16 lg:rounded-[4rem] lg:p-24",
+  iconWrapper: "relative mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-[2rem] bg-amber-50 text-amber-600 shadow-sm group-hover:scale-110 transition-transform duration-700 dark:bg-amber-900/20 dark:text-amber-400 sm:mb-10 sm:h-28 sm:w-28 sm:rounded-[2.5rem] lg:mb-12 lg:h-32 lg:w-32 lg:rounded-[3rem]",
+  icon: "size-10 sm:size-14 lg:size-16",
+  title: "text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl lg:text-5xl",
+  description: "mx-auto mt-4 max-w-2xl text-base font-medium text-zinc-500 leading-relaxed dark:text-zinc-400 sm:mt-6 sm:text-lg lg:mt-8 lg:text-xl",
+  button: "mt-8 h-12 px-8 rounded-2xl bg-zinc-900 text-white font-bold tracking-tight shadow-2xl shadow-zinc-900/20 hover:scale-105 active:scale-95 transition-all dark:bg-sky-600 dark:shadow-sky-900/20 sm:mt-10 sm:h-14 sm:px-10 sm:rounded-3xl lg:mt-12 lg:h-16 lg:px-12",
 };
 
 export const JOB_TRACKER_EMPTY_STATE_CONTENT = {
@@ -189,10 +189,10 @@ export const JOB_TRACKER_EMPTY_STATE_CONTENT = {
 };
 
 export const JOB_TRACKER_ERROR_STATE_STYLES = {
-  wrapper: "rounded-[3.5rem] p-24 text-center border-2 border-rose-100 bg-rose-50/30 dark:border-rose-900/20 dark:bg-rose-950/10",
-  title: "text-3xl font-extrabold tracking-tight text-rose-900 dark:text-rose-200",
-  description: "mt-6 text-xl font-medium text-rose-700/70 dark:text-rose-300/60",
-  button: "mt-12 h-14 rounded-2xl border-2 border-rose-200 font-bold tracking-tight text-rose-700 hover:bg-rose-50 transition-all dark:border-rose-800 dark:text-rose-300",
+  wrapper: "rounded-[2rem] p-8 text-center border-2 border-rose-100 bg-rose-50/30 dark:border-rose-900/20 dark:bg-rose-950/10 sm:rounded-[3rem] sm:p-16 lg:rounded-[3.5rem] lg:p-24",
+  title: "text-2xl font-extrabold tracking-tight text-rose-900 dark:text-rose-200 sm:text-3xl",
+  description: "mt-3 text-base font-medium text-rose-700/70 dark:text-rose-300/60 sm:mt-6 sm:text-xl",
+  button: "mt-8 h-12 rounded-2xl border-2 border-rose-200 font-bold tracking-tight text-rose-700 hover:bg-rose-50 transition-all dark:border-rose-800 dark:text-rose-300 sm:mt-12 sm:h-14",
 };
 
 export const JOB_TRACKER_ERROR_STATE_CONTENT = {

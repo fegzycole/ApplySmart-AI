@@ -40,7 +40,7 @@ export function SummarySection() {
             placeholder="Engineer a high-impact summary of your professional trajectory and core competencies..."
             value={resumeData.summary}
             onChange={(e) => updateSummary(e.target.value)}
-            className="min-h-[200px] resize-none rounded-[2rem] border-2 border-border/50 bg-background/50 p-5 text-sm leading-relaxed shadow-inner backdrop-blur-2xl transition-all duration-300 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10 sm:min-h-[220px] sm:rounded-[2.5rem] sm:p-8"
+            className="min-h-[160px] resize-none rounded-[1.5rem] border-2 border-border/50 bg-background/50 p-4 text-sm leading-relaxed shadow-inner backdrop-blur-2xl transition-all duration-300 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10 sm:min-h-[200px] sm:rounded-[2rem] sm:p-6 lg:rounded-[2.5rem] lg:p-8"
             maxLength={MAX_CHARS}
           />
         </div>

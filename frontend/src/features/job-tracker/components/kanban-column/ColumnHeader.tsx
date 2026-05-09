@@ -18,9 +18,9 @@ export function ColumnHeader({ column, jobCount }: ColumnHeaderProps) {
         </div>
         <div className={KANBAN_COLUMN_STYLES.header.text.container}>
           <div className="flex items-center justify-between gap-4">
-            <h3 className={KANBAN_COLUMN_STYLES.header.text.title}>{column.title}</h3>
+            <h3 className="text-base font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-xl">{column.title}</h3>
             <div className={cn(
-              "flex h-9 min-w-9 items-center justify-center px-2.5 rounded-2xl text-base font-black shadow-sm",
+              "flex h-7 min-w-7 items-center justify-center px-2 rounded-xl text-sm font-black shadow-sm sm:h-9 sm:min-w-9 sm:px-2.5 sm:rounded-2xl sm:text-base",
               column.accentColor
             )}>
               {jobCount}

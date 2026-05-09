@@ -29,7 +29,7 @@ export function JobTrackerEmptyState({ onAddClick }: JobTrackerEmptyStateProps) 
         <div className={JOB_TRACKER_EMPTY_STATE_STYLES.iconWrapper}>
           <EmptyIcon className={JOB_TRACKER_EMPTY_STATE_STYLES.icon} />
           <motion.div 
-            className="absolute inset-0 rounded-[3rem] bg-white/20"
+            className="absolute inset-0 rounded-[2rem] bg-white/20 sm:rounded-[2.5rem] lg:rounded-[3rem]"
             animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
             transition={{ duration: 4, repeat: Infinity }}
           />

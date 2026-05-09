@@ -18,7 +18,7 @@ export function ResumeUploadSection({ uploadedFile, onFileUpload, onRemoveFile }
       </Label>
       
       {!uploadedFile ? (
-        <div className="group relative overflow-hidden rounded-[2.5rem] border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 transition-all duration-500 hover:border-amber-500 hover:bg-white dark:hover:bg-zinc-900/50">
+        <div className="group relative overflow-hidden rounded-[1.75rem] border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 transition-all duration-500 hover:border-amber-500 hover:bg-white dark:hover:bg-zinc-900/50 sm:rounded-[2.5rem]">
           <input
             type="file"
             id="resume-upload"
@@ -26,19 +26,19 @@ export function ResumeUploadSection({ uploadedFile, onFileUpload, onRemoveFile }
             accept=".pdf,.doc,.docx"
             onChange={onFileUpload}
           />
-          <label htmlFor="resume-upload" className="flex cursor-pointer flex-col items-center justify-center p-12 text-center">
-            <div className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-amber-50 text-amber-600 shadow-sm group-hover:scale-110 transition-transform duration-500 dark:bg-amber-900/20 dark:text-amber-400">
-              <Upload className="size-10" />
+          <label htmlFor="resume-upload" className="flex cursor-pointer flex-col items-center justify-center p-7 text-center sm:p-12">
+            <div className="relative mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-50 text-amber-600 shadow-sm group-hover:scale-110 transition-transform duration-500 dark:bg-amber-900/20 dark:text-amber-400 sm:mb-6 sm:h-20 sm:w-20 sm:rounded-3xl">
+              <Upload className="size-7 sm:size-10" />
               <motion.div 
                 className="absolute inset-0 rounded-3xl bg-amber-200/20"
                 animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
                 transition={{ duration: 4, repeat: Infinity }}
               />
             </div>
-            <h4 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+            <h4 className="text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-lg">
               Inject Source Data
             </h4>
-            <p className="mt-2 text-sm font-medium text-zinc-500 leading-relaxed dark:text-zinc-400">
+            <p className="mt-1.5 text-sm font-medium text-zinc-500 leading-relaxed dark:text-zinc-400 sm:mt-2">
               Drag and drop your professional artifact or click to browse.
             </p>
             <p className="mt-4 text-[10px] font-black uppercase tracking-widest text-zinc-300 dark:text-zinc-600">
@@ -49,17 +49,17 @@ export function ResumeUploadSection({ uploadedFile, onFileUpload, onRemoveFile }
           <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </div>
       ) : (
-        <div className="relative group overflow-hidden rounded-[2.5rem] border-2 border-emerald-500/20 bg-emerald-50/10 p-6 dark:bg-emerald-950/5">
+        <div className="relative group overflow-hidden rounded-[1.75rem] border-2 border-emerald-500/20 bg-emerald-50/10 p-4 dark:bg-emerald-950/5 sm:rounded-[2.5rem] sm:p-6">
           {/* Success Aura */}
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent blur-3xl opacity-50" />
-          
-          <div className="relative z-10 flex items-center justify-between gap-6">
-            <div className="flex items-center gap-4 min-w-0">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-xl shadow-emerald-500/20">
-                <ShieldCheck className="size-8" />
+
+          <div className="relative z-10 flex items-center justify-between gap-4 sm:gap-6">
+            <div className="flex items-center gap-3 min-w-0 sm:gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-xl shadow-emerald-500/20 sm:h-14 sm:w-14 sm:rounded-2xl">
+                <ShieldCheck className="size-6 sm:size-8" />
               </div>
               <div className="min-w-0">
-                <p className="truncate text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                <p className="truncate text-base font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-lg">
                   {uploadedFile.name}
                 </p>
                 <div className="mt-1 flex items-start gap-2.5">

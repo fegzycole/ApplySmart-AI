@@ -62,7 +62,7 @@ export function SkillsSection() {
         </div>
 
         {resumeData.skills.length > 0 ? (
-          <div className="flex flex-wrap gap-3 rounded-[2rem] border-2 border-border/50 bg-card/30 p-4 shadow-inner backdrop-blur-xl sm:gap-4 sm:rounded-[2.5rem] sm:p-8">
+          <div className="flex flex-wrap gap-3 rounded-[1.75rem] border-2 border-border/50 bg-card/30 p-4 shadow-inner backdrop-blur-xl sm:gap-4 sm:rounded-[2rem] sm:p-6 lg:rounded-[2.5rem] lg:p-8">
             {resumeData.skills.map((skill, index) => (
               <Badge 
                 key={index} 
@@ -80,8 +80,8 @@ export function SkillsSection() {
             ))}
           </div>
         ) : (
-          <div className="group flex flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-border/50 bg-background/20 py-14 transition-all hover:bg-background/40 sm:rounded-[2.5rem] sm:py-24">
-            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-muted/50 text-muted-foreground/30 transition-all group-hover:scale-110 group-hover:rotate-6 sm:mb-8 sm:h-20 sm:w-20">
+          <div className="group flex flex-col items-center justify-center rounded-[1.75rem] border-2 border-dashed border-border/50 bg-background/20 py-10 transition-all hover:bg-background/40 sm:rounded-[2rem] sm:py-16 lg:rounded-[2.5rem] lg:py-24">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/50 text-muted-foreground/30 transition-all group-hover:scale-110 group-hover:rotate-6 sm:mb-8 sm:h-20 sm:w-20 sm:rounded-3xl">
               <Code className="size-8 sm:size-10" />
             </div>
             <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-muted-foreground/30">

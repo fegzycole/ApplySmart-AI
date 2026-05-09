@@ -77,13 +77,13 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
         </Button>
       </form>
 
-      <div className="mt-6 text-center">
+      <div className="mt-4 sm:mt-5 text-center">
         <Button
           type="button"
           variant="ghost"
           onClick={handleResendCode}
           disabled={resendVerificationMutation.isPending}
-          className="text-sm bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent hover:from-violet-700 hover:to-fuchsia-700 font-semibold cursor-pointer"
+          className="text-sm text-primary hover:text-primary/80 font-semibold cursor-pointer"
         >
           {resendVerificationMutation.isPending ? "Sending..." : AUTH_CONTENT.verifyEmail.resendButton}
         </Button>

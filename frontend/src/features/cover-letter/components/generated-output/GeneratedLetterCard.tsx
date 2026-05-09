@@ -73,7 +73,7 @@ export function GeneratedLetterCard({ onNewLetter, generatedLetter }: GeneratedL
               </div>
             </div>
             
-            <h2 className="text-4xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 leading-none truncate">
+            <h2 className="text-2xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 leading-none truncate sm:text-3xl lg:text-4xl">
               {generatedLetter?.company || "Anonymous Artifact"}
             </h2>
             <p className="text-lg font-bold text-zinc-500 dark:text-zinc-400 tracking-tight">
@@ -84,9 +84,9 @@ export function GeneratedLetterCard({ onNewLetter, generatedLetter }: GeneratedL
           <Button
             variant="ghost"
             onClick={onNewLetter}
-            className="h-14 w-14 rounded-2xl bg-zinc-900/5 dark:bg-white/5 border-2 border-zinc-100 dark:border-zinc-800 hover:border-amber-500/50 hover:text-amber-500 transition-all active:scale-90"
+            className="h-11 w-11 shrink-0 rounded-xl bg-zinc-900/5 dark:bg-white/5 border-2 border-zinc-100 dark:border-zinc-800 hover:border-amber-500/50 hover:text-amber-500 transition-all active:scale-90 sm:h-14 sm:w-14 sm:rounded-2xl"
           >
-            <RefreshCw className="size-6" />
+            <RefreshCw className="size-5 sm:size-6" />
           </Button>
         </div>
 
@@ -106,16 +106,16 @@ export function GeneratedLetterCard({ onNewLetter, generatedLetter }: GeneratedL
         <div className={NARRATIVE_ARTIFACT_STYLES.actionDeck}>
           <div className="flex flex-wrap items-center gap-3">
             <Button
-              className="h-14 px-8 rounded-2xl bg-amber-500 text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all"
+              className="h-11 px-5 rounded-xl bg-amber-500 text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all sm:h-14 sm:px-8 sm:rounded-2xl sm:text-[11px]"
               onClick={() => void handleDownload()}
               disabled={downloading || !generatedLetter?.pdfUrl}
             >
               {downloading ? <Loader2 className="size-4 animate-spin mr-2" /> : <Download className="size-4 mr-2" />}
               Export PDF
             </Button>
-            
+
             {generatedLetter?.pdfUrl && (
-              <Button asChild variant="outline" className="h-14 px-8 rounded-2xl border-2 border-zinc-100 font-black uppercase tracking-widest text-[11px] hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50 transition-all">
+              <Button asChild variant="outline" className="h-11 px-5 rounded-xl border-2 border-zinc-100 font-black uppercase tracking-widest text-[10px] hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50 transition-all sm:h-14 sm:px-8 sm:rounded-2xl sm:text-[11px]">
                 <a href={generatedLetter.pdfUrl} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="size-4 mr-2" />
                   Inspect Render
@@ -126,7 +126,7 @@ export function GeneratedLetterCard({ onNewLetter, generatedLetter }: GeneratedL
 
           <Button
             variant="ghost"
-            className="h-14 px-8 rounded-2xl bg-zinc-900/5 dark:bg-white/5 font-black uppercase tracking-widest text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all"
+            className="h-11 px-5 rounded-xl bg-zinc-900/5 dark:bg-white/5 font-black uppercase tracking-widest text-[10px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all sm:h-14 sm:px-8 sm:rounded-2xl sm:text-[11px]"
             onClick={() => void handleCopy()}
             disabled={copying}
           >

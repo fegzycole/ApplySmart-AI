@@ -79,10 +79,10 @@ export function JobFormDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={JOB_FORM_DIALOG_STYLES.content}>
         <DialogHeader className={JOB_FORM_DIALOG_STYLES.header}>
-          <DialogTitle className="text-5xl font-black tracking-tighter leading-none text-zinc-900 dark:text-zinc-50">
+          <DialogTitle className="text-3xl font-black tracking-tighter leading-none text-zinc-900 dark:text-zinc-50 sm:text-4xl lg:text-5xl">
             {isEditing ? "Calibrate" : "Add an"} <span className="text-sky-500">Opportunity</span>
           </DialogTitle>
-          <DialogDescription className="text-lg font-medium text-zinc-500 mt-6 leading-relaxed dark:text-zinc-400">
+          <DialogDescription className="text-sm font-medium text-zinc-500 mt-3 leading-relaxed dark:text-zinc-400 sm:text-base sm:mt-4 lg:text-lg lg:mt-6">
             {isEditing
               ? "Refine the artifact details to keep your journey synchronized."
               : "Capture a new milestone and start tracking your progress."}

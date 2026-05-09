@@ -44,7 +44,7 @@ export function JobCard({ job, onEdit, onDelete }: JobCardProps) {
         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
       />
 
-      <div className="relative z-10 space-y-4 sm:space-y-6 p-6 sm:p-8">
+      <div className="relative z-10 space-y-4 sm:space-y-6 p-6 pb-20 sm:p-8 sm:pb-8">
         <div className="flex items-start justify-between gap-4 sm:gap-6 min-w-0">
           <div className="flex-1 min-w-0">
             <JobCardHeader role={job.role} company={job.company} location={job.location} />

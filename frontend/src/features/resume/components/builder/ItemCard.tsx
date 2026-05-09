@@ -10,8 +10,8 @@ interface ItemCardProps {
 
 export function ItemCard({ label, onDelete, children }: ItemCardProps) {
   return (
-    <div className="group relative rounded-[2rem] sm:rounded-[2.5rem] border-2 border-border bg-card/30 p-5 sm:p-6 lg:p-8 backdrop-blur-xl transition-all hover:bg-card/50 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5">
-      <div className="flex items-center justify-between mb-6 sm:mb-8">
+    <div className="group relative rounded-[1.75rem] sm:rounded-[2rem] lg:rounded-[2.5rem] border-2 border-border bg-card/30 p-4 sm:p-6 lg:p-8 backdrop-blur-xl transition-all hover:bg-card/50 hover:border-primary/20 hover:shadow-2xl hover:shadow-primary/5">
+      <div className="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="relative flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl bg-primary/10 text-primary">
             <div className="absolute inset-0 rounded-lg sm:rounded-xl bg-primary/20 animate-pulse" />
