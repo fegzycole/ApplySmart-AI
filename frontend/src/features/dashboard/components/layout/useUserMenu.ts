@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router";
 import { useTheme } from "next-themes";
 import { toast } from "sonner";
-import { useCurrentUser, useLogout } from "@/features/authentication/hooks/useAuthQueries";
+import {
+  useCurrentUser,
+  useLogout,
+} from "@/features/authentication/hooks/useAuthQueries";
 import { getFullName } from "@/shared/utils/user.utils";
 
 export function useUserMenu() {
@@ -12,9 +15,12 @@ export function useUserMenu() {
 
   const userFirstName = user?.firstName ?? "User";
   const userLastName = user?.lastName ?? "";
-  const userFullName = user ? getFullName(user.firstName, user.lastName) : "User";
+  const userFullName = user
+    ? getFullName(user.firstName, user.lastName)
+    : "User";
   const userImageUrl = user?.imageUrl ?? null;
   const isDarkTheme = theme === "dark";
+  const userEmail = user?.email ?? "";
 
   const toggleTheme = () => {
     setTheme(isDarkTheme ? "light" : "dark");
@@ -39,5 +45,6 @@ export function useUserMenu() {
     userLastName,
     userFullName,
     userImageUrl,
+    userEmail,
   };
 }
