@@ -57,9 +57,9 @@ export function AIFeaturesCard() {
         </div>
 
         <footer className="pt-6 sm:pt-8 border-t border-zinc-100/50 dark:border-zinc-800/50 px-1">
-          <div className="flex items-center gap-3 sm:gap-4 px-2 sm:px-4">
-            <div className="h-1 w-1 sm:h-1.5 sm:w-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-            <p className="text-[9px] sm:text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.18em] sm:tracking-[0.2em] leading-none">
+          <div className="flex items-start gap-2 px-2 sm:px-4">
+            <div className="mt-[0.22rem] h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-[9px] sm:text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-[0.18em] sm:tracking-[0.2em] leading-[1.1]">
               Real-time Analysis Engine v4.0
             </p>
           </div>

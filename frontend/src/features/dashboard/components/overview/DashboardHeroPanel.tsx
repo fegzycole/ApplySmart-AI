@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { ArrowUpRight, Plus, Rocket } from "lucide-react";
+import { ArrowUpRight, Plus, Rocket, Target, Sparkles } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import type { DashboardData } from "../../types/dashboard.types";
 import { DASHBOARD_ACTIONS } from "../../constants/dashboard.constants";
@@ -23,10 +23,12 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
       label: "Response rate",
       value: formatPercent(overview.responseRate),
       trend: "+2.4% from last month",
+      icon: Target,
     },
     {
       label: "Tailored resumes",
       value: String(tailoredResumes),
+      icon: Sparkles,
     },
   ];
 
@@ -86,9 +88,9 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
                     {stat.icon && <stat.icon className="hidden size-5 text-primary opacity-20 transition-opacity group-hover/stat:opacity-100 sm:block xl:size-6" />}
                   </div>
                   {stat.trend && (
-                    <div className="mt-2 flex items-center gap-2 xl:mt-3">
-                      <div className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
-                      <p className="text-[0.65rem] font-bold text-emerald-600 dark:text-emerald-400">
+                    <div className="mt-2 flex items-start gap-2 xl:mt-3">
+                      <div className="mt-[0.22rem] h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500 animate-pulse" />
+                      <p className="text-[0.65rem] font-bold leading-[1.1] text-emerald-600 dark:text-emerald-400">
                         {stat.trend}
                       </p>
                     </div>

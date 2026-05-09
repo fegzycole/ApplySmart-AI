@@ -24,12 +24,12 @@ export function PreviewHeader({ onSave, saving, disabled }: PreviewHeaderProps) 
           <h3 className="text-xl font-black leading-none tracking-tighter text-foreground sm:text-2xl">
             Synthesis <span className="text-primary">Preview</span>
           </h3>
-          <div className="mt-2 flex items-center gap-2">
-            <div className="relative flex h-2 w-2">
+          <div className="mt-2 flex items-start gap-2">
+            <div className="relative mt-[0.22rem] flex h-1.5 w-1.5 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+              <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
             </div>
-            <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-primary sm:text-[10px] sm:tracking-[0.3em]">
+            <p className="text-[9px] font-bold uppercase leading-[1.1] tracking-[0.22em] text-primary sm:text-[10px] sm:tracking-[0.3em]">
               Quantum Engine Active
             </p>
           </div>

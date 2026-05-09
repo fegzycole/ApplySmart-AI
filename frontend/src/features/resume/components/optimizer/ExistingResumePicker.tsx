@@ -78,9 +78,9 @@ export function ExistingResumePicker({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 px-1">
-          <div className="h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500" />
-          <p className="truncate text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
+        <div className="flex items-start gap-2 px-1">
+          <div className="mt-[0.22rem] h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500" />
+          <p className="min-w-0 truncate text-[10px] font-black uppercase leading-[1.1] tracking-[0.2em] text-zinc-400">
             {searchQuery.trim()
               ? `${filteredResumes.length} matching`
               : `${Math.min(resumes.length, DEFAULT_VISIBLE_RESUMES)} of ${resumes.length} artifacts`}
