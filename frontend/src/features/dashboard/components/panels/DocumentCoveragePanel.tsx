@@ -42,71 +42,68 @@ export function DocumentCoveragePanel({ documents }: DocumentCoveragePanelProps)
       title="Document Readiness"
       description="See how much polished material you have available before you start tailoring again."
       action={
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-lg dark:bg-sky-600">
           <Files className="size-4" />
         </div>
       }
     >
       <div className="space-y-6">
-        <div className="grid gap-4 sm:grid-cols-2">
+        {/* Doc cards — vertical stack for no compression */}
+        <div className="space-y-4">
           {docs.map((doc) => (
             <div
               key={doc.label}
-              className="group relative overflow-hidden rounded-[1.5rem] border border-border bg-background/50 p-4 transition-all hover:border-primary/20 hover:bg-card sm:rounded-[2rem] sm:p-6"
+              className="group relative overflow-hidden flex items-center gap-5 rounded-[1.75rem] border border-zinc-100 bg-white/50 p-5 transition-all hover:border-primary/30 hover:bg-white dark:border-zinc-800 dark:bg-zinc-900/40"
             >
-              <div className="flex items-start justify-between">
-                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${doc.bg} ${doc.color}`}>
-                  <doc.icon className="size-6" />
-                </div>
-                <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
-                  <CheckCircle2 className="size-3" />
-                  Polished
-                </div>
+              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${doc.bg} ${doc.color} shadow-inner`}>
+                <doc.icon className="size-6" />
               </div>
-              
-              <div className="mt-4 sm:mt-6">
-                <p className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-                  {doc.value}
-                </p>
-                <p className="text-sm font-bold text-foreground">
-                  {doc.label}
-                </p>
-                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  {doc.description}
-                </p>
+
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-black text-zinc-900 dark:text-zinc-50 uppercase tracking-tight">{doc.label}</p>
+                <p className="mt-1 truncate text-[10px] font-bold uppercase tracking-widest text-zinc-400">{doc.description}</p>
+              </div>
+
+              <div className="shrink-0 text-right">
+                <p className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50">{doc.value}</p>
+                <div className="mt-1 flex items-center justify-end gap-1.5 text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="size-3" />
+                  Ready
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="rounded-[1.5rem] border border-border bg-secondary/30 p-4 sm:rounded-[2rem] sm:p-6">
-          <div className="mb-3 flex items-center justify-between sm:mb-4">
-            <h4 className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-              Inventory Breakdown
+        {/* Breakdown — flexible inventory statistics */}
+        <div className="relative overflow-hidden rounded-[2rem] border border-zinc-100 bg-zinc-50/50 p-6 dark:border-zinc-800 dark:bg-zinc-950/20">
+          <div className="mb-5 flex items-center justify-between">
+            <h4 className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-400">
+              Inventory Statistics
             </h4>
-            <span className="text-[0.65rem] font-bold text-muted-foreground/60">
-              {totalResumes + coverLetters} Total Files
+            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500/60">
+              {totalResumes + coverLetters} Artifacts
             </span>
           </div>
-          
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+
+          <div className="grid grid-cols-2 gap-4 2xl:grid-cols-2">
             {subStats.map((stat) => (
-              <div key={stat.label} className="space-y-1">
-                <p className="text-xl font-bold text-foreground tabular-nums">
-                  {stat.value}
-                </p>
-                <p className="text-[0.65rem] font-bold uppercase tracking-widest text-muted-foreground/60">
+              <div key={stat.label} className="flex flex-col gap-1 rounded-2xl bg-white/80 p-4 shadow-sm dark:bg-zinc-900/60">
+                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400">
                   {stat.label}
+                </p>
+                <p className="text-xl font-black tabular-nums text-zinc-900 dark:text-zinc-50">
+                  {stat.value}
                 </p>
               </div>
             ))}
           </div>
 
-          <div className="mt-6 flex h-1.5 w-full overflow-hidden rounded-full bg-background">
-            <div className="h-full bg-primary" style={{ width: `${(originalResumes / (totalResumes + coverLetters || 1)) * 100}%` }} />
-            <div className="h-full bg-primary/60" style={{ width: `${(optimizedResumes / (totalResumes + coverLetters || 1)) * 100}%` }} />
-            <div className="h-full bg-primary/30" style={{ width: `${(builtResumes / (totalResumes + coverLetters || 1)) * 100}%` }} />
-            <div className="h-full bg-emerald-500/50" style={{ width: `${(coverLetters / (totalResumes + coverLetters || 1)) * 100}%` }} />
+          <div className="mt-6 flex h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800 shadow-inner">
+            <div className="h-full bg-zinc-900 transition-all duration-1000" style={{ width: `${(originalResumes / (totalResumes + coverLetters || 1)) * 100}%` }} />
+            <div className="h-full bg-sky-500 transition-all duration-1000 delay-100" style={{ width: `${(optimizedResumes / (totalResumes + coverLetters || 1)) * 100}%` }} />
+            <div className="h-full bg-sky-300 transition-all duration-1000 delay-200" style={{ width: `${(builtResumes / (totalResumes + coverLetters || 1)) * 100}%` }} />
+            <div className="h-full bg-emerald-400 transition-all duration-1000 delay-300" style={{ width: `${(coverLetters / (totalResumes + coverLetters || 1)) * 100}%` }} />
           </div>
         </div>
       </div>

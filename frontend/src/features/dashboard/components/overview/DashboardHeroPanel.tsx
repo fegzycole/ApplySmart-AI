@@ -60,7 +60,7 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
             </div>
 
             <div className="space-y-3 sm:space-y-4">
-              <h2 className="max-w-3xl text-2xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-6xl">
+              <h2 className="max-w-3xl text-2xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl xl:text-6xl">
                 Command your <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">career momentum.</span>
               </h2>
               <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
@@ -69,32 +69,40 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 sm:gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3 xl:gap-4">
             {heroStats.map((stat) => (
               <div
                 key={stat.label}
-                className="group/stat relative overflow-hidden rounded-[1.5rem] border border-border bg-background/50 p-3 transition-all hover:border-primary/20 hover:bg-card sm:rounded-[2rem] sm:p-6 dark:bg-zinc-900/40"
+                className="group/stat relative overflow-hidden rounded-[2rem] border border-border bg-background/50 p-4 transition-all hover:border-primary/20 hover:bg-card sm:p-5 xl:p-6 dark:bg-zinc-900/40"
               >
-                <p className="text-[0.55rem] font-bold uppercase tracking-[0.15em] text-muted-foreground sm:text-[0.65rem] sm:tracking-[0.2em]">
-                  {stat.label}
-                </p>
-                <div className="mt-2 flex items-end justify-between sm:mt-4">
-                  <p className="text-2xl font-bold tracking-tight text-foreground sm:text-4xl">
-                    {stat.value}
+                <div className="relative z-10">
+                  <p className="text-[0.6rem] font-black uppercase tracking-[0.2em] text-muted-foreground xl:text-[0.65rem]">
+                    {stat.label}
                   </p>
-                  {stat.icon && <stat.icon className="hidden size-6 text-primary opacity-20 transition-opacity group-hover/stat:opacity-100 sm:block" />}
+                  <div className="mt-2 flex items-end justify-between sm:mt-3 xl:mt-4">
+                    <p className="text-2xl font-black tracking-tight text-foreground sm:text-3xl xl:text-4xl">
+                      {stat.value}
+                    </p>
+                    {stat.icon && <stat.icon className="hidden size-5 text-primary opacity-20 transition-opacity group-hover/stat:opacity-100 sm:block xl:size-6" />}
+                  </div>
+                  {stat.trend && (
+                    <div className="mt-2 flex items-center gap-2 xl:mt-3">
+                      <div className="h-1 w-1 rounded-full bg-emerald-500 animate-pulse" />
+                      <p className="text-[0.65rem] font-bold text-emerald-600 dark:text-emerald-400">
+                        {stat.trend}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                {stat.trend && (
-                  <p className="mt-1 hidden text-xs font-medium text-emerald-600 sm:mt-3 sm:block dark:text-emerald-400">
-                    {stat.trend}
-                  </p>
-                )}
+                
+                {/* Subtle Glow */}
+                <div className="absolute -right-4 -top-4 h-24 w-24 bg-primary/5 blur-2xl transition-opacity opacity-0 group-hover/stat:opacity-100" />
               </div>
             ))}
           </div>
         </div>
 
-        <div className="relative flex flex-col rounded-[2rem] border border-border bg-secondary/30 p-4 sm:rounded-[2.5rem] sm:p-6">
+        <div className="relative flex flex-col rounded-[2rem] border border-border bg-secondary/30 p-4 sm:rounded-[2.5rem] sm:p-6 lg:self-start">
           <div className="mb-4 flex items-center justify-between sm:mb-6">
             <h3 className="text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Direct Actions
@@ -104,7 +112,7 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
             </Button>
           </div>
 
-          <div className="flex-1 space-y-2 sm:space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {DASHBOARD_ACTIONS.map((action) => {
               const Icon = action.icon;
               return (

@@ -37,19 +37,19 @@ export function UserMenu() {
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"
-          className="flex h-12 items-center gap-3 rounded-2xl px-2 sm:px-4 hover:bg-zinc-900/5 dark:hover:bg-white/5 transition-all active:scale-95 group"
+          className="flex h-10 items-center gap-1.5 rounded-xl px-1.5 hover:bg-zinc-900/5 dark:hover:bg-white/5 transition-all active:scale-95 group sm:px-2 lg:h-11 lg:gap-2 2xl:h-12 2xl:gap-3 2xl:rounded-2xl 2xl:px-4"
         >
           <div className="relative">
             <UserAvatar
               firstName={userFirstName}
               lastName={userLastName}
               imageUrl={userImageUrl}
-              className="size-9 rounded-xl border-2 border-white dark:border-zinc-800 shadow-lg group-hover:scale-105 transition-transform"
-              textClassName="text-sm font-black"
+              className="size-8 rounded-lg border-2 border-white dark:border-zinc-800 shadow-lg group-hover:scale-105 transition-transform lg:size-9 lg:rounded-xl"
+              textClassName="text-xs font-black lg:text-sm"
             />
-            <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background bg-emerald-500 shadow-sm" />
+            <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-background bg-emerald-500 shadow-sm lg:-bottom-1 lg:-right-1 lg:h-3 lg:w-3" />
           </div>
-          <div className="hidden md:flex flex-col items-start leading-none">
+          <div className="hidden 2xl:flex flex-col items-start leading-none">
             <span className="text-sm font-black tracking-tight text-zinc-900 dark:text-zinc-50">
               {userFullName}
             </span>

@@ -60,7 +60,7 @@ export function DashboardHomePage() {
               <RecentApplicationsPanel applications={data.recentApplications} />
             </motion.div>
 
-            <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-2 lg:gap-8">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 xl:grid-cols-2 xl:gap-8">
               <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className="canvas-card rounded-[2.5rem] p-1">
                 <ApplicationVelocityPanel data={data.applicationVelocity} />
               </motion.div>
@@ -76,12 +76,12 @@ export function DashboardHomePage() {
               <DashboardInsightsPanel data={data} />
             </motion.div>
 
-            <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className="canvas-card rounded-[2.5rem] p-1">
-              <PipelineSnapshotPanel data={data} />
+            <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
+              <DocumentCoveragePanel documents={data.documents} />
             </motion.div>
 
-            <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className="canvas-card rounded-[2.5rem] p-1">
-              <DocumentCoveragePanel documents={data.documents} />
+            <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
+              <PipelineSnapshotPanel data={data} />
             </motion.div>
           </div>
         </div>

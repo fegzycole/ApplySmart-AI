@@ -28,13 +28,13 @@ export function AppLayout() {
 
       <AppHeader />
 
-      <main className="relative z-40 mx-auto max-w-[1800px] px-3 pt-24 pb-16 sm:px-6 sm:pt-28 sm:pb-20 lg:px-12 lg:pt-32 xl:px-20 xl:pb-24">
+      <main className="relative z-40 mx-auto max-w-[1700px] px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-12 lg:pt-36">
         <motion.div
           key={pathname}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{
-            duration: 0.24,
+            duration: 0.3,
             ease: [0.22, 1, 0.36, 1],
           }}
         >

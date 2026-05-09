@@ -10,7 +10,7 @@ export function Navigation() {
 
   return (
     <header className="fixed top-8 left-0 right-0 z-50 px-6 pointer-events-none">
-      <motion.nav 
+      <motion.nav
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -23,9 +23,9 @@ export function Navigation() {
             </div>
             <span className="text-xl font-bold tracking-tight text-foreground hidden sm:block">ApplySmart</span>
           </div>
-          
+
           <div className="h-6 w-px bg-foreground/10 mx-2 hidden sm:block" />
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}

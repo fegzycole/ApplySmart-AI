@@ -21,9 +21,11 @@ export function PipelineSnapshotPanel({ data }: PipelineSnapshotPanelProps) {
     <DashboardSectionCard
       title="Pipeline structure"
       description="Understand where most of your roles are sitting right now, not just how many you have logged."
+      className="lg:col-span-2 2xl:col-span-1"
     >
-      <div className="grid gap-6 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center lg:grid-cols-[190px_minmax(0,1fr)]">
-        <div className="mx-auto w-full max-w-[190px]">
+      <div className="grid grid-cols-1 gap-8 sm:gap-12 2xl:grid-cols-[220px_minmax(0,1fr)] items-center">
+        {/* Donut chart — centred, bounded so it never dominates on wide screens */}
+        <div className="mx-auto w-full max-w-[160px] sm:max-w-[220px]">
           <svg viewBox="0 0 184 184" className="h-auto w-full">
             <circle
               cx={centerX}
@@ -62,7 +64,7 @@ export function PipelineSnapshotPanel({ data }: PipelineSnapshotPanelProps) {
               x={centerX}
               y={centerY - 6}
               textAnchor="middle"
-              className="fill-zinc-500 text-[11px] uppercase tracking-[0.16em] dark:fill-zinc-400"
+              className="fill-zinc-500 text-[11px] uppercase font-black tracking-[0.2em] dark:fill-zinc-400"
             >
               In play
             </text>
@@ -70,32 +72,33 @@ export function PipelineSnapshotPanel({ data }: PipelineSnapshotPanelProps) {
               x={centerX}
               y={centerY + 22}
               textAnchor="middle"
-              className="fill-zinc-950 text-[28px] font-semibold tracking-[-0.04em] dark:fill-zinc-50"
+              className="fill-zinc-950 text-[32px] font-black tracking-[-0.04em] dark:fill-zinc-50"
             >
               {overview.activeApplications}
             </text>
           </svg>
         </div>
 
+        {/* Stage rows — adaptive legend */}
         <div className="space-y-3">
           {funnel.map((stage) => (
             <div
               key={stage.name}
-              className="flex items-center justify-between gap-3 rounded-[1.2rem] border border-zinc-200/80 bg-zinc-50/80 px-4 py-3 dark:border-zinc-800 dark:bg-zinc-900/65"
+              className="flex items-center justify-between gap-4 rounded-2xl border border-zinc-100 bg-white/50 px-5 py-4 dark:border-zinc-800 dark:bg-zinc-900/40 transition-all hover:bg-white dark:hover:bg-zinc-800/60"
             >
-              <div className="flex min-w-0 items-center gap-3">
+              <div className="flex min-w-0 items-center gap-4">
                 <span
-                  className="size-3 rounded-full"
-                  style={{ backgroundColor: DASHBOARD_PIPELINE_COLORS[stage.name] ?? "#a1a1aa" }}
+                  className="size-3 shrink-0 rounded-full shadow-lg"
+                  style={{ backgroundColor: DASHBOARD_PIPELINE_COLORS[stage.name] ?? "#a1a1aa", boxShadow: `0 0 12px ${DASHBOARD_PIPELINE_COLORS[stage.name]}40` }}
                 />
                 <div className="min-w-0">
-                  <p className="font-medium text-zinc-900 dark:text-zinc-50">{stage.name}</p>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                    {formatPercent(stage.percentage)} of tracked roles
+                  <p className="truncate text-sm font-black text-zinc-900 dark:text-zinc-50 uppercase tracking-tight">{stage.name}</p>
+                  <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-1">
+                    {formatPercent(stage.percentage)} Impact
                   </p>
                 </div>
               </div>
-              <span className="text-lg font-semibold tracking-[-0.03em] text-zinc-950 dark:text-zinc-50">
+              <span className="shrink-0 text-lg font-black tracking-tighter text-zinc-900 dark:text-zinc-50">
                 {stage.value}
               </span>
             </div>

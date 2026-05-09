@@ -12,9 +12,9 @@ export const DASHBOARD_PAGE_STYLES = {
   wrapper: "mx-auto max-w-[1600px] space-y-6 sm:space-y-8 lg:space-y-10",
   bentoGrid: "grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12 lg:gap-8",
   heroSection: "col-span-12",
-  mainStage: "col-span-12 space-y-4 sm:space-y-6 lg:col-span-8 lg:space-y-8",
-  sideStage: "col-span-12 space-y-4 sm:space-y-6 lg:col-span-4 lg:space-y-8",
-  metricsGrid: "grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:gap-6",
+  mainStage: "col-span-12 space-y-6 sm:space-y-8 2xl:col-span-8 2xl:space-y-10",
+  sideStage: "col-span-12 space-y-6 sm:space-y-8 lg:grid lg:grid-cols-2 lg:gap-8 lg:space-y-0 2xl:col-span-4 2xl:flex 2xl:flex-col 2xl:gap-0 2xl:space-y-10",
+  metricsGrid: "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6 2xl:grid-cols-4",
   activityFeed: "col-span-12 lg:col-span-7",
   trendsPanel: "col-span-12 lg:col-span-5",
 } as const;
