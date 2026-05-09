@@ -15,7 +15,7 @@ export function ResumeActions({ resume, onDelete }: ResumeActionsProps) {
   const canEditInBuilder = Boolean(resume.content && contentToResumeData(resume.content));
 
   return (
-    <div className="flex flex-wrap gap-2 pt-1">
+    <div className="flex flex-wrap items-center justify-center gap-2 pt-1 sm:justify-start">
       {canEditInBuilder ? (
         <Link to={`/app/resume-builder?id=${resume.id}`}>
           <Button className={RESUME_CARD_STYLES.editButtonClassName} size="sm">

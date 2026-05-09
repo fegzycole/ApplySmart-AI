@@ -1,68 +1,68 @@
 import type { FormFieldConfig } from "../types/authentication.types";
 
 export const AUTH_PAGE_STYLES = {
-  container: "min-h-screen bg-gradient-to-br from-violet-50 via-white to-cyan-50 dark:from-zinc-950 dark:via-violet-950/20 dark:to-zinc-950 flex flex-col relative overflow-hidden",
-  contentWrapper: "relative z-10 flex-1 flex items-center justify-center px-4 py-12"
+  container: "min-h-screen bg-transparent flex flex-col relative overflow-hidden antialiased",
+  contentWrapper: "relative z-40 flex-1 flex items-center justify-center px-6 py-24"
 } as const;
 
 export const DECORATIVE_BG_STYLES = {
-  wrapper: "absolute inset-0 overflow-hidden pointer-events-none",
-  topRight: "absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-violet-400/30 to-fuchsia-600/30 dark:from-violet-600/20 dark:to-fuchsia-800/20 rounded-full blur-3xl",
-  bottomLeft: "absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-cyan-400/30 to-teal-600/30 dark:from-cyan-600/20 dark:to-teal-800/20 rounded-full blur-3xl"
+  wrapper: "absolute inset-0 overflow-hidden pointer-events-none z-10",
+  topRight: "absolute -top-[10%] -right-[10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[120px]",
+  bottomLeft: "absolute -bottom-[10%] -left-[10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[100px]"
 } as const;
 
 export const AUTH_NAV_STYLES = {
-  nav: "relative z-10 backdrop-blur-xl bg-white/70 dark:bg-zinc-900/70 border-b border-violet-200/50 dark:border-violet-800/50",
-  wrapper: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-  content: "flex justify-between items-center h-16",
+  nav: "fixed top-8 left-0 right-0 z-50 px-6 pointer-events-none",
+  wrapper: "max-w-fit mx-auto pointer-events-auto",
+  content: "flex items-center gap-6 bg-card/60 backdrop-blur-3xl border border-white/10 shadow-2xl rounded-full px-8 py-4",
   logoContainer: "flex items-center gap-2",
   logoIcon: {
-    wrapper: "size-8 rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center",
-    icon: "size-5 text-white"
+    wrapper: "size-8 rounded-full bg-primary flex items-center justify-center",
+    icon: "size-5 text-primary-foreground"
   },
-  logoText: "text-xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent",
-  themeToggle: "p-2 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors cursor-pointer"
+  logoText: "text-xl font-bold tracking-tight text-foreground",
+  themeToggle: "p-2 rounded-full hover:bg-foreground/5 transition-colors cursor-pointer"
 } as const;
 
 export const AUTH_CARD_STYLES = {
-  card: "w-full max-w-md border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl shadow-2xl shadow-violet-500/20 dark:shadow-violet-900/30",
+  card: "w-full max-w-xl border border-white/10 bg-card/40 backdrop-blur-3xl shadow-[0_32px_64px_-15px_rgba(0,0,0,0.2)] rounded-[3.5rem] p-4 lg:p-8",
   header: {
-    container: "text-center space-y-2 pb-8",
+    container: "text-center space-y-4 pb-12",
     icon: {
-      wrapper: "size-16 rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/50",
-      icon: "size-8 text-white"
+      wrapper: "size-20 rounded-3xl bg-primary/10 flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-500",
+      icon: "size-10 text-primary"
     },
-    title: "text-3xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent",
-    description: "text-base"
+    title: "text-5xl font-bold tracking-tight text-foreground",
+    description: "text-lg text-muted-foreground leading-relaxed"
   }
 } as const;
 
 export const FORM_FIELD_STYLES = {
-  wrapper: "space-y-2 group",
-  label: "text-sm font-medium text-zinc-700 dark:text-zinc-300",
+  wrapper: "space-y-3 group",
+  label: "text-sm font-semibold uppercase tracking-widest text-muted-foreground/60 ml-1",
   inputWrapper: "relative",
-  input: "h-12 bg-white dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 rounded-xl focus:border-violet-500 dark:focus:border-violet-500 focus:ring-4 focus:ring-violet-500/20 transition-all duration-300 pl-4",
-  focusGlow: "absolute inset-0 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 opacity-0 group-focus-within:opacity-100 -z-10 blur-xl transition-opacity duration-300"
+  input: "h-14 bg-foreground/5 border-2 border-transparent rounded-2xl px-5 text-base transition-all duration-300 focus:bg-transparent focus:border-primary focus:ring-8 focus:ring-primary/10 outline-none",
+  focusGlow: "absolute inset-0 rounded-2xl bg-primary/5 opacity-0 group-focus-within:opacity-100 -z-10 blur-xl transition-opacity duration-300"
 } as const;
 
 export const FORM_STYLES = {
-  form: "space-y-6",
-  formCompact: "space-y-5",
-  submitButton: "w-full h-12 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-semibold rounded-xl shadow-lg shadow-violet-500/50 dark:shadow-violet-900/50 transform hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+  form: "space-y-8",
+  formCompact: "space-y-6",
+  submitButton: "w-full h-16 bg-primary text-primary-foreground text-lg font-bold rounded-2xl shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 cursor-pointer"
 } as const;
 
 export const OAUTH_STYLES = {
-  wrapper: "mt-8",
+  wrapper: "mt-12",
   divider: {
     container: "relative",
     line: "absolute inset-0 flex items-center",
-    border: "w-full border-t-2 border-zinc-200 dark:border-zinc-800",
-    textWrapper: "relative flex justify-center text-sm",
-    text: "px-4 bg-white dark:bg-zinc-900 text-zinc-500 font-medium"
+    border: "w-full border-t border-foreground/10",
+    textWrapper: "relative flex justify-center text-xs font-bold uppercase tracking-widest",
+    text: "px-6 bg-transparent text-muted-foreground/40"
   },
   buttons: {
-    container: "mt-6 grid grid-cols-2 gap-4",
-    button: "h-12 border-2 border-zinc-200 dark:border-zinc-800 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-950/30 rounded-xl transition-all duration-300 cursor-pointer",
+    container: "mt-8 grid grid-cols-2 gap-4",
+    button: "h-14 bg-foreground/5 border-2 border-transparent hover:border-foreground/10 hover:bg-foreground/10 rounded-2xl font-semibold transition-all duration-300 cursor-pointer",
     icon: "size-5 mr-2"
   }
 } as const;

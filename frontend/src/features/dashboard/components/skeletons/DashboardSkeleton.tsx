@@ -14,11 +14,11 @@ export function DashboardSkeleton() {
             />
           ))}
         </div>
-        <div className={DASHBOARD_PAGE_STYLES.topPanels}>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] xl:gap-6">
           <div className="h-[26rem] animate-pulse rounded-[1.75rem] bg-zinc-200/70 dark:bg-zinc-800/70" />
           <div className="h-[26rem] animate-pulse rounded-[1.75rem] bg-zinc-200/70 dark:bg-zinc-800/70" />
         </div>
-        <div className={DASHBOARD_PAGE_STYLES.bottomPanels}>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] xl:gap-6">
           <div className="h-[28rem] animate-pulse rounded-[1.75rem] bg-zinc-200/70 dark:bg-zinc-800/70" />
           <div className="h-[28rem] animate-pulse rounded-[1.75rem] bg-zinc-200/70 dark:bg-zinc-800/70" />
         </div>

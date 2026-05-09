@@ -46,6 +46,7 @@ export interface ResumeOptimization {
   changes: string[];
   content: string;
   fileUrl?: string;
+  analysis?: ResumeAnalysis;
   coverLetter?: CoverLetter;
 }
 

@@ -34,14 +34,12 @@ export function NavigationLinks({ onNavigate, variant }: NavigationLinksProps) {
 
 function getNavigationLinkClassName(isDesktop: boolean, active: boolean) {
   const baseClassName = isDesktop
-    ? "flex cursor-pointer items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all"
-    : "flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-all";
+    ? "flex cursor-pointer items-center gap-2 rounded-full px-4 py-1.5 text-sm font-medium transition-all duration-300"
+    : "flex cursor-pointer items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium transition-all duration-300 sm:gap-4 sm:px-5 sm:py-4 sm:text-base";
 
   if (active) {
-    return isDesktop
-      ? `${baseClassName} bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/25`
-      : `${baseClassName} bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white`;
+    return `${baseClassName} bg-primary text-primary-foreground shadow-lg shadow-primary/20`;
   }
 
-  return `${baseClassName} text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800`;
+  return `${baseClassName} text-muted-foreground hover:text-foreground hover:bg-foreground/5`;
 }

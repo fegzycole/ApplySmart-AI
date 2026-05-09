@@ -1,4 +1,5 @@
-import { KeyRound, Shield, ShieldCheck } from "lucide-react";
+import { KeyRound, ShieldCheck, Lock, AlertTriangle } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 import { SectionCard } from "../shared/SectionCard";
 import { SecuritySection } from "./SecuritySection";
 import { ChangePasswordForm } from "./ChangePasswordForm";
@@ -18,77 +19,70 @@ export function SecurityTab() {
   const isSecurityReady = !securityQuery.isLoading && !!security;
 
   return (
-    <>
+    <div className="space-y-12">
       <SectionCard
-        icon={Shield}
-        title="Security Settings"
-        description="Protect your account with stronger credentials and layered verification."
-        iconGradient="from-emerald-500 to-teal-500"
+        icon={Lock}
+        title="Encryption & Access"
+        description="Configure your account's high-security authentication layers."
       >
-        <div className="overflow-hidden rounded-[1.5rem] border border-zinc-200/80 bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.14),_transparent_40%),linear-gradient(180deg,rgba(255,255,255,0.96),rgba(244,244,245,0.92))] dark:border-zinc-800 dark:bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.16),_transparent_35%),linear-gradient(180deg,rgba(24,24,27,0.92),rgba(9,9,11,0.9))]">
-          <div className="flex flex-col gap-5 px-4 py-4 sm:px-5 sm:py-5 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl space-y-2">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-emerald-700 dark:text-emerald-300">
-                Security overview
-              </p>
-              <h3 className="text-xl font-semibold tracking-[-0.02em] text-zinc-950 dark:text-white sm:text-2xl">
-                Your sign-in setup at a glance.
+        <div className="group relative space-y-8 rounded-[2rem] border-0 bg-transparent p-0 dark:bg-transparent sm:overflow-hidden sm:rounded-[2.5rem] sm:border-2 sm:border-zinc-100 sm:bg-zinc-950/[0.02] sm:p-8 sm:space-y-10 dark:sm:border-zinc-800 dark:sm:bg-white/[0.02]">
+          <div className="absolute inset-0 opacity-0 transition-opacity duration-1000 group-hover:opacity-100 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent" />
+          
+          <div className="relative z-10 flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div className="min-w-0 flex-1 space-y-4">
+              <div className="flex items-start gap-2">
+                 <div className="mt-[0.18rem] h-2 w-2 shrink-0 rounded-full bg-emerald-500 animate-pulse" />
+                 <span className="text-[10px] font-black uppercase leading-[1.1] tracking-[0.22em] text-emerald-600 dark:text-emerald-300">
+                   Security Protocol Overview
+                 </span>
+              </div>
+              <h3 className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 uppercase leading-none">
+                Sign-In <span className="text-emerald-500">Integrity</span>
               </h3>
-              <p className="text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-                Keep a strong password on the account and add authenticator-based verification when you want a tighter login flow.
+              <p className="text-base font-medium leading-[1.6] text-zinc-500 dark:text-zinc-400 sm:text-lg">
+                Maintain a high-caliber authentication posture. Layered verification ensures your career artifacts remain under absolute control.
               </p>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <span className="inline-flex items-center rounded-full border border-zinc-200 bg-white/80 px-3 py-1.5 text-xs font-medium text-zinc-700 shadow-sm dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-200">
-                {hasPassword ? "Password account" : "External sign-in"}
-              </span>
-              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50/90 px-3 py-1.5 text-xs font-medium text-emerald-700 shadow-sm dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300">
-                {twoFactorEnabled ? "Authenticator enabled" : "Authenticator not enabled"}
-              </span>
+            <div className="flex flex-wrap gap-3 xl:justify-end">
+              <div className="flex h-8 items-center px-3 rounded-full bg-zinc-900/5 dark:bg-white/5 border border-zinc-200/50 dark:border-zinc-700/30 text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                {hasPassword ? "Password Active" : "External Only"}
+              </div>
+              <div className={cn(
+                "flex h-8 items-center px-3 rounded-full border text-[10px] font-black uppercase tracking-widest",
+                twoFactorEnabled 
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400" 
+                  : "bg-zinc-900/5 border-zinc-200/50 text-zinc-500"
+              )}>
+                2FA: {twoFactorEnabled ? "Active" : "Inactive"}
+              </div>
             </div>
           </div>
 
-          <div className="grid gap-px border-t border-zinc-200/80 bg-zinc-200/80 dark:border-zinc-800 dark:bg-zinc-800 sm:grid-cols-2">
-            <div className="bg-white/85 px-4 py-4 dark:bg-zinc-950/65">
-              <div className="flex items-start gap-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300">
-                  <KeyRound className="size-4" />
+          <div className="relative z-10 grid gap-4 sm:grid-cols-2 sm:gap-6">
+            <div className="rounded-2xl border border-zinc-100 bg-white p-5 text-left shadow-sm transition-all hover:border-emerald-500/30 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
+              <div className="flex items-start gap-4">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-white shadow-xl dark:bg-emerald-600">
+                  <KeyRound className="size-6" />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-                    Sign-in
-                  </p>
-                  <p className="mt-1 text-base font-semibold text-zinc-950 dark:text-white">
-                    {hasPassword ? "Password enabled" : "Provider only"}
-                  </p>
-                  <p className="mt-1 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-                    {hasPassword
-                      ? "You can sign in directly with email and password."
-                      : "Add a password if you want direct email sign-in."}
+                <div className="min-w-0 pt-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Primary Key</p>
+                  <p className="mt-1 text-base font-black text-zinc-900 dark:text-white uppercase tracking-tight">
+                    {hasPassword ? "Standard Credentials" : "OIDC Federated"}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white/85 px-4 py-4 dark:bg-zinc-950/65">
-              <div className="flex items-start gap-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
-                  <ShieldCheck className="size-4" />
+            <div className="rounded-2xl border border-zinc-100 bg-white p-5 text-left shadow-sm transition-all hover:border-emerald-500/30 dark:border-zinc-800 dark:bg-zinc-900 sm:p-6">
+              <div className="flex items-start gap-4">
+                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-white shadow-xl dark:bg-emerald-600">
+                  <ShieldCheck className="size-6" />
                 </div>
-                <div className="min-w-0">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-                    Authenticator
-                  </p>
-                  <p className="mt-1 text-base font-semibold text-zinc-950 dark:text-white">
-                    {twoFactorEnabled ? "Enabled" : hasPassword ? "Available" : "Unavailable"}
-                  </p>
-                  <p className="mt-1 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-                    {twoFactorEnabled
-                      ? "A one-time code is required after password sign-in."
-                      : hasPassword
-                        ? "Set up an authenticator app to add a second check."
-                        : "Authenticator setup appears after you add a password."}
+                <div className="min-w-0 pt-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Secondary Node</p>
+                  <p className="mt-1 text-base font-black text-zinc-900 dark:text-white uppercase tracking-tight">
+                    {twoFactorEnabled ? "Multi-Factor Active" : "Uncalibrated Layer"}
                   </p>
                 </div>
               </div>
@@ -97,25 +91,28 @@ export function SecurityTab() {
         </div>
 
         {securityQuery.isError ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50/80 px-4 py-3 text-sm text-red-700 dark:border-red-950 dark:bg-red-950/20 dark:text-red-300">
-            We couldn't load your security settings right now. Please refresh and try again.
+          <div className="rounded-2xl border-2 border-rose-100 bg-rose-50/30 p-8 text-center dark:border-rose-900/20 dark:bg-rose-950/10">
+            <div className="flex items-center justify-center gap-3 text-rose-700 dark:text-rose-300 font-bold uppercase tracking-widest text-xs">
+              <AlertTriangle className="size-4" />
+              Node Synchronization Failure
+            </div>
           </div>
         ) : null}
 
-        <div className="space-y-4 sm:space-y-5">
-          <SecuritySection {...SECURITY_SECTIONS[0]}>
-            {isSecurityReady ? (
-              <ChangePasswordForm
-                hasPassword={hasPassword}
-                isSaving={changePasswordMutation.isPending}
-                onSubmit={(data) => changePasswordMutation.mutateAsync(data)}
-              />
-            ) : (
-              <div className="rounded-2xl border border-zinc-200/70 bg-zinc-50/80 px-4 py-4 text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-300">
-                Loading your password settings...
-              </div>
-            )}
-          </SecuritySection>
+        <div className="space-y-10">
+          <div className="mt-4 sm:mt-0">
+            <SecuritySection {...SECURITY_SECTIONS[0]}>
+              {isSecurityReady ? (
+                <ChangePasswordForm
+                  hasPassword={hasPassword}
+                  isSaving={changePasswordMutation.isPending}
+                  onSubmit={(data) => changePasswordMutation.mutateAsync(data)}
+                />
+              ) : (
+                <div className="h-40 rounded-[2.5rem] bg-zinc-900/5 animate-pulse" />
+              )}
+            </SecuritySection>
+          </div>
 
           <SecuritySection {...SECURITY_SECTIONS[1]}>
             {isSecurityReady ? (
@@ -127,15 +124,13 @@ export function SecurityTab() {
                 hasSetupPending={hasSetupPending}
               />
             ) : (
-              <div className="rounded-2xl border border-zinc-200/70 bg-zinc-50/80 px-4 py-4 text-sm text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900/60 dark:text-zinc-300">
-                Loading your two-factor authentication settings...
-              </div>
+              <div className="h-40 rounded-[2.5rem] bg-zinc-900/5 animate-pulse" />
             )}
           </SecuritySection>
         </div>
       </SectionCard>
 
       <DangerZone isReady={isSecurityReady} />
-    </>
+    </div>
   );
 }

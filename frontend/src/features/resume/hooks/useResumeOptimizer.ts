@@ -10,7 +10,6 @@ import {
 } from "../services/resume.service";
 import type { ResumeTemplate } from "../types/resume-builder.types";
 import type {
-  OptimizerView,
   ResumeOptimizerCoverLetterOptions,
   ResumeOptimizerSource,
 } from "../types/resume-optimizer.types";
@@ -56,14 +55,11 @@ export function useResumeOptimizer() {
     setErrorMessage(null);
   };
 
-  const view: OptimizerView = result ? "result" : "upload";
-
   return {
     optimize,
     optimizing,
     result,
     errorMessage,
     startOver,
-    view,
   };
 }

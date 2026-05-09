@@ -1,39 +1,102 @@
 import { Link } from "react-router";
 import { Button } from "@/shared/components/ui/button";
-import { Sparkles } from "lucide-react";
+import { Sparkles, ArrowRight, Zap, Target, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.3 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30, scale: 0.95 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 export function HeroSection() {
   return (
-    <section className="relative z-10 pt-12 sm:pt-24 pb-16 sm:pb-32 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto text-center">
-        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-violet-500/10 via-fuchsia-500/10 to-cyan-500/10 border border-violet-200 dark:border-violet-800 text-violet-700 dark:text-violet-300 text-xs sm:text-sm mb-6 sm:mb-8 backdrop-blur-sm">
-          <Sparkles className="size-3 sm:size-4" />
-          <span className="font-medium">Powered by Advanced AI Technology</span>
-        </div>
-        <h1 className="text-4xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold mb-4 sm:mb-6 leading-tight">
-          <span className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 bg-clip-text text-transparent">
-            Land More Interviews
-          </span>
-          <br />
-          <span className="text-zinc-900 dark:text-white">With AI</span>
-        </h1>
-        <p className="text-base sm:text-xl text-zinc-600 dark:text-zinc-400 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed px-4">
-          Create ATS-optimized resumes, generate compelling cover letters, and track your job applications—all powered by cutting-edge artificial intelligence.
-        </p>
-        <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4">
-          <Link to="/signup" className="w-full sm:w-auto">
-            <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white text-base sm:text-lg px-8 sm:px-10 h-12 sm:h-14 rounded-full shadow-2xl shadow-violet-500/50 dark:shadow-violet-900/50 transform hover:scale-105 transition-all">
-              Start Free Trial
-            </Button>
-          </Link>
-        </div>
-        <p className="text-xs sm:text-sm text-zinc-500 dark:text-zinc-500 mt-4 sm:mt-6 px-4">
-          ✨ No credit card required
-        </p>
-      </div>
+    <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden">
+      <motion.div
+        className="max-w-[1400px] w-full mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Main Hero Bento Block */}
+        <motion.div 
+          variants={itemVariants}
+          className="lg:col-span-8 bg-card/40 backdrop-blur-3xl border border-white/10 rounded-[3rem] p-12 lg:p-20 flex flex-col justify-center relative overflow-hidden group shadow-2xl"
+        >
+          <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-primary/10 rounded-full blur-[120px] -z-10 group-hover:bg-primary/20 transition-all duration-1000" />
+          
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-semibold mb-8 w-fit">
+            <Sparkles className="size-4" />
+            <span>THE FUTURE OF CAREER DESIGN</span>
+          </div>
 
-      <div className="hidden sm:block absolute top-20 right-10 w-20 h-20 bg-gradient-to-br from-violet-400 to-fuchsia-500 rounded-2xl opacity-20 blur-xl animate-pulse" />
-      <div className="hidden sm:block absolute bottom-20 left-10 w-32 h-32 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-full opacity-20 blur-xl animate-pulse" style={{ animationDelay: '1s' }} />
+          <h1 className="text-6xl sm:text-7xl lg:text-9xl font-bold tracking-tighter leading-[0.85] mb-8">
+            <span className="text-foreground">CRAFT YOUR</span>
+            <br />
+            <span className="text-muted-foreground/30 italic">LEGACY.</span>
+          </h1>
+
+          <p className="text-xl lg:text-2xl text-muted-foreground max-w-xl mb-12 leading-tight">
+            An ultra-high-fidelity AI workspace designed for those who don't just apply—they command.
+          </p>
+
+          <div className="flex flex-wrap gap-4">
+            <Link to="/signup">
+              <Button size="lg" className="h-16 px-10 text-xl rounded-full gap-3 shadow-xl shadow-primary/20 hover:scale-105 active:scale-95 transition-all">
+                Access Now <ArrowRight className="size-6" />
+              </Button>
+            </Link>
+          </div>
+        </motion.div>
+
+        {/* Sidebar Bento Blocks */}
+        <div className="lg:col-span-4 grid grid-cols-1 gap-6">
+          <motion.div 
+            variants={itemVariants}
+            className="bg-primary/5 backdrop-blur-3xl border border-primary/10 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-primary/10 transition-colors group cursor-default shadow-xl"
+          >
+            <Zap className="size-10 text-primary mb-6 group-hover:scale-110 transition-transform" />
+            <div>
+              <h3 className="text-3xl font-bold mb-2">98%</h3>
+              <p className="text-muted-foreground">ATS Success Rate</p>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            variants={itemVariants}
+            className="bg-card/20 backdrop-blur-3xl border border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-between hover:bg-card/30 transition-colors group cursor-default shadow-xl"
+          >
+            <Target className="size-10 text-muted-foreground mb-6 group-hover:text-primary transition-colors" />
+            <div>
+              <h3 className="text-3xl font-bold mb-2">0.4s</h3>
+              <p className="text-muted-foreground">Optimization Speed</p>
+            </div>
+          </motion.div>
+
+          <motion.div 
+            variants={itemVariants}
+            className="bg-foreground text-background rounded-[2.5rem] p-8 flex flex-col justify-between hover:opacity-90 transition-opacity group cursor-default shadow-2xl"
+          >
+            <ShieldCheck className="size-10 mb-6 group-hover:rotate-12 transition-transform" />
+            <div>
+              <h3 className="text-3xl font-bold mb-2">PRO</h3>
+              <p className="opacity-70">Grade Security</p>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
     </section>
   );
 }

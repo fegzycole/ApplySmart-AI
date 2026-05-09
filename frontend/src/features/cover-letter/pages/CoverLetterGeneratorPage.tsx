@@ -1,7 +1,10 @@
+import { motion } from "framer-motion";
+import { cn } from "@/shared/lib/utils";
 import { COVER_LETTER_PAGE_STYLES } from "../constants/cover-letter.constants";
 import { useCoverLetterGenerator } from "../hooks/useCoverLetterGenerator";
 import { GeneratorPageHeader } from "../components/generator-header";
 import { LeftColumnSection, RightColumnSection } from "../components/page-sections";
+import { MISSION_CONTROL_ANIMATIONS } from "@/shared/constants/animations";
 
 export function CoverLetterGeneratorPage() {
   const {
@@ -28,43 +31,53 @@ export function CoverLetterGeneratorPage() {
   } = useCoverLetterGenerator();
 
   return (
-    <div className={COVER_LETTER_PAGE_STYLES.container}>
-      <div className={COVER_LETTER_PAGE_STYLES.wrapper}>
-        <div className="pointer-events-none absolute -left-16 top-10 h-36 w-36 rounded-full bg-indigo-500/10 blur-3xl dark:bg-indigo-400/10" />
-        <div className="pointer-events-none absolute right-0 top-40 h-40 w-40 rounded-full bg-emerald-400/10 blur-3xl dark:bg-emerald-400/10" />
-
-        <div className={COVER_LETTER_PAGE_STYLES.header}>
+    <motion.div 
+      variants={MISSION_CONTROL_ANIMATIONS.stagger.container}
+      initial="hidden"
+      animate="visible"
+      className={COVER_LETTER_PAGE_STYLES.container}
+    >
+      <div className={cn(COVER_LETTER_PAGE_STYLES.wrapper, "space-y-10 sm:space-y-16 pt-8 sm:pt-12")}>
+        <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
           <GeneratorPageHeader />
-        </div>
+        </motion.div>
 
-        <div className={COVER_LETTER_PAGE_STYLES.grid}>
-          <LeftColumnSection
-            company={company}
-            position={position}
-            jobDescription={jobDescription}
-            highlights={highlights}
-            tone={tone}
-            onCompanyChange={setCompany}
-            onPositionChange={setPosition}
-            onJobDescriptionChange={setJobDescription}
-            onHighlightsChange={setHighlights}
-            onToneChange={setTone}
-            uploadedFile={uploadedFile}
-            onFileUpload={handleFileUpload}
-            onRemoveFile={removeFile}
-            fieldErrors={fieldErrors}
-            formErrors={formErrors}
-            generating={generating}
-            onGenerate={handleGenerate}
-          />
+        <div className={cn(COVER_LETTER_PAGE_STYLES.grid, "gap-8 lg:gap-12")}>
+          <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className={cn(COVER_LETTER_PAGE_STYLES.leftColumn, "col-span-1 lg:col-span-1")}>
+            <LeftColumnSection
+              company={company}
+              position={position}
+              jobDescription={jobDescription}
+              highlights={highlights}
+              tone={tone}
+              onCompanyChange={setCompany}
+              onPositionChange={setPosition}
+              onJobDescriptionChange={setJobDescription}
+              onHighlightsChange={setHighlights}
+              onToneChange={setTone}
+              uploadedFile={uploadedFile}
+              onFileUpload={handleFileUpload}
+              onRemoveFile={removeFile}
+              fieldErrors={fieldErrors}
+              formErrors={formErrors}
+              generating={generating}
+              onGenerate={handleGenerate}
+            />
+          </motion.div>
 
-          <RightColumnSection
-            generated={generated}
-            onNewLetter={handleNewLetter}
-            generatedLetter={generatedLetter}
-          />
+          <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className={cn(COVER_LETTER_PAGE_STYLES.rightColumn, "col-span-1 lg:col-span-1")}>
+            <div className="lg:sticky lg:top-8 w-full">
+              <RightColumnSection
+                generated={generated}
+                onNewLetter={handleNewLetter}
+                generatedLetter={generatedLetter}
+                generating={generating}
+              />
+            </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
+
   );
 }

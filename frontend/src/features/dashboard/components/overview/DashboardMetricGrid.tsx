@@ -15,6 +15,7 @@ export function DashboardMetricGrid({ data }: DashboardMetricGridProps) {
           label={metric.label}
           value={metric.value}
           hint={metric.hint}
+          icon={metric.icon}
         />
       ))}
     </>

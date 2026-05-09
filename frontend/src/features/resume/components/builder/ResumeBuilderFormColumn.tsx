@@ -1,32 +1,49 @@
+import { motion } from "framer-motion";
 import { BuilderPanel } from "./BuilderPanel";
 import { EducationSection } from "./EducationSection";
 import { PersonalInfoSection } from "./PersonalInfoSection";
 import { SkillsSection } from "./SkillsSection";
 import { SummarySection } from "./SummarySection";
 import { WorkExperienceSection } from "./WorkExperienceSection";
+import { MISSION_CONTROL_ANIMATIONS } from "@/shared/constants/animations";
 
 export function ResumeBuilderFormColumn() {
   return (
-    <div className="min-w-0 space-y-6">
-      <BuilderPanel>
-        <PersonalInfoSection />
-      </BuilderPanel>
+    <motion.div 
+      variants={MISSION_CONTROL_ANIMATIONS.stagger.container}
+      initial="hidden"
+      animate="visible"
+      className="min-w-0 space-y-5 sm:space-y-8"
+    >
+      <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
+        <BuilderPanel>
+          <PersonalInfoSection />
+        </BuilderPanel>
+      </motion.div>
 
-      <BuilderPanel>
-        <SummarySection />
-      </BuilderPanel>
+      <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
+        <BuilderPanel>
+          <SummarySection />
+        </BuilderPanel>
+      </motion.div>
 
-      <BuilderPanel>
-        <WorkExperienceSection />
-      </BuilderPanel>
+      <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
+        <BuilderPanel>
+          <WorkExperienceSection />
+        </BuilderPanel>
+      </motion.div>
 
-      <BuilderPanel>
-        <EducationSection />
-      </BuilderPanel>
+      <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
+        <BuilderPanel>
+          <EducationSection />
+        </BuilderPanel>
+      </motion.div>
 
-      <BuilderPanel>
-        <SkillsSection />
-      </BuilderPanel>
-    </div>
+      <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
+        <BuilderPanel>
+          <SkillsSection />
+        </BuilderPanel>
+      </motion.div>
+    </motion.div>
   );
 }

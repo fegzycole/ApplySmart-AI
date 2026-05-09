@@ -14,5 +14,6 @@ public class ResumeOptimizationDto {
     private List<String> changes;
     private String content;
     private String fileUrl;
+    private ResumeAnalysisDto analysis;
     private CoverLetterResponseDto coverLetter;
 }

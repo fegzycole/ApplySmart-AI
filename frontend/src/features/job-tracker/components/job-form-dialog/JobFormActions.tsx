@@ -12,19 +12,19 @@ export function JobFormActions({ isEditing, isPending, onCancel }: JobFormAction
     <div className={JOB_FORM_DIALOG_STYLES.actions.container}>
       <Button
         type="button"
-        variant="outline"
+        variant="ghost"
         onClick={onCancel}
         className={JOB_FORM_DIALOG_STYLES.actions.cancelButton}
         disabled={isPending}
       >
-        Cancel
+        Discard
       </Button>
       <Button
         type="submit"
         className={JOB_FORM_DIALOG_STYLES.actions.submitButton}
         disabled={isPending}
       >
-        {isPending ? "Saving..." : isEditing ? "Save Changes" : "Add Application"}
+        {isPending ? "Updating Journey..." : isEditing ? "Save Progress" : "Add Opportunity"}
       </Button>
     </div>
   );

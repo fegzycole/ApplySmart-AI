@@ -1,17 +1,22 @@
 import { BriefcaseBusiness, FileText, WandSparkles } from "lucide-react";
+import { MISSION_CONTROL_ANIMATIONS } from "@/shared/constants/animations";
 import type {
   DashboardAction,
   DashboardApplicationStatus,
 } from "../types/dashboard.types";
 
+export { MISSION_CONTROL_ANIMATIONS };
+
 export const DASHBOARD_PAGE_STYLES = {
-  container:
-    "min-h-screen overflow-x-hidden bg-gradient-to-br from-zinc-50 via-white to-violet-50/30 px-4 py-4 dark:from-zinc-950 dark:via-zinc-900 dark:to-violet-950/10 sm:px-6 sm:py-6 lg:px-8 lg:py-8",
-  wrapper: "mx-auto max-w-7xl space-y-6 lg:space-y-8",
-  metricsGrid: "grid gap-4 sm:grid-cols-2 xl:grid-cols-4",
-  topPanels: "grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] xl:gap-6",
-  midPanels: "grid gap-4 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] xl:gap-6",
-  bottomPanels: "grid gap-4 xl:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] xl:gap-6",
+  container: "w-full min-h-screen pb-20",
+  wrapper: "mx-auto max-w-[1600px] space-y-6 sm:space-y-8 lg:space-y-10",
+  bentoGrid: "grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-12 lg:gap-8",
+  heroSection: "col-span-12",
+  mainStage: "col-span-12 space-y-4 sm:space-y-6 lg:col-span-8 lg:space-y-8",
+  sideStage: "col-span-12 space-y-4 sm:space-y-6 lg:col-span-4 lg:space-y-8",
+  metricsGrid: "grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:gap-6",
+  activityFeed: "col-span-12 lg:col-span-7",
+  trendsPanel: "col-span-12 lg:col-span-5",
 } as const;
 
 export const DASHBOARD_HEADER_CONTENT = {
@@ -47,43 +52,38 @@ export const DASHBOARD_STATUS_META: Record<
 > = {
   saved: {
     label: "Saved",
-    className:
-      "border-zinc-200 bg-zinc-100 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300",
+    className: "bg-muted text-muted-foreground",
   },
   applied: {
     label: "Applied",
-    className:
-      "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-300",
+    className: "bg-amber-100/50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-300",
   },
   interview: {
     label: "Interview",
-    className:
-      "border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-900 dark:bg-violet-950/40 dark:text-violet-300",
+    className: "bg-primary/10 text-primary",
   },
   offer: {
     label: "Offer",
-    className:
-      "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300",
+    className: "bg-emerald-100/50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-300",
   },
   rejected: {
     label: "Rejected",
-    className:
-      "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-300",
+    className: "bg-rose-100/50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-300",
   },
 };
 
 export const DASHBOARD_PIPELINE_COLORS: Record<string, string> = {
-  Saved: "#64748b",
+  Saved: "var(--color-muted-foreground)",
   Applied: "#f59e0b",
-  Interview: "#8b5cf6",
-  Offer: "#10b981",
+  Interview: "var(--color-primary)",
+  Offer: "oklch(0.65 0.18 160)",
 };
 
 export const DASHBOARD_DOCUMENT_COLORS = {
-  originalResumes: "#94a3b8",
-  optimizedResumes: "#8b5cf6",
-  builtResumes: "#06b6d4",
-  coverLetters: "#10b981",
+  originalResumes: "var(--color-muted-foreground)",
+  optimizedResumes: "var(--color-primary)",
+  builtResumes: "oklch(0.65 0.18 200)",
+  coverLetters: "oklch(0.65 0.18 160)",
 } as const;
 
 export const DASHBOARD_INSIGHT_TONE_STYLES = {

@@ -1,4 +1,4 @@
-import { Briefcase, Plus } from "lucide-react";
+import { Briefcase, Plus, Calendar } from "lucide-react";
 import { Textarea } from "@/shared/components/ui/textarea";
 import { Label } from "@/shared/components/ui/label";
 import { Button } from "@/shared/components/ui/button";
@@ -14,75 +14,96 @@ export function WorkExperienceSection() {
   const { resumeData, addWorkExperience, updateWorkExperience, deleteWorkExperience } = useResumeBuilder();
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <SectionHeader icon={Briefcase} title="Work Experience" />
-        <Button onClick={addWorkExperience} variant="outline" size="sm" className="w-full sm:w-auto rounded-lg">
-          <Plus className="size-4 mr-1" />
-          Add Position
+    <div className="space-y-8">
+      <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        <SectionHeader icon={Briefcase} title="Work Experience" stage="Stage 03" />
+        <Button 
+          onClick={addWorkExperience} 
+          className="h-12 px-6 rounded-2xl bg-primary text-primary-foreground font-bold shadow-lg shadow-primary/20 hover:scale-105 active:scale-95 transition-all"
+        >
+          <Plus className="size-5 mr-2" />
+          Add Experience
         </Button>
       </div>
 
       {resumeData.workExperience.length === 0 ? (
         <EmptyState
           icon={Briefcase}
-          message="No work experience added yet"
-          buttonLabel="Add Your First Position"
+          message="No professional milestones synthesized yet."
+          buttonLabel="Synthesize Your First Role"
           onAdd={addWorkExperience}
         />
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-6">
           {resumeData.workExperience.map((exp, index) => (
-            <ItemCard key={exp.id} label={`Position ${index + 1}`} onDelete={() => deleteWorkExperience(exp.id)}>
-              <div className="grid grid-cols-1 2xl:grid-cols-2 gap-4">
-                <FormField label="Company" placeholder="Company Name" value={exp.company} onChange={(v) => updateWorkExperience(exp.id, { company: v })} />
-                <FormField label="Position" placeholder="Job Title" value={exp.position} onChange={(v) => updateWorkExperience(exp.id, { position: v })} />
-                <FormField label="Location" placeholder="City, State" value={exp.location} onChange={(v) => updateWorkExperience(exp.id, { location: v })} />
-                <div className="2xl:col-span-2 space-y-3 rounded-xl border border-zinc-200/80 bg-zinc-50/70 p-3 sm:p-4 dark:border-zinc-800 dark:bg-zinc-950/40">
-                  <div className="flex items-center justify-between gap-3">
+            <ItemCard key={exp.id} label={`Experience Vector 0${index + 1}`} onDelete={() => deleteWorkExperience(exp.id)}>
+              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+                <FormField label="Organization" placeholder="Company Name" value={exp.company} onChange={(v) => updateWorkExperience(exp.id, { company: v })} />
+                <FormField label="Designation" placeholder="Job Title" value={exp.position} onChange={(v) => updateWorkExperience(exp.id, { position: v })} />
+                <FormField label="Operational Region" placeholder="City, State" value={exp.location} onChange={(v) => updateWorkExperience(exp.id, { location: v })} />
+                
+                <div className="xl:col-span-2 space-y-6 rounded-[2.5rem] border-2 border-border/50 bg-card/50 p-8 backdrop-blur-2xl transition-all group-hover:bg-card/80">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary shadow-lg shadow-primary/5">
+                      <Calendar className="size-5" />
+                    </div>
                     <div>
-                      <p className="text-sm font-semibold text-zinc-900 dark:text-white">Employment Dates</p>
-                      <p className="text-xs text-zinc-500 dark:text-zinc-400">Set the period for this role.</p>
+                      <p className="text-sm font-bold tracking-tight text-foreground">Timeline Calibration</p>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">Temporal alignment for this role</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <MonthYearPicker
-                      label="Start Date"
+                      label="Start Vector"
                       value={exp.startDate}
                       onChange={(v) => updateWorkExperience(exp.id, { startDate: v })}
                     />
                     <MonthYearPicker
-                      label="End Date"
+                      label="End Vector"
                       value={exp.endDate}
                       onChange={(v) => updateWorkExperience(exp.id, { endDate: v })}
                       disabled={exp.current}
                     />
                   </div>
-                  <div className="flex items-center gap-2 pt-1">
+
+                  <div className="flex items-center gap-3 pt-2">
                     <Checkbox
                       id={`current-${exp.id}`}
                       checked={exp.current}
                       onCheckedChange={(checked) =>
                         updateWorkExperience(exp.id, { current: checked === true })
                       }
+                      className="h-6 w-6 rounded-lg border-2 border-primary/20 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                     />
-                    <Label htmlFor={`current-${exp.id}`} className="text-sm text-zinc-600 dark:text-zinc-400 cursor-pointer">
-                      I currently work here
+                    <Label 
+                      htmlFor={`current-${exp.id}`} 
+                      className="text-xs font-bold uppercase tracking-widest text-muted-foreground/60 cursor-pointer hover:text-primary transition-colors"
+                    >
+                      Active Role • Currently Synthesis Target
                     </Label>
                   </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label className="text-sm font-medium">Responsibilities</Label>
+
+              <div className="space-y-4 group">
+                <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground/40 ml-1 transition-all group-focus-within:text-primary group-focus-within:tracking-[0.4em]">
+                  Synthesized Responsibilities & Achievements
+                </Label>
                 <Textarea
-                  placeholder={`• Key achievement or responsibility
-• Another important accomplishment
-• Quantifiable result with metrics`}
+                  placeholder={`• Spearheaded high-impact initiatives...
+• Synthesized complex data sets to...
+• Calibrated system architectures for...`}
                   value={exp.responsibilities.join("\n")}
                   onChange={(e) => updateWorkExperience(exp.id, { responsibilities: e.target.value.split("\n") })}
-                  className="min-h-[100px] rounded-lg resize-none"
+                  className="min-h-[200px] rounded-[2.5rem] border-2 border-border/50 bg-background/50 p-8 text-sm leading-relaxed backdrop-blur-2xl transition-all duration-300 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/10 resize-none shadow-inner"
                 />
-                <p className="text-xs text-zinc-500">One responsibility per line</p>
+                <div className="flex items-center gap-2 ml-1">
+                  <div className="h-1.5 w-1.5 rounded-full bg-primary/40" />
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
+                    Synthesize each milestone on a new line for optimal rendering.
+                  </p>
+                </div>
               </div>
             </ItemCard>
           ))}

@@ -14,16 +14,16 @@ export function AuthNavigation() {
             <div className={AUTH_NAV_STYLES.logoIcon.wrapper}>
               <Sparkles className={AUTH_NAV_STYLES.logoIcon.icon} />
             </div>
-            <span className={AUTH_NAV_STYLES.logoText}>ApplySmart AI</span>
+            <span className={AUTH_NAV_STYLES.logoText}>ApplySmart</span>
           </Link>
           <button
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className={AUTH_NAV_STYLES.themeToggle}
           >
             {theme === "dark" ? (
-              <Sun className="size-5 text-violet-400" />
+              <Sun className="size-5 text-primary" />
             ) : (
-              <Moon className="size-5 text-violet-600" />
+              <Moon className="size-5 text-primary" />
             )}
           </button>
         </div>

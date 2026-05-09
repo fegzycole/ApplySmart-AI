@@ -19,17 +19,17 @@ export function DashboardSectionCard({
   contentClassName,
 }: DashboardSectionCardProps) {
   return (
-    <Card className={`overflow-hidden rounded-[1.75rem] border-zinc-200/80 bg-white/80 shadow-xl shadow-zinc-200/35 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/75 dark:shadow-black/20 ${className ?? ""}`}>
-      <CardHeader className="flex flex-row items-start justify-between gap-4 border-b border-zinc-200/80 px-5 pb-5 pt-5 dark:border-zinc-800 sm:px-6">
-        <div className="space-y-1">
-          <CardTitle className="text-lg font-semibold tracking-[-0.03em] text-zinc-950 dark:text-zinc-50">
+    <Card className={`overflow-hidden rounded-[2.5rem] border-zinc-200/50 bg-white shadow-2xl shadow-zinc-200/30 dark:border-zinc-800 dark:bg-zinc-950 dark:shadow-none ${className ?? ""}`}>
+      <CardHeader className="flex flex-row items-start justify-between gap-3 border-b border-zinc-100 px-4 py-4 sm:items-center sm:gap-4 sm:px-6 sm:py-6 dark:border-zinc-900 lg:px-8">
+        <div className="space-y-1 sm:space-y-1.5">
+          <CardTitle className="text-base font-bold tracking-tight text-zinc-950 sm:text-xl dark:text-zinc-50">
             {title}
           </CardTitle>
-          <p className="text-sm leading-6 text-zinc-600 dark:text-zinc-400">{description}</p>
+          <p className="text-xs font-medium leading-relaxed text-zinc-500 sm:text-sm dark:text-zinc-400">{description}</p>
         </div>
-        {action ? <div className="shrink-0">{action}</div> : null}
+        {action ? <div className="mt-0.5 shrink-0 sm:mt-0">{action}</div> : null}
       </CardHeader>
-      <CardContent className={`px-5 py-5 sm:px-6 ${contentClassName ?? ""}`}>{children}</CardContent>
+      <CardContent className={`px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 ${contentClassName ?? ""}`}>{children}</CardContent>
     </Card>
   );
 }

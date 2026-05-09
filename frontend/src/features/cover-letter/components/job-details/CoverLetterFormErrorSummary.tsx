@@ -9,15 +9,18 @@ export function CoverLetterFormErrorSummary({ messages }: CoverLetterFormErrorSu
 
   return (
     <div
-      className="rounded-2xl border border-red-200 bg-red-50/80 px-4 py-3 dark:border-red-950 dark:bg-red-950/20"
+      className="rounded-[2.5rem] border-2 border-rose-100 bg-rose-50/30 p-8 dark:border-rose-900/20 dark:bg-rose-950/10 backdrop-blur-xl"
       aria-live="polite"
     >
-      <p className="text-sm font-medium text-red-900 dark:text-red-200">
-        Please fix the following:
+      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-600 dark:text-rose-400 mb-4">
+        Synthesis Interrupted: Recalibrate Details
       </p>
-      <ul className="mt-2 space-y-1 text-sm text-red-700 dark:text-red-300">
+      <ul className="space-y-3">
         {messages.map((message) => (
-          <li key={message}>{message}</li>
+          <li key={message} className="flex items-center gap-3 text-sm font-bold text-rose-700 dark:text-rose-300">
+            <div className="h-1.5 w-1.5 rounded-full bg-rose-300 dark:bg-rose-700" />
+            {message}
+          </li>
         ))}
       </ul>
     </div>

@@ -16,20 +16,20 @@ export function TemplateCard({ id, name, description, color, gradient, isSelecte
     <button
       type="button"
       onClick={() => onSelect(id)}
-      className={`group relative min-w-[220px] w-[220px] xl:min-w-0 xl:w-auto rounded-2xl border p-3 text-left transition-all ${
+      className={`group relative w-full rounded-[1.75rem] border-2 p-4 text-left transition-all sm:rounded-3xl ${
         isSelected
-          ? "border-violet-500 bg-white shadow-lg shadow-violet-500/15 dark:border-violet-400 dark:bg-zinc-900"
-          : "border-zinc-200 bg-white/80 hover:border-violet-300 hover:bg-white dark:border-zinc-800 dark:bg-zinc-900/70 dark:hover:border-violet-700 dark:hover:bg-zinc-900"
+          ? "border-primary bg-background shadow-2xl shadow-primary/10"
+          : "border-border bg-background/50 hover:border-primary/30 hover:bg-background dark:bg-card/30 dark:hover:bg-card/50"
       }`}
       aria-pressed={isSelected}
     >
-      <div className={`pointer-events-none absolute inset-0 rounded-2xl ${gradient} transition-opacity ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-60"}`} />
+      <div className={`pointer-events-none absolute inset-0 rounded-3xl ${gradient} transition-opacity ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-60"}`} />
 
-      <div className="relative z-10 flex items-start gap-3">
-        <div className={`relative aspect-[4/5] w-20 shrink-0 overflow-hidden rounded-xl bg-gradient-to-br ${color} ring-1 ring-black/5`}>
+      <div className="relative z-10 flex items-start gap-3 sm:gap-4">
+        <div className={`relative aspect-[4/5] w-20 shrink-0 overflow-hidden rounded-2xl bg-gradient-to-br ${color} shadow-lg ring-1 ring-black/5 sm:w-24`}>
           <div className="absolute inset-[10%] rounded-lg bg-white/95 shadow-sm">
             <div className="flex h-full">
-              <div className="w-[18%] bg-black/5" />
+              <div className="w-[18%] bg-zinc-100" />
               <div className="flex-1 px-2 py-2">
                 <div className="h-1.5 w-3/4 rounded-full bg-zinc-800/80" />
                 <div className="mt-2 h-1 w-full rounded-full bg-zinc-300" />
@@ -45,29 +45,29 @@ export function TemplateCard({ id, name, description, color, gradient, isSelecte
           </div>
         </div>
 
-        <div className="min-w-0 flex-1 pt-0.5">
+        <div className="min-w-0 flex-1 pt-1">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <h4 className="truncate text-sm sm:text-base font-semibold text-zinc-900 dark:text-white">{name}</h4>
-              <p className="mt-1 text-[11px] sm:text-xs leading-relaxed text-zinc-600 dark:text-zinc-400">
+              <h4 className="truncate text-sm font-bold tracking-tight text-foreground sm:text-base">{name}</h4>
+              <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
                 {description}
               </p>
             </div>
 
             <div
-              className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border transition-colors ${
+              className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
                 isSelected
-                  ? "border-violet-500 bg-violet-500 text-white"
-                  : "border-zinc-300 bg-white text-transparent dark:border-zinc-700 dark:bg-zinc-950"
+                  ? "border-primary bg-primary text-primary-foreground scale-110 shadow-lg shadow-primary/20"
+                  : "border-muted-foreground/20 bg-background text-transparent"
               }`}
             >
               <Check className="size-3.5" />
             </div>
           </div>
 
-          <div className="mt-4 flex items-center justify-between gap-2">
-            <div className={`h-1.5 flex-1 rounded-full bg-gradient-to-r ${color} opacity-90`} />
-            <span className="text-[10px] sm:text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-500 dark:text-zinc-400">
+          <div className="mt-4 flex items-center justify-between gap-3 sm:mt-5">
+            <div className={`h-2 flex-1 rounded-full bg-gradient-to-r ${color} opacity-90`} />
+            <span className={`text-[10px] font-bold uppercase tracking-[0.2em] ${isSelected ? "text-primary" : "text-muted-foreground/40"}`}>
               {isSelected ? "Active" : "Select"}
             </span>
           </div>

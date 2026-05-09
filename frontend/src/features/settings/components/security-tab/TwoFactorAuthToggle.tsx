@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Button } from "@/shared/components/ui/button";
 import { Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/shared/lib/utils";
 import { useDisableTwoFactor, useEnableTwoFactor, useSetupTwoFactor } from "../../hooks/useSettingsSecurity";
 import type { TwoFactorSetup, TwoFactorSetupFormData } from "../../types/settings.types";
 import { getSettingsServerFeedback } from "../../utils/settings-security.errors";
@@ -53,7 +54,7 @@ export function TwoFactorAuthToggle({
       setValues({ code: "" });
       setFieldErrors({});
       setFormErrors([]);
-      toast.success("Scan the QR code in your authenticator app.");
+      toast.success("Artifact scan active. Sync with authenticator.");
     } catch (error) {
       const serverFeedback = getSettingsServerFeedback<Record<never, string>>(error, []);
       setFormErrors(serverFeedback.formErrors);
@@ -83,7 +84,7 @@ export function TwoFactorAuthToggle({
       setValues({ code: "" });
       setFieldErrors({});
       setFormErrors([]);
-      toast.success("Authenticator app two-factor authentication enabled.");
+      toast.success("Secondary authentication layer calibrated.");
     } catch (error) {
       const serverFeedback = getSettingsServerFeedback<TwoFactorSetupFormData>(error, ["code"]);
       setFieldErrors(serverFeedback.fieldErrors);
@@ -98,69 +99,73 @@ export function TwoFactorAuthToggle({
       setValues({ code: "" });
       setFieldErrors({});
       setFormErrors([]);
-      toast.success("Two-factor authentication disabled.");
+      toast.success("Secondary layer disconnected.");
     } catch (error) {
       const serverFeedback = getSettingsServerFeedback<Record<never, string>>(error, []);
       setFormErrors(serverFeedback.formErrors);
-      toast.error(serverFeedback.formErrors[0] ?? "Failed to disable two-factor authentication.");
+      toast.error(serverFeedback.formErrors[0] ?? "Layer disconnection failure.");
     }
   };
 
   return (
-    <div className="space-y-4 sm:space-y-5">
+    <div className="mx-auto w-full space-y-6 xl:w-[92%]">
       {!setup ? <SettingsFormErrorSummary messages={formErrors} /> : null}
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
-            <ShieldCheck className="size-5" />
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex items-start gap-4">
+          <div className="mt-1 flex size-12 shrink-0 items-center justify-center rounded-xl bg-zinc-900 text-white shadow-xl dark:bg-emerald-600">
+            <ShieldCheck className="size-6" />
           </div>
-          <div className="space-y-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="text-base font-semibold text-zinc-950 dark:text-white">{title}</p>
-              <span className="inline-flex items-center rounded-full border border-zinc-200 bg-zinc-50 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
-                {enabled ? "Enabled" : "Inactive"}
-              </span>
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <p className="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight leading-none">{title}</p>
+              <div className={cn(
+                "flex h-5 shrink-0 items-center whitespace-nowrap px-2.5 rounded-lg text-[9px] font-black uppercase tracking-widest border",
+                enabled 
+                  ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400" 
+                  : "bg-zinc-900/5 border-zinc-200/50 text-zinc-500"
+              )}>
+                {enabled ? "Active" : "Uncalibrated"}
+              </div>
             </div>
-            <p className="max-w-lg text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+            <p className="text-sm font-medium leading-relaxed text-zinc-500 dark:text-zinc-400">
               {description}
             </p>
           </div>
         </div>
         <Button
           type="button"
-          variant="outline"
           disabled={!available || isSaving}
           onClick={() => {
             if (enabled) {
               void handleDisable();
               return;
             }
-
             void startSetup();
           }}
-          className="h-11 w-full rounded-xl border-zinc-200 bg-white px-5 text-zinc-900 hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:bg-zinc-800 sm:w-auto"
+          className="group/btn relative h-12 w-full overflow-hidden rounded-2xl bg-zinc-900 px-5 text-[10px] font-black uppercase tracking-widest text-white shadow-xl shadow-zinc-900/20 transition-all hover:scale-105 active:scale-95 dark:bg-sky-600 sm:h-14 sm:w-auto sm:px-8"
         >
-          {isSaving ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-          {enabled ? "Disable 2FA" : hasSetupPending ? "Generate New QR" : "Set Up 2FA"}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
+          {isSaving ? <Loader2 className="mr-3 size-4 animate-spin" /> : null}
+          {enabled ? "Disconnect Layer" : hasSetupPending ? "Regenerate QR" : "Activate 2FA"}
         </Button>
       </div>
 
       {enabled ? (
-        <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-4 text-sm leading-6 text-emerald-800 dark:border-emerald-950/70 dark:bg-emerald-950/20 dark:text-emerald-300">
-          Your account now requires a 6-digit code from your authenticator app after password sign-in.
-        </div>
-      ) : null}
-
-      {!enabled && available && hasSetupPending && !setup ? (
-        <div className="rounded-2xl border border-cyan-100 bg-cyan-50/70 px-4 py-4 text-sm leading-6 text-cyan-900 dark:border-cyan-950/70 dark:bg-cyan-950/20 dark:text-cyan-200">
-          Authenticator setup was started for this account but not confirmed. Generate a fresh QR code and finish verification to activate two-factor authentication.
+        <div className="p-6 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 border-2 border-emerald-500/20 flex items-center gap-4">
+           <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+           <p className="text-[13px] font-bold text-emerald-700 dark:text-emerald-300 leading-relaxed">
+             Secondary neural layer is active. System now requires authenticator verification for all entry sequences.
+           </p>
         </div>
       ) : null}
 
       {!available ? (
-        <div className="rounded-2xl border border-zinc-200 bg-zinc-50/80 px-4 py-4 text-sm leading-6 text-zinc-700 dark:border-zinc-800 dark:bg-zinc-900/70 dark:text-zinc-300">
-          Two-factor authentication is currently available for password-based accounts only.
+        <div className="flex items-start gap-3 rounded-2xl border-2 border-zinc-100 bg-zinc-900/5 p-6 grayscale dark:border-zinc-800 dark:bg-white/5">
+           <div className="mt-[0.34rem] h-2 w-2 shrink-0 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+           <p className="text-[13px] font-bold text-zinc-500 dark:text-zinc-400 leading-relaxed">
+             2FA protocol is currently exclusive to credential-based identities.
+           </p>
         </div>
       ) : null}
 
@@ -180,12 +185,6 @@ export function TwoFactorAuthToggle({
             setFormErrors([]);
           }}
         />
-      ) : null}
-
-      {!enabled && available && !setup ? (
-        <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-4 text-sm leading-6 text-emerald-800 dark:border-emerald-950/70 dark:bg-emerald-950/20 dark:text-emerald-300">
-          Use an authenticator app like Google Authenticator, 1Password, or Authy to generate 6-digit codes for sign-in.
-        </div>
       ) : null}
     </div>
   );

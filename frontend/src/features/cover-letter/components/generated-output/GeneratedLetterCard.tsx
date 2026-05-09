@@ -1,10 +1,8 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Button } from "@/shared/components/ui/button";
-import { Textarea } from "@/shared/components/ui/textarea";
-import { CheckCircle2, RefreshCw, Download, Copy } from "lucide-react";
+import { RefreshCw, Download, Copy, ShieldCheck, ExternalLink, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { GENERATED_LETTER_STYLES } from "../../constants/cover-letter.constants";
+import { NARRATIVE_ARTIFACT_STYLES } from "../../constants/cover-letter.constants";
 import { downloadCoverLetterPdf, type CoverLetter } from "../../services/cover-letter.service";
 import { getDocumentDownloadFilename, triggerBrowserDownload } from "@/features/resume/utils/resume-download";
 
@@ -19,22 +17,17 @@ export function GeneratedLetterCard({ onNewLetter, generatedLetter }: GeneratedL
   const [copying, setCopying] = useState(false);
 
   const handleDownload = async () => {
-    if (!generatedLetter?.pdfUrl) {
-      return;
-    }
-
+    if (!generatedLetter?.pdfUrl) return;
     setDownloading(true);
-
     try {
       const blob = await downloadCoverLetterPdf(generatedLetter.pdfUrl);
       triggerBrowserDownload(
         blob,
         getDocumentDownloadFilename(generatedLetter.pdfUrl, "cover-letter.pdf")
       );
+      toast.success("Artifact downloaded.");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Failed to download cover letter. Please try again."
-      );
+      toast.error("Failed to download narrative artifact.");
     } finally {
       setDownloading(false);
     }
@@ -42,81 +35,106 @@ export function GeneratedLetterCard({ onNewLetter, generatedLetter }: GeneratedL
 
   const handleCopy = async () => {
     setCopying(true);
-
     try {
       await navigator.clipboard.writeText(content);
-      toast.success("Cover letter copied.");
+      toast.success("Narrative fragment copied.");
     } catch {
-      toast.error("Couldn't copy the cover letter.");
+      toast.error("Couldn't copy fragment.");
     } finally {
       setCopying(false);
     }
   };
 
   return (
-    <Card className={GENERATED_LETTER_STYLES.card}>
-      <CardHeader>
-        <div className={GENERATED_LETTER_STYLES.header.wrapper}>
-          <div className={GENERATED_LETTER_STYLES.header.left}>
-            <div className={GENERATED_LETTER_STYLES.header.icon.wrapper}>
-              <CheckCircle2 className={GENERATED_LETTER_STYLES.header.icon.icon} />
+    <div className={NARRATIVE_ARTIFACT_STYLES.wrapper}>
+      {/* Dynamic Amber Aura */}
+      <div className={NARRATIVE_ARTIFACT_STYLES.aura} />
+      
+      {/* Frosted Grain Texture */}
+      <div 
+        className={NARRATIVE_ARTIFACT_STYLES.grain} 
+        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+      />
+
+      <div className={NARRATIVE_ARTIFACT_STYLES.body}>
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+          <div className="space-y-4 min-w-0">
+            <div className="flex flex-wrap items-start gap-3">
+              <div className="inline-flex h-7 min-w-0 max-w-full items-center rounded-full border border-amber-500/20 bg-amber-500/10 px-3.5">
+                <span className="block truncate text-[10px] font-black uppercase tracking-[0.14em] leading-none text-amber-600 dark:text-amber-400">
+                  Synthesized Narrative
+                </span>
+              </div>
+              <div className="inline-flex h-7 min-w-0 max-w-full items-center rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3.5">
+                <ShieldCheck className="mr-2 size-3.5 shrink-0 text-emerald-500" />
+                <span className="block truncate text-[10px] font-black uppercase tracking-[0.14em] leading-none text-emerald-600 dark:text-emerald-400">
+                  Verified
+                </span>
+              </div>
             </div>
-            <div>
-              <CardTitle className={GENERATED_LETTER_STYLES.header.title}>Generated Letter</CardTitle>
-              <CardDescription className={GENERATED_LETTER_STYLES.header.description}>
-                AI-crafted and ready to customize
-              </CardDescription>
-            </div>
+            
+            <h2 className="text-4xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 leading-none truncate">
+              {generatedLetter?.company || "Anonymous Artifact"}
+            </h2>
+            <p className="text-lg font-bold text-zinc-500 dark:text-zinc-400 tracking-tight">
+              {generatedLetter?.position || "Target Position"}
+            </p>
           </div>
+
           <Button
             variant="ghost"
-            size="sm"
             onClick={onNewLetter}
-            className={GENERATED_LETTER_STYLES.header.newButton}
+            className="h-14 w-14 rounded-2xl bg-zinc-900/5 dark:bg-white/5 border-2 border-zinc-100 dark:border-zinc-800 hover:border-amber-500/50 hover:text-amber-500 transition-all active:scale-90"
           >
-            <RefreshCw className={GENERATED_LETTER_STYLES.header.newButtonIcon} />
-            New
+            <RefreshCw className="size-6" />
           </Button>
-        </div>
-      </CardHeader>
-      <CardContent className={GENERATED_LETTER_STYLES.content}>
-        <div className={GENERATED_LETTER_STYLES.textareaWrapper}>
-          <Textarea
-            value={content}
-            readOnly
-            className={GENERATED_LETTER_STYLES.textarea}
-          />
         </div>
 
-        <div className={GENERATED_LETTER_STYLES.buttonGrid}>
-          <Button
-            className={GENERATED_LETTER_STYLES.downloadButton}
-            onClick={() => void handleDownload()}
-            disabled={downloading || !generatedLetter?.pdfUrl}
-          >
-            <Download className={GENERATED_LETTER_STYLES.buttonIcon} />
-            {downloading ? "Downloading..." : "PDF"}
-          </Button>
-          {generatedLetter?.pdfUrl ? (
-            <Button asChild variant="outline" className={GENERATED_LETTER_STYLES.downloadButtonAlt}>
-              <a href={generatedLetter.pdfUrl} target="_blank" rel="noopener noreferrer">
-                <Download className={GENERATED_LETTER_STYLES.buttonIcon} />
-                Open PDF
-              </a>
+        <div className={NARRATIVE_ARTIFACT_STYLES.specimenFrame}>
+          <div className="absolute right-6 top-4 flex items-start gap-2">
+            <div className="mt-[0.18rem] h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-[8px] font-black uppercase tracking-widest leading-[1.1] text-zinc-400">Specimen ID-CL</span>
+          </div>
+          
+          <div className="max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-amber-500/20 pr-4">
+            <p className={NARRATIVE_ARTIFACT_STYLES.specimenContent}>
+              {content}
+            </p>
+          </div>
+        </div>
+
+        <div className={NARRATIVE_ARTIFACT_STYLES.actionDeck}>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              className="h-14 px-8 rounded-2xl bg-amber-500 text-white font-black uppercase tracking-widest text-[11px] shadow-xl shadow-amber-500/20 hover:scale-105 active:scale-95 transition-all"
+              onClick={() => void handleDownload()}
+              disabled={downloading || !generatedLetter?.pdfUrl}
+            >
+              {downloading ? <Loader2 className="size-4 animate-spin mr-2" /> : <Download className="size-4 mr-2" />}
+              Export PDF
             </Button>
-          ) : null}
-        </div>
+            
+            {generatedLetter?.pdfUrl && (
+              <Button asChild variant="outline" className="h-14 px-8 rounded-2xl border-2 border-zinc-100 font-black uppercase tracking-widest text-[11px] hover:bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900/50 transition-all">
+                <a href={generatedLetter.pdfUrl} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="size-4 mr-2" />
+                  Inspect Render
+                </a>
+              </Button>
+            )}
+          </div>
 
-        <Button
-          variant="outline"
-          className={GENERATED_LETTER_STYLES.copyButton}
-          onClick={() => void handleCopy()}
-          disabled={copying}
-        >
-          <Copy className={GENERATED_LETTER_STYLES.buttonIcon} />
-          {copying ? "Copying..." : "Copy to Clipboard"}
-        </Button>
-      </CardContent>
-    </Card>
+          <Button
+            variant="ghost"
+            className="h-14 px-8 rounded-2xl bg-zinc-900/5 dark:bg-white/5 font-black uppercase tracking-widest text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all"
+            onClick={() => void handleCopy()}
+            disabled={copying}
+          >
+            {copying ? "Syncing..." : "Copy Fragment"}
+            <Copy className="size-4 ml-2" />
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }

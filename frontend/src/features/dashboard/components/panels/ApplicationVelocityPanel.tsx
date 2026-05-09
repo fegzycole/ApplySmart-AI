@@ -30,8 +30,8 @@ export function ApplicationVelocityPanel({ data }: ApplicationVelocityPanelProps
         <svg viewBox={`0 0 ${width} ${height}`} className="h-auto w-full">
           <defs>
             <linearGradient id="dashboard-velocity-gradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#8b5cf6" />
-              <stop offset="100%" stopColor="#06b6d4" />
+              <stop offset="0%" stopColor="var(--color-primary)" />
+              <stop offset="100%" stopColor="oklch(0.65 0.18 200)" />
             </linearGradient>
           </defs>
 
@@ -45,7 +45,7 @@ export function ApplicationVelocityPanel({ data }: ApplicationVelocityPanelProps
                   y1={y}
                   y2={y}
                   stroke="currentColor"
-                  className="text-zinc-200 dark:text-zinc-800"
+                  className="text-border"
                   strokeDasharray="4 6"
                 />
               </g>
@@ -84,7 +84,7 @@ export function ApplicationVelocityPanel({ data }: ApplicationVelocityPanelProps
                   x={x + barWidth / 2}
                   y={height - 10}
                   textAnchor="middle"
-                  className="fill-zinc-500 text-[11px] dark:fill-zinc-400"
+                  className="fill-muted-foreground text-[11px]"
                 >
                   {item.week}
                 </text>
@@ -93,9 +93,9 @@ export function ApplicationVelocityPanel({ data }: ApplicationVelocityPanelProps
           })}
         </svg>
 
-        <div className="flex flex-wrap items-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+        <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-2">
-            <span className="size-2.5 rounded-full bg-violet-500" />
+            <span className="size-2.5 rounded-full bg-primary" />
             Applications logged
           </span>
           <span className="inline-flex items-center gap-2">

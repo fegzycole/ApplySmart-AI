@@ -1,4 +1,4 @@
-import { CreditCard, Download } from "lucide-react";
+import { Activity, Database } from "lucide-react";
 import { SectionCard } from "../shared/SectionCard";
 import { CurrentPlanCard } from "./CurrentPlanCard";
 import { PaymentMethodCard } from "./PaymentMethodCard";
@@ -8,30 +8,34 @@ import { CURRENT_PLAN, PAYMENT_METHOD, INVOICES } from "../../constants/billing.
 
 export function BillingTab() {
   return (
-    <>
+    <div className="space-y-12">
       <SectionCard
-        icon={CreditCard}
-        title="Billing & Subscription"
-        description="Manage your subscription and payment methods"
-        iconGradient="from-amber-500 to-orange-500"
+        icon={Database}
+        title="Resource Infrastructure"
+        description="Manage your system tier and primary financial vectors."
       >
-        <CurrentPlanCard {...CURRENT_PLAN} />
-        <PaymentMethodCard {...PAYMENT_METHOD} />
-        <BillingActions />
+        <div className="grid gap-8 lg:grid-cols-2">
+          <CurrentPlanCard {...CURRENT_PLAN} />
+          <PaymentMethodCard {...PAYMENT_METHOD} />
+        </div>
+        <div className="pt-4">
+          <BillingActions />
+        </div>
       </SectionCard>
 
       <SectionCard
-        icon={Download}
-        title="Billing History"
-        description="Download your previous invoices"
-        iconGradient="from-emerald-500 to-teal-500"
+        icon={Activity}
+        title="Transaction Archive"
+        description="Historical log of infrastructure resource allocations."
       >
-        <div className="space-y-3">
-          {INVOICES.map((invoice, index) => (
-            <InvoiceItem key={index} {...invoice} />
-          ))}
+        <div className="group relative overflow-hidden rounded-[2.5rem] border-2 border-zinc-100 bg-white/40 dark:bg-zinc-900/40 dark:border-zinc-800 p-2 shadow-inner backdrop-blur-xl">
+          <div className="divide-y-2 divide-zinc-100 dark:divide-zinc-800">
+            {INVOICES.map((invoice, index) => (
+              <InvoiceItem key={index} {...invoice} />
+            ))}
+          </div>
         </div>
       </SectionCard>
-    </>
+    </div>
   );
 }

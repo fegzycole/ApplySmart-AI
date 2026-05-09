@@ -193,6 +193,7 @@ public class ResumeOptimizationWorkflow {
                 .originalScore(originalAnalysis.getScore())
                 .optimizedScore(optimizedAnalysis.getScore())
                 .changes(changes)
+                .analysis(optimizedAnalysis)
                 .content("")
                 .fileUrl(fileUrl)
                 .build();

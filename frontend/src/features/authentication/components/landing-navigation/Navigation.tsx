@@ -2,48 +2,57 @@ import { Link } from "react-router";
 import { Button } from "@/shared/components/ui/button";
 import { Sparkles, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { motion } from "framer-motion";
 import { FEATURE_FLAGS } from "@/shared/config/feature-flags";
 
 export function Navigation() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <nav className="relative z-10 backdrop-blur-xl bg-white/70 dark:bg-zinc-900/70 border-b border-violet-200/50 dark:border-violet-800/50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <header className="fixed top-8 left-0 right-0 z-50 px-6 pointer-events-none">
+      <motion.nav 
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="max-w-fit mx-auto pointer-events-auto"
+      >
+        <div className="flex items-center gap-6 bg-card/60 backdrop-blur-3xl border border-white/10 shadow-2xl rounded-full px-8 py-4">
           <div className="flex items-center gap-2">
-            <div className="size-8 rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center">
-              <Sparkles className="size-5 text-white" />
+            <div className="size-8 rounded-full bg-primary flex items-center justify-center">
+              <Sparkles className="size-5 text-primary-foreground" />
             </div>
-            <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">ApplySmart AI</span>
+            <span className="text-xl font-bold tracking-tight text-foreground hidden sm:block">ApplySmart</span>
           </div>
-          <div className="flex items-center gap-2 sm:gap-4">
+          
+          <div className="h-6 w-px bg-foreground/10 mx-2 hidden sm:block" />
+          
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="p-2 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors"
+              className="p-2 rounded-full hover:bg-foreground/5 transition-colors"
             >
               {theme === "dark" ? (
-                <Sun className="size-5 text-violet-400" />
+                <Sun className="size-5 text-primary" />
               ) : (
-                <Moon className="size-5 text-violet-600" />
+                <Moon className="size-5 text-primary" />
               )}
             </button>
             {FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED && (
-              <Link to="/pricing" className="hidden sm:inline-block">
-                <Button variant="ghost" className="hover:bg-violet-100 dark:hover:bg-violet-900/30">Pricing</Button>
+              <Link to="/pricing" className="hidden lg:inline-block">
+                <Button variant="ghost" className="rounded-full">Pricing</Button>
               </Link>
             )}
             <Link to="/login" className="hidden sm:inline-block">
-              <Button variant="ghost" className="hover:bg-violet-100 dark:hover:bg-violet-900/30">Sign In</Button>
+              <Button variant="ghost" className="rounded-full">Sign In</Button>
             </Link>
             <Link to="/signup">
-              <Button className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white shadow-lg shadow-violet-500/50 dark:shadow-violet-900/50 text-sm sm:text-base h-9 sm:h-10 px-3 sm:px-4">
-                Start Free
+              <Button className="rounded-full px-6 shadow-xl shadow-primary/20">
+                Join Now
               </Button>
             </Link>
           </div>
         </div>
-      </div>
-    </nav>
+      </motion.nav>
+    </header>
   );
 }

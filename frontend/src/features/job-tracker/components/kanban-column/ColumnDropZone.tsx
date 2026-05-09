@@ -2,6 +2,7 @@ import { JobCard } from "../JobCard";
 import type { Job } from "../../types/job.types";
 import { KANBAN_COLUMN_STYLES } from "../../constants/job-tracker.constants";
 import { ColumnEmptyState } from "./ColumnEmptyState";
+import { cn } from "@/shared/lib/utils";
 
 interface ColumnDropZoneProps {
   jobs: Job[];
@@ -13,15 +14,21 @@ interface ColumnDropZoneProps {
 }
 
 export function ColumnDropZone({ jobs, isOver, onEdit, onDelete, dropRef, emptyMessage }: ColumnDropZoneProps) {
-  const dropZoneClassName = `${KANBAN_COLUMN_STYLES.dropZone.base} ${
+  const dropZoneClassName = cn(
+    KANBAN_COLUMN_STYLES.dropZone.base,
     isOver ? KANBAN_COLUMN_STYLES.dropZone.hover : KANBAN_COLUMN_STYLES.dropZone.default
-  }`;
+  );
 
   return (
-    <div ref={dropRef} className={dropZoneClassName}>
-      {jobs.map((job) => (
-        <JobCard key={job.id} job={job} onEdit={onEdit} onDelete={onDelete} />
-      ))}
+    <div 
+      ref={dropRef} 
+      className={dropZoneClassName}
+    >
+      <div className="space-y-4">
+        {jobs.map((job) => (
+          <JobCard key={job.id} job={job} onEdit={onEdit} onDelete={onDelete} />
+        ))}
+      </div>
       {jobs.length === 0 && <ColumnEmptyState message={emptyMessage} />}
     </div>
   );
