@@ -1,87 +1,52 @@
-import { Upload, Target, Sparkles, Award, Brain, Search, Gauge, TrendingUp, BarChart3, Shield } from "lucide-react";
+import { Target, Award, Brain, Search, Gauge, TrendingUp, BarChart3, Shield, Cpu, Zap, Microscope } from "lucide-react";
 
 export const HOW_IT_WORKS_STEPS = [
-  { icon: Upload, title: "Upload Resume", desc: "Share your current resume" },
-  { icon: Target, title: "Paste Job Description", desc: "Add the target job posting" },
-  { icon: Sparkles, title: "AI Analysis", desc: "Our AI analyzes the match" },
-  { icon: Award, title: "Get Results", desc: "Receive optimization tips" }
+  { icon: Microscope, title: "Initialize Specimen", desc: "Inject your current professional artifact" },
+  { icon: Target, title: "Define Blueprint", desc: "Scan target role parameters" },
+  { icon: Cpu, title: "Neural Synthesis", desc: "AI-driven alignment calibration" },
+  { icon: Zap, title: "verified Output", desc: "Deploy ATS-optimized artifact" }
 ];
 
 export const AI_ANALYSIS_FEATURES = [
   {
     icon: Brain,
-    gradient: "from-violet-500 to-fuchsia-500",
-    text: "Compares resume to job requirements"
+    gradient: "from-sky-500 to-indigo-600",
+    text: "Neural comparison to role blueprint"
   },
   {
     icon: Search,
-    gradient: "from-cyan-500 to-teal-500",
-    text: "Identifies missing keywords & skills"
+    gradient: "from-amber-500 to-orange-600",
+    text: "Heuristic gap detection & indexing"
   },
   {
     icon: Gauge,
-    gradient: "from-amber-500 to-orange-500",
-    text: "Calculates ATS compatibility score"
+    gradient: "from-emerald-500 to-teal-600",
+    text: "Quantum ATS compatibility indexing"
   },
   {
     icon: TrendingUp,
-    gradient: "from-emerald-500 to-green-500",
-    text: "Suggests specific improvements"
+    gradient: "from-rose-500 to-pink-600",
+    text: "Surgical achievement calibration"
   }
 ];
 
 export const SCORE_METRICS = [
-  { icon: BarChart3, value: "87%", label: "Overall Match" },
-  { icon: Target, value: "92%", label: "Keywords" },
-  { icon: Shield, value: "95%", label: "ATS Score" },
-  { icon: Award, value: "A+", label: "Grade" }
+  { icon: BarChart3, value: "87%", label: "Alignment Index" },
+  { icon: Target, value: "92%", label: "Keyword Density" },
+  { icon: Shield, value: "95%", label: "ATS Verification" },
+  { icon: Award, value: "A+", label: "Caliber Grade" }
 ];
 
-export const STRENGTHS = [
-  {
-    title: "Keyword Match: 92%",
-    desc: "Excellent coverage of required skills and technologies",
-    score: 92
-  },
-  {
-    title: "ATS-Friendly Format",
-    desc: "Clean structure compatible with all tracking systems",
-    score: 95
-  },
-  {
-    title: "Strong Action Verbs",
-    desc: "Effective use of impactful language throughout",
-    score: 88
-  }
-];
-
-export const IMPROVEMENTS = [
-  {
-    title: "Missing Keywords",
-    desc: "Add: \"cloud infrastructure\", \"CI/CD\", \"microservices\"",
-    priority: "High" as const
-  },
-  {
-    title: "Quantify Achievements",
-    desc: "Include metrics like \"increased performance by 40%\"",
-    priority: "Medium" as const
-  },
-  {
-    title: "Technical Depth",
-    desc: "Expand on specific technologies and frameworks used",
-    priority: "Medium" as const
-  }
-];
-
-export const MATCHED_KEYWORDS = [
-  "React", "Node.js", "AWS", "Docker", "Python", "Agile", "Git", "REST API"
-];
-
-export const MISSING_KEYWORDS = [
-  "Kubernetes", "CI/CD", "Microservices"
-];
+export const OPTIMIZER_RESULT_STYLES = {
+  container: "w-full min-h-screen pb-20 bg-[#fafafa] dark:bg-zinc-950",
+  wrapper: "mx-auto max-w-[1700px] space-y-6 px-3 pt-6 sm:space-y-10 sm:px-6 sm:pt-8 lg:px-8 lg:pt-12 lg:space-y-12",
+  bentoGrid: "grid grid-cols-1 gap-6 sm:gap-8 xl:grid-cols-12 xl:gap-12",
+  heroSection: "col-span-12",
+  mainStage: "col-span-12 space-y-6 sm:space-y-8 xl:col-span-7 xl:space-y-12",
+  sideStage: "col-span-12 space-y-6 sm:space-y-8 xl:col-span-5 xl:space-y-12",
+} as const;
 
 export const OPTIMIZER_STYLES = {
-  cardClassName: "border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl shadow-xl hover:shadow-2xl transition-all duration-300",
-  gradientCardClassName: "border-0 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-cyan-600 shadow-2xl shadow-violet-500/50 dark:shadow-violet-900/50"
+  cardClassName: "canvas-card rounded-[2rem] border-2 border-white/60 bg-white/40 p-5 shadow-2xl shadow-zinc-200/50 backdrop-blur-3xl dark:border-zinc-800/40 dark:bg-zinc-900/40 dark:shadow-none sm:rounded-[3rem] sm:p-8",
+  gradientCardClassName: "border-0 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 shadow-2xl shadow-zinc-900/20 dark:from-sky-600 dark:to-indigo-700 text-white"
 };

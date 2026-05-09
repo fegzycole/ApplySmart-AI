@@ -1,7 +1,7 @@
 import { Label } from "@/shared/components/ui/label";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { Lightbulb } from "lucide-react";
-import { JOB_DETAILS_CARD_STYLES } from "../../constants/cover-letter.constants";
+import { SYNTHESIS_STAGE_STYLES } from "../../constants/cover-letter.constants";
+import { cn } from "@/shared/lib/utils";
 
 interface TextareaFieldProps {
   id: string;
@@ -18,18 +18,17 @@ export function TextareaField({
   id,
   label,
   placeholder,
-  minHeight,
   value,
   onChange,
   error,
   hint,
 }: TextareaFieldProps) {
   return (
-    <div className={JOB_DETAILS_CARD_STYLES.inputGroup}>
-      <Label htmlFor={id} className={JOB_DETAILS_CARD_STYLES.label}>
+    <div className="min-w-0 space-y-3 group">
+      <Label htmlFor={id} className={SYNTHESIS_STAGE_STYLES.label}>
         {label}
       </Label>
-      <div className={JOB_DETAILS_CARD_STYLES.inputWrapper}>
+      <div className="relative min-w-0">
         <Textarea
           id={id}
           value={value}
@@ -37,16 +36,24 @@ export function TextareaField({
           placeholder={placeholder}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${id}-error` : undefined}
-          className={`${minHeight} ${JOB_DETAILS_CARD_STYLES.textarea}`}
+          className={cn(
+            SYNTHESIS_STAGE_STYLES.textarea,
+            error && "border-destructive/50 focus-visible:border-destructive focus-visible:ring-destructive/10"
+          )}
         />
-        <div className={JOB_DETAILS_CARD_STYLES.focusGlow} />
       </div>
-      {error ? <p id={`${id}-error`} className={JOB_DETAILS_CARD_STYLES.error}>{error}</p> : null}
-      {hint && (
-        <p className={JOB_DETAILS_CARD_STYLES.hint}>
-          <Lightbulb className={JOB_DETAILS_CARD_STYLES.hintIcon} />
-          {hint}
+      {error ? (
+        <p id={`${id}-error`} className="text-[10px] font-bold uppercase tracking-widest text-destructive ml-1">
+          {error}
         </p>
+      ) : null}
+      {hint && (
+        <div className="ml-1 flex items-start gap-2">
+          <div className="mt-[0.26rem] h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500/40" />
+          <span className="text-[10px] font-bold uppercase leading-[1.1] tracking-[0.22em] text-zinc-400">
+            {hint}
+          </span>
+        </div>
       )}
     </div>
   );

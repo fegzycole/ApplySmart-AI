@@ -1,12 +1,14 @@
 import { useEffect, useState, type FormEvent } from "react";
 import QRCode from "qrcode";
-import { Copy, Loader2, QrCode, ShieldCheck } from "lucide-react";
+import { Copy, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/shared/components/ui/button";
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
+import { cn } from "@/shared/lib/utils";
 import { SettingsFormErrorSummary } from "../shared";
 import type { TwoFactorSetup } from "../../types/settings.types";
+import { MODULE_ARTIFACT_STYLES } from "../../constants/settings.constants";
 
 interface TwoFactorSetupFormProps {
   setup: TwoFactorSetup;
@@ -37,7 +39,7 @@ export function TwoFactorSetupForm({
     void QRCode.toDataURL(setup.otpAuthUri, {
       errorCorrectionLevel: "M",
       margin: 1,
-      width: 224,
+      width: 192,
     })
       .then((dataUrl: string) => {
         if (active) {
@@ -60,84 +62,87 @@ export function TwoFactorSetupForm({
       await navigator.clipboard.writeText(setup.secret);
       toast.success("Authenticator secret copied.");
     } catch {
-      toast.error("Couldn't copy the authenticator secret.");
+      toast.error("Couldn't copy secret.");
     }
   };
 
   return (
-    <form onSubmit={onSubmit} noValidate className="space-y-5">
+    <form onSubmit={onSubmit} noValidate className="space-y-8 mt-10">
       <SettingsFormErrorSummary messages={formErrors} />
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,224px),minmax(0,1fr)]">
-        <div className="rounded-[1.5rem] border border-zinc-200/80 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/70">
-          <div className="flex items-center gap-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-            <QrCode className="size-4" />
-            Scan in your authenticator app
-          </div>
-          <div className="mt-4 flex min-h-56 items-center justify-center rounded-[1.25rem] border border-dashed border-zinc-300 bg-white p-3 dark:border-zinc-700 dark:bg-zinc-950/80">
+      <div className="grid gap-8 lg:grid-cols-[240px,1fr]">
+        <div className="space-y-4 text-left">
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500 ml-1">
+            Visual Calibration
+          </p>
+          <div className="relative mx-auto aspect-square w-full max-w-[210px] flex items-center justify-center overflow-hidden rounded-[2rem] border-2 border-zinc-100 bg-white p-3 shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
+             <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent blur-2xl" />
             {qrCodeDataUrl ? (
               <img
                 src={qrCodeDataUrl}
                 alt="Authenticator app QR code"
-                className="size-56 rounded-xl"
+                className="relative z-10 size-full rounded-[1.35rem] grayscale dark:invert"
               />
             ) : (
-              <div className="flex flex-col items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
-                <Loader2 className="size-5 animate-spin" />
-                Generating QR code...
+              <div className="flex flex-col items-center gap-4 text-sm text-zinc-400">
+                <Loader2 className="size-8 animate-spin text-sky-500" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Scanning...</span>
               </div>
             )}
           </div>
         </div>
 
-        <div className="space-y-4">
-          <div className="rounded-[1.5rem] border border-cyan-100 bg-cyan-50/70 p-4 text-sm leading-6 text-cyan-900 dark:border-cyan-950/70 dark:bg-cyan-950/20 dark:text-cyan-200">
-            Scan the QR code with Google Authenticator, 1Password, Authy, or another TOTP app. If scanning is unavailable, enter the setup key manually.
+        <div className="space-y-8 text-left">
+          <div className="flex items-start gap-3 rounded-2xl border-2 border-sky-500/20 bg-sky-500/5 p-6 dark:bg-sky-500/10">
+             <div className="mt-[0.34rem] h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500 animate-pulse" />
+             <span className="text-[13px] font-bold leading-[1.45] text-sky-700 dark:text-sky-300">
+               Scan the code via your secure authenticator app. If optical scan fails, manually inject the secret artifact below.
+             </span>
           </div>
 
-          <div className="rounded-[1.5rem] border border-zinc-200/80 bg-white/90 p-4 dark:border-zinc-800 dark:bg-zinc-950/60">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-400">
-                  Manual setup key
-                </p>
-                <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                  Issuer: {setup.issuer} · Account: {setup.accountName}
-                </p>
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                className="cursor-pointer rounded-xl"
-                onClick={() => void copySecret()}
-              >
-                <Copy className="mr-2 size-4" />
-                Copy
-              </Button>
-            </div>
-
-            <div className="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 font-mono text-xs leading-6 tracking-[0.16em] break-all text-zinc-900 sm:text-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100">
-              {setup.secret}
+          <div className="space-y-4">
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500 ml-1">
+              Manual Setup Artifact
+            </p>
+            <div className="rounded-2xl border-2 border-zinc-100 bg-zinc-950/[0.02] dark:bg-white/[0.02] p-6 dark:border-zinc-800 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-inner">
+               <div className="min-w-0">
+                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-widest leading-none">Secret Identity Key</p>
+                  <p className="mt-3 font-mono text-sm font-black text-zinc-900 dark:text-zinc-50 break-all tracking-[0.2em]">{setup.secret}</p>
+               </div>
+               <Button
+                  type="button"
+                  variant="ghost"
+                  className="h-12 rounded-xl bg-zinc-900/5 dark:bg-white/5 border-2 border-zinc-100 dark:border-zinc-800 font-black uppercase tracking-widest text-[10px] hover:bg-zinc-900 hover:text-white transition-all"
+                  onClick={() => void copySecret()}
+                >
+                  <Copy className="mr-2 size-4" />
+                  Sync Key
+                </Button>
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="two-factor-code" className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Authenticator Code
+          <div className="space-y-3 group">
+            <Label htmlFor="two-factor-code" className={MODULE_ARTIFACT_STYLES.label}>
+              Verification Token
             </Label>
-            <Input
-              id="two-factor-code"
-              value={code}
-              onChange={onCodeChange}
-              inputMode="numeric"
-              placeholder="Enter 6-digit code"
-              maxLength={6}
-              aria-invalid={Boolean(error)}
-              aria-describedby={error ? "two-factor-code-error" : undefined}
-              className="h-12 rounded-xl border-zinc-200 bg-white/90 px-4 shadow-sm transition-colors placeholder:text-zinc-400 focus-visible:border-cyan-500 focus-visible:ring-cyan-500/20 dark:border-zinc-800 dark:bg-zinc-900/80"
-            />
+            <div className="relative">
+              <Input
+                id="two-factor-code"
+                value={code}
+                onChange={onCodeChange}
+                inputMode="numeric"
+                placeholder="000 000"
+                maxLength={6}
+                aria-invalid={Boolean(error)}
+                className={cn(
+                  MODULE_ARTIFACT_STYLES.input,
+                  "text-center text-3xl font-black tracking-[0.5em] placeholder:tracking-normal placeholder:text-zinc-200",
+                  error && "border-rose-500 focus-visible:ring-rose-500/10"
+                )}
+              />
+            </div>
             {error ? (
-              <p id="two-factor-code-error" className="text-xs text-red-600 dark:text-red-400">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500 ml-1">
                 {error}
               </p>
             ) : null}
@@ -145,22 +150,23 @@ export function TwoFactorSetupForm({
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      <div className="flex flex-col gap-6 sm:flex-row pt-6">
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="flex-1 rounded-xl bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200"
+          className="relative h-16 flex-1 rounded-2xl bg-sky-600 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-sky-900/20 hover:scale-105 active:scale-95 transition-all overflow-hidden group/btn"
         >
-          {isSubmitting ? <Loader2 className="mr-2 size-4 animate-spin" /> : <ShieldCheck className="mr-2 size-4" />}
-          {isSubmitting ? "Verifying..." : "Enable Authenticator App"}
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
+          {isSubmitting ? <Loader2 className="mr-3 size-5 animate-spin" /> : <ShieldCheck className="mr-3 size-5" />}
+          {isSubmitting ? "Verifying..." : "Initialize 2FA Node"}
         </Button>
         <Button
           type="button"
-          variant="outline"
-          className="flex-1 cursor-pointer rounded-xl"
+          variant="ghost"
+          className="h-16 flex-1 rounded-2xl border-2 border-zinc-100 dark:border-zinc-800 font-black uppercase tracking-widest text-[11px] text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-all active:scale-95"
           onClick={onCancel}
         >
-          Cancel Setup
+          Abort Calibration
         </Button>
       </div>
     </form>

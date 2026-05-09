@@ -22,7 +22,7 @@ export function PipelineSnapshotPanel({ data }: PipelineSnapshotPanelProps) {
       title="Pipeline structure"
       description="Understand where most of your roles are sitting right now, not just how many you have logged."
     >
-      <div className="grid gap-6 lg:grid-cols-[190px_minmax(0,1fr)] lg:items-center">
+      <div className="grid gap-6 sm:grid-cols-[160px_minmax(0,1fr)] sm:items-center lg:grid-cols-[190px_minmax(0,1fr)]">
         <div className="mx-auto w-full max-w-[190px]">
           <svg viewBox="0 0 184 184" className="h-auto w-full">
             <circle

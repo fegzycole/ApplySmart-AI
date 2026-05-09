@@ -106,7 +106,7 @@ export function ChangePasswordForm({
   };
 
   return (
-    <form noValidate onSubmit={handleSubmit} className="space-y-5">
+    <form noValidate onSubmit={handleSubmit} className="mx-auto w-full space-y-5 px-1 xl:w-[92%] xl:px-0">
       <SettingsFormErrorSummary messages={formErrors} />
 
       {!hasPassword ? (
@@ -145,7 +145,7 @@ export function ChangePasswordForm({
         />
       ))}
 
-      <div className="flex flex-col gap-3 pt-1 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex w-full flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs leading-5 text-zinc-500 dark:text-zinc-400">
           Choose a strong password with a mix of letters, numbers, and symbols.
         </p>

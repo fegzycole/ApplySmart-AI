@@ -27,7 +27,7 @@ export function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2">
+        <Button variant="ghost" className="flex h-10 items-center gap-2 rounded-full px-2 sm:h-11 sm:px-3">
           <UserAvatar
             firstName={userFirstName}
             lastName={userLastName}
@@ -43,7 +43,7 @@ export function UserMenu() {
         <div className="px-2 py-1.5">
           <p className="text-sm font-medium">{userFullName}</p>
           {FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED ? (
-            <p className="text-xs text-violet-600 dark:text-violet-400">Pro Plan</p>
+            <p className="text-xs text-primary font-bold">Pro Plan</p>
           ) : null}
         </div>
         <DropdownMenuSeparator />

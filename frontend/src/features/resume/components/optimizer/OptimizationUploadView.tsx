@@ -1,5 +1,6 @@
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useMemo, useState } from "react";
+import { cn } from "@/shared/lib/utils";
 import { getJobDescriptionStats, getJobDescriptionValidationMessage } from "@/shared/utils/job-description.validation";
 import { ProgressSteps } from "./ProgressSteps";
 import { StepOne } from "./steps/StepOne";
@@ -116,50 +117,74 @@ export function OptimizationUploadView({
   const canProceedToStep3 = jobDescriptionValidationMessage === null;
 
   return (
-    <div className="min-w-0 max-w-5xl mx-auto rounded-[2rem] border border-zinc-200/80 bg-white/75 p-4 shadow-xl shadow-zinc-200/40 backdrop-blur-xl dark:border-zinc-800 dark:bg-zinc-950/75 dark:shadow-black/20 sm:p-6 lg:p-8">
-      <ProgressSteps currentStep={step} />
+    <div className="relative mx-auto max-w-5xl">
+      {/* Cinematic Background Glow */}
+      <div className="absolute -inset-20 pointer-events-none overflow-hidden opacity-30">
+        <motion.div 
+          animate={{ 
+            backgroundColor: errorMessage ? "rgba(239, 68, 68, 0.15)" : "rgba(14, 165, 233, 0.15)",
+            scale: errorMessage ? 1.2 : 1
+          }}
+          className="absolute top-1/2 left-1/2 h-[800px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[140px] transition-colors duration-1000" 
+        />
+      </div>
 
-      <AnimatePresence mode="wait">
-        {step === 1 && (
-          <StepOne
-            file={file}
-            existingResumes={existingResumes}
-            existingResumesLoading={resumesLoading}
-            selectedResume={selectedResume}
-            sourceMode={sourceMode}
-            onFileSelect={selectFile}
-            onFileRemove={removeFile}
-            onResumeSelect={selectExistingResume}
-            onSelectedResumeClear={clearSelectedResume}
-            onSourceModeChange={setSourceMode}
-          />
-        )}
+      <div className={cn(
+        "relative rounded-[2rem] sm:rounded-[3rem] lg:rounded-[4rem] border-2 transition-all duration-1000 bg-white/40 dark:bg-zinc-900/40 p-4 sm:p-10 lg:p-20 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.1)] backdrop-blur-3xl",
+        errorMessage ? "border-rose-500/20 shadow-rose-500/5" : "border-white/60 dark:border-zinc-800/60 shadow-sky-500/5"
+      )}>
+        {/* Decorative corner element */}
+        <div className="absolute top-0 right-0 -mr-1 -mt-1 h-16 w-16 sm:h-24 sm:w-24 lg:h-32 lg:w-32 bg-gradient-to-br from-white/40 to-transparent dark:from-zinc-800/40 rounded-bl-[2rem] sm:rounded-bl-[3rem] lg:rounded-bl-[4rem] border-b-2 border-l-2 border-white/20 dark:border-zinc-700/20 pointer-events-none" />
 
-        {step === 2 && (
-          <StepTwo
-            jobDescription={jobDescription}
-            jobDescriptionError={jobDescriptionError}
-            jobDescriptionStats={jobDescriptionStats}
-            onJobDescriptionChange={handleJobDescriptionChange}
-            onBack={() => setStep(1)}
-            onNext={handleStepTwoNext}
-            canProceed={canProceedToStep3}
-          />
-        )}
+        <ProgressSteps currentStep={step} />
 
-        {step === 3 && (
-          <StepThree
-            selectedTemplate={template}
-            onTemplateSelect={setTemplate}
-            coverLetter={coverLetter}
-            onCoverLetterChange={setCoverLetter}
-            errorMessage={errorMessage}
-            onBack={() => setStep(2)}
-            onSubmit={handleSubmit}
-            isSubmitting={optimizing}
-          />
-        )}
-      </AnimatePresence>
+        <div className="mt-8 sm:mt-14 lg:mt-24">
+          <AnimatePresence mode="wait">
+            {step === 1 && (
+              <StepOne
+                key="step1"
+                file={file}
+                existingResumes={existingResumes}
+                existingResumesLoading={resumesLoading}
+                selectedResume={selectedResume}
+                sourceMode={sourceMode}
+                onFileSelect={selectFile}
+                onFileRemove={removeFile}
+                onResumeSelect={selectExistingResume}
+                onSelectedResumeClear={clearSelectedResume}
+                onSourceModeChange={setSourceMode}
+              />
+            )}
+
+            {step === 2 && (
+              <StepTwo
+                key="step2"
+                jobDescription={jobDescription}
+                jobDescriptionError={jobDescriptionError}
+                jobDescriptionStats={jobDescriptionStats}
+                onJobDescriptionChange={handleJobDescriptionChange}
+                onBack={() => setStep(1)}
+                onNext={handleStepTwoNext}
+                canProceed={canProceedToStep3}
+              />
+            )}
+
+            {step === 3 && (
+              <StepThree
+                key="step3"
+                selectedTemplate={template}
+                onTemplateSelect={setTemplate}
+                coverLetter={coverLetter}
+                onCoverLetterChange={setCoverLetter}
+                errorMessage={errorMessage}
+                onBack={() => setStep(2)}
+                onSubmit={handleSubmit}
+                isSubmitting={optimizing}
+              />
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
     </div>
   );
 }

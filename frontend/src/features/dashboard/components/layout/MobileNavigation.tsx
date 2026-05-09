@@ -11,7 +11,7 @@ export function MobileNavigation({ onNavigate, open }: MobileNavigationProps) {
   }
 
   return (
-    <div className="lg:hidden border-t border-zinc-200 dark:border-zinc-800 py-3">
+    <div className="py-2 lg:hidden sm:py-3">
       <NavigationLinks variant="mobile" onNavigate={onNavigate} />
     </div>
   );

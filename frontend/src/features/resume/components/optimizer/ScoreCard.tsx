@@ -23,38 +23,54 @@ export function ScoreCard({
   return (
     <div
       className={cn(
-        "rounded-2xl p-6 space-y-4",
+        "group relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] border-2 p-6 sm:p-8 lg:p-10 space-y-6 sm:space-y-8 transition-all duration-700 hover:-translate-y-1",
         isHighlight
-          ? "border-2 border-violet-200 dark:border-violet-900 bg-gradient-to-br from-violet-50 to-fuchsia-50 dark:from-violet-950/30 dark:to-fuchsia-950/30"
-          : "border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"
+          ? "border-amber-500/20 bg-amber-500/5 shadow-[0_20px_50px_-12px_rgba(245,158,11,0.2)] dark:bg-amber-500/10"
+          : "border-white/60 bg-white/40 shadow-2xl backdrop-blur-3xl dark:border-zinc-800/60 dark:bg-zinc-900/40"
       )}
     >
+      {/* Decorative Aura for Highlight */}
+      {isHighlight && (
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent blur-3xl opacity-50 pointer-events-none" />
+      )}
+
       <div
         className={cn(
-          "text-xs sm:text-sm font-medium uppercase tracking-wide flex items-center gap-2",
+          "text-[9px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] flex items-center gap-3 sm:gap-4",
           isHighlight
-            ? "text-violet-700 dark:text-violet-400"
-            : "text-zinc-500 dark:text-zinc-400"
+            ? "text-amber-600 dark:text-amber-400"
+            : "text-zinc-400 dark:text-zinc-500"
         )}
       >
-        {icon}
-        {label}
+        <div className={cn(
+          "flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg sm:rounded-xl shadow-inner transition-transform duration-500 group-hover:scale-110",
+          isHighlight 
+            ? "bg-amber-500 text-white shadow-amber-500/20" 
+            : "bg-zinc-100 text-zinc-500 dark:bg-zinc-950 dark:border dark:border-zinc-800"
+        )}>
+          {icon}
+        </div>
+        <span className="truncate">{label}</span>
       </div>
-      <div className="space-y-2">
+      
+      <div className="space-y-3 sm:space-y-4">
         <div
           className={cn(
-            "text-4xl sm:text-5xl font-bold",
+            "text-4xl sm:text-6xl lg:text-8xl font-black tracking-tighter leading-none",
             isHighlight
-              ? "bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent"
-              : "text-zinc-900 dark:text-white"
+              ? "text-amber-500 drop-shadow-[0_0_20px_rgba(245,158,11,0.4)]"
+              : "text-zinc-900 dark:text-zinc-50"
           )}
         >
-          {prefix}
-          {score}
+          {prefix}{score}
         </div>
+        
         {rating && (
-          <div className={cn("text-xs sm:text-sm font-medium", rating.color)}>
-            {rating.label}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className={cn("h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full", isHighlight ? "bg-amber-500 animate-pulse" : "bg-sky-500")} />
+            <div className={cn("text-[10px] sm:text-xs font-black uppercase tracking-widest leading-none", rating.color)}>
+              {rating.label}
+            </div>
           </div>
         )}
       </div>

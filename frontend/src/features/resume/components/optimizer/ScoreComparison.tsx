@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { TrendingUp } from "lucide-react";
+import { Gauge, Sparkles, Scale } from "lucide-react";
 import { ScoreCard } from "./ScoreCard";
 
 interface ScoreComparisonProps {
@@ -47,14 +47,11 @@ export function ScoreComparison({
   }, [originalScore, optimizedScore]);
 
   const getScoreRating = (score: number) => {
-    if (score >= 90) return { label: "Excellent", color: "text-emerald-600" };
-    if (score >= 80) return { label: "Very Good", color: "text-green-600" };
-    if (score >= 70) return { label: "Good", color: "text-blue-600" };
-    return { label: "Needs Work", color: "text-amber-600" };
+    if (score >= 90) return { label: "Exceptional Match", color: "text-emerald-500" };
+    if (score >= 80) return { label: "Strong Alignment", color: "text-sky-500" };
+    if (score >= 70) return { label: "Good Potential", color: "text-amber-500" };
+    return { label: "Calibration Required", color: "text-rose-500" };
   };
-
-  const originalRating = getScoreRating(originalScore);
-  const optimizedRating = getScoreRating(optimizedScore);
 
   return (
     <motion.div
@@ -64,25 +61,28 @@ export function ScoreComparison({
       className="grid gap-4 sm:gap-6 md:grid-cols-3"
     >
       <ScoreCard
-        label="Before"
+        label="Specimen Base Score"
         score={animatedOriginal}
-        rating={originalRating}
+        rating={getScoreRating(originalScore)}
+        icon={<Gauge className="size-5" />}
       />
 
       <ScoreCard
-        label="Improvement"
+        label="Synthesis Magnitude"
         score={improvement}
-        rating={{ label: "Points gained", color: "text-violet-700 dark:text-violet-400" }}
-        icon={<TrendingUp className="size-4" />}
+        rating={{ label: "Neural points gained", color: "text-amber-500" }}
+        icon={<Sparkles className="size-5" />}
         variant="highlight"
         prefix="+"
       />
 
       <ScoreCard
-        label="After"
+        label="Final Calibration Score"
         score={animatedOptimized}
-        rating={optimizedRating}
+        rating={getScoreRating(optimizedScore)}
+        icon={<Scale className="size-5" />}
       />
     </motion.div>
   );
 }
+

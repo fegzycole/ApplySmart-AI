@@ -121,14 +121,17 @@ export function ProfileForm({
         disabled
       />
 
-      <Button
-        type="submit"
-        disabled={isLoading || isSaving || !profile}
-        className="h-12 w-full rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-lg hover:from-violet-700 hover:to-fuchsia-700 md:w-auto"
-      >
-        <Check className="size-4 mr-2" />
-        {isSaving ? "Saving..." : "Save Changes"}
-      </Button>
+      <div className="pt-8 flex flex-col sm:flex-row sm:justify-end">
+        <Button
+          type="submit"
+          disabled={isLoading || isSaving || !profile}
+          className="relative h-16 px-10 rounded-2xl bg-zinc-900 dark:bg-sky-600 text-white font-black uppercase tracking-widest text-[11px] shadow-2xl shadow-zinc-900/20 dark:shadow-sky-900/20 hover:scale-105 active:scale-95 transition-all overflow-hidden group/btn"
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000" />
+          <Check className="size-4 mr-3" />
+          {isSaving ? "Updating Identity..." : "Commit Changes"}
+        </Button>
+      </div>
     </form>
   );
 }

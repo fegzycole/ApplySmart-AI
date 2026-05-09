@@ -203,6 +203,7 @@ public class ResumeServiceImpl implements ResumeService {
                 .originalScore(optimization.getOriginalScore())
                 .optimizedScore(optimization.getOptimizedScore())
                 .changes(optimization.getChanges())
+                .analysis(optimization.getAnalysis())
                 .content(optimization.getContent())
                 .fileUrl(optimization.getFileUrl())
                 .coverLetter(coverLetter)

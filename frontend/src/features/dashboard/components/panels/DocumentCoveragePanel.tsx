@@ -1,5 +1,5 @@
+import { FileText, Sparkles, CheckCircle2, Files } from "lucide-react";
 import type { DashboardDocumentStats } from "../../types/dashboard.types";
-import { DASHBOARD_DOCUMENT_COLORS } from "../../constants/dashboard.constants";
 import { DashboardSectionCard } from "./DashboardSectionCard";
 
 interface DocumentCoveragePanelProps {
@@ -7,64 +7,107 @@ interface DocumentCoveragePanelProps {
 }
 
 export function DocumentCoveragePanel({ documents }: DocumentCoveragePanelProps) {
-  const tailoredResumes = documents.optimizedResumes + documents.builtResumes;
-  const bars = [
-    { label: "Original resumes", value: documents.originalResumes, color: DASHBOARD_DOCUMENT_COLORS.originalResumes },
-    { label: "Optimized resumes", value: documents.optimizedResumes, color: DASHBOARD_DOCUMENT_COLORS.optimizedResumes },
-    { label: "Built resumes", value: documents.builtResumes, color: DASHBOARD_DOCUMENT_COLORS.builtResumes },
-    { label: "Cover letters", value: documents.coverLetters, color: DASHBOARD_DOCUMENT_COLORS.coverLetters },
+  const { originalResumes, optimizedResumes, builtResumes, coverLetters } = documents;
+  const tailoredResumes = optimizedResumes + builtResumes;
+  const totalResumes = originalResumes + optimizedResumes + builtResumes;
+
+  const docs = [
+    {
+      label: "Tailored Resumes",
+      value: tailoredResumes,
+      description: "Optimized and builder-produced resumes.",
+      icon: Sparkles,
+      color: "text-primary",
+      bg: "bg-primary/5",
+    },
+    {
+      label: "Cover Letters",
+      value: coverLetters,
+      description: "Reusable letters in your document library.",
+      icon: FileText,
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/5",
+    },
   ];
-  const maxValue = Math.max(1, ...bars.map((bar) => bar.value));
+
+  const subStats = [
+    { label: "Original", value: originalResumes },
+    { label: "Optimized", value: optimizedResumes },
+    { label: "Built", value: builtResumes },
+    { label: "Letters", value: coverLetters },
+  ];
 
   return (
     <DashboardSectionCard
-      title="Document readiness"
-      description="See how much polished application material you already have available before you start tailoring again."
-    >
-      <div className="space-y-5">
-        <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-[1.35rem] border border-zinc-200/80 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/65">
-            <p className="text-xs font-medium uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-400">
-              Tailored resumes
-            </p>
-            <p className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-zinc-50">
-              {tailoredResumes}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-              Optimized and builder-produced resumes available for targeted applications.
-            </p>
-          </div>
-          <div className="rounded-[1.35rem] border border-zinc-200/80 bg-zinc-50/80 p-4 dark:border-zinc-800 dark:bg-zinc-900/65">
-            <p className="text-xs font-medium uppercase tracking-[0.16em] text-zinc-500 dark:text-zinc-400">
-              Cover letters created
-            </p>
-            <p className="mt-3 text-3xl font-semibold tracking-[-0.04em] text-zinc-950 dark:text-zinc-50">
-              {documents.coverLetters}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
-              Reusable letters available in your document library.
-            </p>
-          </div>
+      title="Document Readiness"
+      description="See how much polished material you have available before you start tailoring again."
+      action={
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+          <Files className="size-4" />
         </div>
-
-        <div className="space-y-3">
-          {bars.map((bar) => (
-            <div key={bar.label} className="space-y-1.5">
-              <div className="flex items-center justify-between gap-3 text-sm">
-                <span className="font-medium text-zinc-800 dark:text-zinc-200">{bar.label}</span>
-                <span className="text-zinc-500 dark:text-zinc-400">{bar.value}</span>
+      }
+    >
+      <div className="space-y-6">
+        <div className="grid gap-4 sm:grid-cols-2">
+          {docs.map((doc) => (
+            <div
+              key={doc.label}
+              className="group relative overflow-hidden rounded-[1.5rem] border border-border bg-background/50 p-4 transition-all hover:border-primary/20 hover:bg-card sm:rounded-[2rem] sm:p-6"
+            >
+              <div className="flex items-start justify-between">
+                <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${doc.bg} ${doc.color}`}>
+                  <doc.icon className="size-6" />
+                </div>
+                <div className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-[0.65rem] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="size-3" />
+                  Polished
+                </div>
               </div>
-              <div className="h-2.5 overflow-hidden rounded-full bg-zinc-200/80 dark:bg-zinc-800">
-                <div
-                  className="h-full rounded-full"
-                  style={{
-                    width: `${(bar.value / maxValue) * 100}%`,
-                    backgroundColor: bar.color,
-                  }}
-                />
+              
+              <div className="mt-4 sm:mt-6">
+                <p className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                  {doc.value}
+                </p>
+                <p className="text-sm font-bold text-foreground">
+                  {doc.label}
+                </p>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                  {doc.description}
+                </p>
               </div>
             </div>
           ))}
+        </div>
+
+        <div className="rounded-[1.5rem] border border-border bg-secondary/30 p-4 sm:rounded-[2rem] sm:p-6">
+          <div className="mb-3 flex items-center justify-between sm:mb-4">
+            <h4 className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+              Inventory Breakdown
+            </h4>
+            <span className="text-[0.65rem] font-bold text-muted-foreground/60">
+              {totalResumes + coverLetters} Total Files
+            </span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {subStats.map((stat) => (
+              <div key={stat.label} className="space-y-1">
+                <p className="text-xl font-bold text-foreground tabular-nums">
+                  {stat.value}
+                </p>
+                <p className="text-[0.65rem] font-bold uppercase tracking-widest text-muted-foreground/60">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 flex h-1.5 w-full overflow-hidden rounded-full bg-background">
+            <div className="h-full bg-primary" style={{ width: `${(originalResumes / (totalResumes + coverLetters || 1)) * 100}%` }} />
+            <div className="h-full bg-primary/60" style={{ width: `${(optimizedResumes / (totalResumes + coverLetters || 1)) * 100}%` }} />
+            <div className="h-full bg-primary/30" style={{ width: `${(builtResumes / (totalResumes + coverLetters || 1)) * 100}%` }} />
+            <div className="h-full bg-emerald-500/50" style={{ width: `${(coverLetters / (totalResumes + coverLetters || 1)) * 100}%` }} />
+          </div>
         </div>
       </div>
     </DashboardSectionCard>

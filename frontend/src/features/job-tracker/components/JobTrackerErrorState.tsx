@@ -17,8 +17,12 @@ export function JobTrackerErrorState({ onRetry }: JobTrackerErrorStateProps) {
       <p className={JOB_TRACKER_ERROR_STATE_STYLES.description}>
         {JOB_TRACKER_ERROR_STATE_CONTENT.description}
       </p>
-      <Button variant="outline" onClick={onRetry} className={JOB_TRACKER_ERROR_STATE_STYLES.button}>
-        Retry
+      <Button 
+        variant="outline" 
+        onClick={onRetry} 
+        className={JOB_TRACKER_ERROR_STATE_STYLES.button}
+      >
+        Re-establish Connection
       </Button>
     </div>
   );

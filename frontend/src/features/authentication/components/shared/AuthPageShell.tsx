@@ -33,10 +33,10 @@ export function AuthPageShell({
 
       <div className={AUTH_PAGE_STYLES.contentWrapper}>
         <Card className={AUTH_CARD_STYLES.card}>
-          <CardHeader>
+          <CardHeader className="p-0 pb-4 sm:pb-5">
             <AuthCardHeader title={title} description={description} />
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-0">
             {children}
             {showOAuth && <OAuthButtons />}
             {footerText && footerLinkText && footerLinkPath && (

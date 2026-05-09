@@ -1,4 +1,5 @@
-import { Crown, Sparkles } from "lucide-react";
+import { Crown, ShieldCheck } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface CurrentPlanCardProps {
   name: string;
@@ -9,25 +10,47 @@ interface CurrentPlanCardProps {
 
 export function CurrentPlanCard({ name, price, renewalDate, status }: CurrentPlanCardProps) {
   return (
-    <div className="p-6 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-600 text-white shadow-xl relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16" />
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12" />
-      <div className="relative">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <Crown className="size-6" />
+    <div className="relative group overflow-hidden rounded-[2.5rem] border-2 border-zinc-900 bg-zinc-900 dark:bg-sky-600 dark:border-sky-500 p-10 text-white shadow-2xl transition-all duration-500 hover:-translate-y-1">
+      {/* Dynamic Background Glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-50 pointer-events-none" />
+      <motion.div 
+        className="absolute -top-10 -right-10 w-40 h-40 bg-sky-500/20 rounded-full blur-3xl"
+        animate={{ scale: [1, 1.2, 1] }}
+        transition={{ duration: 4, repeat: Infinity }}
+      />
+
+      <div className="relative z-10 flex flex-col gap-10">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-5">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 shadow-xl">
+              <Crown className="size-8" />
+            </div>
             <div>
-              <p className="font-bold text-xl">{name}</p>
-              <p className="text-white/80 text-sm">{price}</p>
+              <p className="text-[11px] font-black uppercase tracking-[0.3em] text-white/60 mb-1">
+                System Core Tier
+              </p>
+              <h4 className="text-3xl font-black tracking-tighter uppercase leading-none">{name}</h4>
             </div>
           </div>
-          <span className="px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white text-sm rounded-full font-medium">
+          <div className="flex h-8 items-center px-4 rounded-full bg-white text-zinc-900 text-[10px] font-black uppercase tracking-widest shadow-xl">
             {status}
-          </span>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-white/90">
-          <Sparkles className="size-4" />
-          <p className="text-sm">Your subscription renews on {renewalDate}</p>
+
+        <div className="space-y-6">
+          <div className="space-y-1">
+             <p className="text-4xl font-black tracking-tighter leading-none">{price}</p>
+             <p className="text-xs font-bold text-white/50 uppercase tracking-widest">Allocation Resource Cost</p>
+          </div>
+
+          <div className="pt-6 border-t border-white/10 flex items-center gap-3">
+            <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-500 text-white shadow-lg">
+               <ShieldCheck className="size-3.5" />
+            </div>
+            <p className="text-[11px] font-bold text-white/80 tracking-tight uppercase">
+              Next calibration: {renewalDate}
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -1,4 +1,3 @@
-import { DOCUMENTS_PAGE_STYLES } from "../constants/documents.constants";
 import type { CoverLetter } from "@/features/cover-letter/services/cover-letter.service";
 import type { Resume } from "@/features/resume/services/resume.service";
 import { CoverLetterDocumentCard } from "./CoverLetterDocumentCard";
@@ -38,22 +37,22 @@ export function DocumentsTabPanel({
   const hasCoverLetters = coverLetters.length > 0;
 
   return (
-    <section className="space-y-4">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h2 className="text-xl font-semibold tracking-[-0.03em] text-zinc-950 dark:text-white">
+    <section className="space-y-6 sm:space-y-10">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between border-b border-zinc-100 dark:border-zinc-800 pb-6 sm:pb-8">
+        <div className="space-y-1 sm:space-y-2">
+          <h2 className="text-2xl sm:text-4xl font-black tracking-tighter text-zinc-900 dark:text-white uppercase leading-none">
             {title}
           </h2>
-          <p className="mt-1 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm sm:text-lg font-medium text-zinc-500 dark:text-zinc-400">
             {description}
           </p>
         </div>
-        <div className="inline-flex w-fit items-center rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-medium text-zinc-600 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-300">
-          {count} {count === 1 ? "document" : "documents"}
+        <div className="flex h-8 sm:h-10 w-fit items-center px-3 sm:px-4 rounded-full bg-zinc-900 text-white dark:bg-sky-600 text-[10px] sm:text-xs font-black uppercase tracking-widest shadow-xl">
+          {count} {count === 1 ? "Artifact" : "Artifacts"}
         </div>
       </div>
 
-      <div className={DOCUMENTS_PAGE_STYLES.sectionGrid}>
+      <div className="grid gap-6 sm:gap-10">
         {hasResumes
           ? resumes.map((resume) => (
               <ResumeDocumentCard

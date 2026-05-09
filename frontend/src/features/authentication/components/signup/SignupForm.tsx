@@ -63,7 +63,22 @@ export function SignupForm() {
   return (
     <form noValidate onSubmit={handleSubmit} className={FORM_STYLES.form}>
       <AuthFormErrorSummary messages={formErrors} />
-      {SIGNUP_FIELDS.map((field) => (
+
+      {/* First + Last name side by side */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        {SIGNUP_FIELDS.slice(0, 2).map((field) => (
+          <ControlledFormField
+            key={field.id}
+            {...field}
+            value={values[field.id as keyof typeof values]}
+            onChange={handleFieldChange}
+            error={fieldErrors[field.id as keyof typeof fieldErrors]}
+          />
+        ))}
+      </div>
+
+      {/* Email + Password */}
+      {SIGNUP_FIELDS.slice(2).map((field) => (
         <ControlledFormField
           key={field.id}
           {...field}
@@ -72,6 +87,7 @@ export function SignupForm() {
           error={fieldErrors[field.id as keyof typeof fieldErrors]}
         />
       ))}
+
       <Button
         type="submit"
         className={FORM_STYLES.submitButton}

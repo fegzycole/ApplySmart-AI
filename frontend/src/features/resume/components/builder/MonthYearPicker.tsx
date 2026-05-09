@@ -42,26 +42,32 @@ export function MonthYearPicker({ label, value, onChange, disabled }: MonthYearP
   };
 
   return (
-    <div className="min-w-0 space-y-2">
-      <Label className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{label}</Label>
-      <div className="grid grid-cols-1 gap-3 min-[520px]:grid-cols-2">
+    <div className="min-w-0 space-y-3 group">
+      <Label className="text-[10px] font-bold uppercase tracking-[0.3em] text-muted-foreground/40 ml-1 transition-all group-focus-within:text-primary group-focus-within:tracking-[0.4em]">
+        {label}
+      </Label>
+      <div className="grid grid-cols-1 gap-4 min-[520px]:grid-cols-2">
         <Select value={month} onValueChange={handleMonth} disabled={disabled}>
-          <SelectTrigger className="h-10 min-w-0 rounded-lg">
+          <SelectTrigger className="h-14 min-w-0 rounded-2xl border-2 border-border/50 bg-background/50 text-sm backdrop-blur-2xl transition-all duration-300 focus:ring-4 focus:ring-primary/10 data-[state=open]:border-primary">
             <SelectValue placeholder="Month" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-2xl border-2 border-border/50 bg-background/95 backdrop-blur-xl">
             {MONTHS.map((m) => (
-              <SelectItem key={m} value={m}>{m}</SelectItem>
+              <SelectItem key={m} value={m} className="rounded-xl focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer">
+                {m}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Select value={year} onValueChange={handleYear} disabled={disabled}>
-          <SelectTrigger className="h-10 min-w-0 rounded-lg">
+          <SelectTrigger className="h-14 min-w-0 rounded-2xl border-2 border-border/50 bg-background/50 text-sm backdrop-blur-2xl transition-all duration-300 focus:ring-4 focus:ring-primary/10 data-[state=open]:border-primary">
             <SelectValue placeholder="Year" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="rounded-2xl border-2 border-border/50 bg-background/95 backdrop-blur-xl">
             {YEARS.map((y) => (
-              <SelectItem key={y} value={y}>{y}</SelectItem>
+              <SelectItem key={y} value={y} className="rounded-xl focus:bg-primary/10 focus:text-primary transition-colors cursor-pointer">
+                {y}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>

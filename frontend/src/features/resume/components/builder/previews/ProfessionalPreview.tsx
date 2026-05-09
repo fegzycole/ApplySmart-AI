@@ -6,50 +6,53 @@ interface ProfessionalPreviewProps {
   data: ResumeData;
 }
 
-const sectionTitleClassName = "text-[13pt] font-bold text-[#2c3e50] mb-2 uppercase border-b border-gray-300 pb-1";
+const sectionTitleClassName = "text-[14pt] font-bold text-[#1e293b] mb-4 uppercase border-b-2 border-[#e2e8f0] pb-2 tracking-[0.1em]";
 
 export function ProfessionalPreview({ data }: ProfessionalPreviewProps) {
   const { personalInfo, summary, workExperience, education, skills } = data;
 
   return (
-    <div className="bg-white p-8 md:p-12 min-h-[11in] w-full" style={{ fontFamily: 'Georgia, serif' }}>
-      <div className="mb-6 pb-4 border-b-2 border-[#2c3e50]">
-        <h1 className="text-[32pt] font-bold text-[#2c3e50] mb-3">
+    <div className="bg-white p-10 md:p-16 min-h-[11in] w-full" style={{ fontFamily: '"Libre Baskerville", "Georgia", serif' }}>
+      <div className="mb-10 pb-8 border-b-4 border-[#1e293b]">
+        <h1 className="text-[36pt] font-bold text-[#1e293b] mb-4 tracking-tight leading-tight">
           {personalInfo.name || "Your Name"}
         </h1>
         <ContactDetails
           personalInfo={personalInfo}
-          className="flex flex-wrap gap-x-3 text-[10pt] text-[#555]"
+          className="flex flex-wrap gap-x-6 text-[10.5pt] text-[#475569] font-medium"
         />
       </div>
 
       {summary && (
-        <PreviewSection title="Professional Summary" className="mb-5" titleClassName={sectionTitleClassName}>
-          <SummaryText summary={summary} className="text-[10.5pt] leading-relaxed text-[#555]" />
+        <PreviewSection title="Professional Summary" className="mb-8" titleClassName={sectionTitleClassName}>
+          <SummaryText summary={summary} className="text-[11pt] leading-relaxed text-[#334155] text-justify" />
         </PreviewSection>
       )}
 
       {workExperience.length > 0 && (
-        <PreviewSection title="Work Experience" className="mb-5" titleClassName={`${sectionTitleClassName} mb-3`}>
+        <PreviewSection title="Experience History" className="mb-8" titleClassName={sectionTitleClassName}>
           {workExperience.map((experience) => (
-            <div key={experience.id} className="mb-4">
-              <div className="flex justify-between items-start mb-1">
+            <div key={experience.id} className="mb-6 last:mb-0">
+              <div className="flex justify-between items-baseline mb-2">
                 <div>
-                  <h3 className="text-[11.5pt] font-bold text-[#2c3e50]">
-                    {experience.position || "Position"} - {experience.company || "Company"}
+                  <h3 className="text-[12.5pt] font-bold text-[#0f172a]">
+                    {experience.position || "Position"}
                   </h3>
+                  <div className="text-[11.5pt] text-[#334155] font-semibold">{experience.company || "Company"}</div>
+                </div>
+                <div className="text-right shrink-0 ml-6">
+                  <div className="text-[10.5pt] font-bold text-[#1e293b]">
+                    {formatDateRange(experience.startDate, experience.endDate, "Date", experience.current)}
+                  </div>
                   {experience.location && (
-                    <div className="text-[10pt] text-[#666] italic">{experience.location}</div>
+                    <div className="text-[10pt] text-[#64748b] italic">{experience.location}</div>
                   )}
                 </div>
-                <span className="text-[10pt] text-[#666]">
-                  {formatDateRange(experience.startDate, experience.endDate, "Date", experience.current)}
-                </span>
               </div>
               <ResponsibilitiesList
                 responsibilities={getResponsibilities(experience)}
-                className="list-disc list-outside ml-5 space-y-0.5"
-                itemClassName="text-[10pt] text-[#555]"
+                className="list-disc list-outside ml-6 space-y-1.5"
+                itemClassName="text-[10.5pt] text-[#334155]"
               />
             </div>
           ))}
@@ -57,14 +60,19 @@ export function ProfessionalPreview({ data }: ProfessionalPreviewProps) {
       )}
 
       {education.length > 0 && (
-        <PreviewSection title="Education" className="mb-5" titleClassName={sectionTitleClassName}>
+        <PreviewSection title="Education" className="mb-8" titleClassName={sectionTitleClassName}>
           {education.map((item) => (
-            <div key={item.id} className="mb-2">
-              <div className="flex justify-between">
-                <span className="text-[11pt] font-semibold text-[#2c3e50]">
-                  {getEducationTitle(item, "dash")}
-                </span>
-                <span className="text-[10pt] text-[#666]">{formatEducationDate(item)}</span>
+            <div key={item.id} className="mb-4 last:mb-0">
+              <div className="flex justify-between items-baseline">
+                <div>
+                  <h3 className="text-[12pt] font-bold text-[#0f172a]">
+                    {getEducationTitle(item, "dash")}
+                  </h3>
+                  {item.location && <div className="text-[10pt] text-[#64748b] italic">{item.location}</div>}
+                </div>
+                <div className="text-right shrink-0 ml-6">
+                  <span className="text-[10.5pt] font-bold text-[#1e293b]">{formatEducationDate(item)}</span>
+                </div>
               </div>
             </div>
           ))}
@@ -72,8 +80,8 @@ export function ProfessionalPreview({ data }: ProfessionalPreviewProps) {
       )}
 
       {skills.length > 0 && (
-        <PreviewSection title="Skills" className="mb-5" titleClassName={sectionTitleClassName}>
-          <p className="text-[10pt] text-[#555]">{skills.join(" • ")}</p>
+        <PreviewSection title="Core Competencies" className="mb-8" titleClassName={sectionTitleClassName}>
+          <p className="text-[11pt] text-[#334155] leading-relaxed font-medium">{skills.join("  •  ")}</p>
         </PreviewSection>
       )}
     </div>

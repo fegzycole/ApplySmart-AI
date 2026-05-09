@@ -84,6 +84,7 @@ export interface DashboardMetricCardData {
   label: string;
   value: string;
   hint: string;
+  icon?: LucideIcon;
 }
 
 export interface DashboardInsight {
@@ -92,4 +93,5 @@ export interface DashboardInsight {
   value: string;
   description: string;
   tone: "violet" | "cyan" | "emerald" | "amber";
+  icon?: LucideIcon;
 }

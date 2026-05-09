@@ -1,82 +1,82 @@
 import type { FormFieldConfig } from "../types/authentication.types";
 
 export const AUTH_PAGE_STYLES = {
-  container: "min-h-screen bg-gradient-to-br from-violet-50 via-white to-cyan-50 dark:from-zinc-950 dark:via-violet-950/20 dark:to-zinc-950 flex flex-col relative overflow-hidden",
-  contentWrapper: "relative z-10 flex-1 flex items-center justify-center px-4 py-12"
+  container: "min-h-screen bg-transparent flex flex-col relative overflow-hidden antialiased",
+  contentWrapper: "relative z-40 flex-1 flex items-center justify-center px-4 pt-20 pb-6 sm:px-6 sm:pt-28 sm:pb-10"
 } as const;
 
 export const DECORATIVE_BG_STYLES = {
-  wrapper: "absolute inset-0 overflow-hidden pointer-events-none",
-  topRight: "absolute top-0 right-0 w-[500px] h-[500px] bg-gradient-to-br from-violet-400/30 to-fuchsia-600/30 dark:from-violet-600/20 dark:to-fuchsia-800/20 rounded-full blur-3xl",
-  bottomLeft: "absolute bottom-0 left-0 w-[600px] h-[600px] bg-gradient-to-tr from-cyan-400/30 to-teal-600/30 dark:from-cyan-600/20 dark:to-teal-800/20 rounded-full blur-3xl"
+  wrapper: "absolute inset-0 overflow-hidden pointer-events-none z-10",
+  topRight: "absolute -top-[10%] -right-[10%] w-[60%] h-[60%] bg-primary/10 rounded-full blur-[120px]",
+  bottomLeft: "absolute -bottom-[10%] -left-[10%] w-[50%] h-[50%] bg-primary/5 rounded-full blur-[100px]"
 } as const;
 
 export const AUTH_NAV_STYLES = {
-  nav: "relative z-10 backdrop-blur-xl bg-white/70 dark:bg-zinc-900/70 border-b border-violet-200/50 dark:border-violet-800/50",
-  wrapper: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8",
-  content: "flex justify-between items-center h-16",
+  nav: "fixed top-4 sm:top-8 left-0 right-0 z-50 px-4 sm:px-6 pointer-events-none",
+  wrapper: "max-w-fit mx-auto pointer-events-auto",
+  content: "flex items-center gap-4 sm:gap-6 bg-card/60 backdrop-blur-3xl border border-white/10 shadow-2xl rounded-full px-5 py-3 sm:px-8 sm:py-4",
   logoContainer: "flex items-center gap-2",
   logoIcon: {
-    wrapper: "size-8 rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center",
-    icon: "size-5 text-white"
+    wrapper: "size-7 sm:size-8 rounded-full bg-primary flex items-center justify-center",
+    icon: "size-4 sm:size-5 text-primary-foreground"
   },
-  logoText: "text-xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent",
-  themeToggle: "p-2 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors cursor-pointer"
+  logoText: "text-base sm:text-xl font-bold tracking-tight text-foreground",
+  themeToggle: "p-1.5 sm:p-2 rounded-full hover:bg-foreground/5 transition-colors cursor-pointer"
 } as const;
 
 export const AUTH_CARD_STYLES = {
-  card: "w-full max-w-md border-0 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl shadow-2xl shadow-violet-500/20 dark:shadow-violet-900/30",
+  card: "w-full max-w-xl border border-white/10 bg-card/40 backdrop-blur-3xl shadow-[0_32px_64px_-15px_rgba(0,0,0,0.2)] rounded-[2rem] sm:rounded-[3rem] p-5 sm:p-6 lg:p-8",
   header: {
-    container: "text-center space-y-2 pb-8",
+    container: "text-center space-y-1.5 sm:space-y-2",
     icon: {
-      wrapper: "size-16 rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-violet-500/50",
-      icon: "size-8 text-white"
+      wrapper: "size-10 sm:size-12 rounded-xl sm:rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform duration-500",
+      icon: "size-5 sm:size-6 text-primary"
     },
-    title: "text-3xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent",
-    description: "text-base"
+    title: "text-xl sm:text-2xl font-bold tracking-tight text-foreground",
+    description: "text-xs sm:text-sm text-muted-foreground leading-relaxed"
   }
 } as const;
 
 export const FORM_FIELD_STYLES = {
-  wrapper: "space-y-2 group",
-  label: "text-sm font-medium text-zinc-700 dark:text-zinc-300",
+  wrapper: "space-y-1 sm:space-y-1.5 group",
+  label: "text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-muted-foreground/60 ml-1",
   inputWrapper: "relative",
-  input: "h-12 bg-white dark:bg-zinc-950 border-2 border-zinc-200 dark:border-zinc-800 rounded-xl focus:border-violet-500 dark:focus:border-violet-500 focus:ring-4 focus:ring-violet-500/20 transition-all duration-300 pl-4",
-  focusGlow: "absolute inset-0 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 opacity-0 group-focus-within:opacity-100 -z-10 blur-xl transition-opacity duration-300"
+  input: "h-10 sm:h-11 bg-foreground/5 border-2 border-transparent rounded-xl sm:rounded-2xl px-3 sm:px-4 text-sm transition-all duration-300 focus:bg-transparent focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none",
+  focusGlow: "absolute inset-0 rounded-xl sm:rounded-2xl bg-primary/5 opacity-0 group-focus-within:opacity-100 -z-10 blur-xl transition-opacity duration-300"
 } as const;
 
 export const FORM_STYLES = {
-  form: "space-y-6",
-  formCompact: "space-y-5",
-  submitButton: "w-full h-12 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white font-semibold rounded-xl shadow-lg shadow-violet-500/50 dark:shadow-violet-900/50 transform hover:scale-[1.02] transition-all duration-300 cursor-pointer"
+  form: "space-y-3 sm:space-y-4",
+  formCompact: "space-y-2.5 sm:space-y-3",
+  submitButton: "w-full h-10 sm:h-12 bg-primary text-primary-foreground text-sm sm:text-base font-bold rounded-xl sm:rounded-2xl shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 hover:-translate-y-1 active:scale-[0.98] transition-all duration-300 cursor-pointer"
 } as const;
 
 export const OAUTH_STYLES = {
-  wrapper: "mt-8",
+  wrapper: "mt-4 sm:mt-5",
   divider: {
     container: "relative",
     line: "absolute inset-0 flex items-center",
-    border: "w-full border-t-2 border-zinc-200 dark:border-zinc-800",
-    textWrapper: "relative flex justify-center text-sm",
-    text: "px-4 bg-white dark:bg-zinc-900 text-zinc-500 font-medium"
+    border: "w-full border-t border-foreground/10",
+    textWrapper: "relative flex justify-center text-xs font-bold uppercase tracking-widest",
+    text: "px-4 sm:px-6 bg-transparent text-muted-foreground/40"
   },
   buttons: {
-    container: "mt-6 grid grid-cols-2 gap-4",
-    button: "h-12 border-2 border-zinc-200 dark:border-zinc-800 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50 dark:hover:bg-violet-950/30 rounded-xl transition-all duration-300 cursor-pointer",
-    icon: "size-5 mr-2"
+    container: "mt-3 sm:mt-4 grid grid-cols-2 gap-2.5 sm:gap-3",
+    button: "h-10 sm:h-11 bg-foreground/5 border-2 border-transparent hover:border-foreground/10 hover:bg-foreground/10 rounded-xl sm:rounded-2xl font-semibold text-sm transition-all duration-300 cursor-pointer",
+    icon: "size-4 sm:size-5 mr-2"
   }
 } as const;
 
 export const TERMS_CHECKBOX_STYLES = {
-  wrapper: "flex items-start gap-3 p-4 rounded-xl bg-gradient-to-r from-violet-50/50 to-fuchsia-50/50 dark:from-violet-950/30 dark:to-fuchsia-950/30 border border-violet-100 dark:border-violet-900",
-  checkbox: "mt-0.5 border-2 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-violet-600 data-[state=checked]:to-fuchsia-600",
-  label: "text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed cursor-pointer",
-  link: "bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent hover:from-violet-700 hover:to-fuchsia-700 font-semibold"
+  wrapper: "flex items-start gap-3 p-3 sm:p-4 rounded-xl bg-primary/5 border border-primary/10",
+  checkbox: "mt-0.5 border-2 data-[state=checked]:bg-primary data-[state=checked]:border-primary",
+  label: "text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed cursor-pointer",
+  link: "text-primary hover:text-primary/80 font-semibold"
 } as const;
 
 export const LINK_TEXT_STYLES = {
-  wrapper: "text-center text-sm text-zinc-600 dark:text-zinc-400 mt-4",
-  link: "bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent hover:from-violet-700 hover:to-fuchsia-700 font-semibold"
+  wrapper: "text-center text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 mt-2.5 sm:mt-3",
+  link: "text-primary hover:text-primary/80 font-semibold"
 } as const;
 
 export const LOGIN_FIELDS: FormFieldConfig[] = [

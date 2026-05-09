@@ -53,8 +53,17 @@ export const EDUCATION_CREDENTIAL_SUGGESTIONS = [
 ] as const;
 
 export const TEMPLATES: Array<{ id: ResumeTemplate; name: string; description: string; color: string; gradient: string }> = [
-  { id: "MODERN", name: "Modern", description: "Clean and contemporary", color: "from-violet-500 to-purple-600", gradient: "bg-gradient-to-br from-violet-500/20 to-purple-600/20" },
-  { id: "PROFESSIONAL", name: "Professional", description: "Traditional corporate", color: "from-blue-500 to-cyan-600", gradient: "bg-gradient-to-br from-blue-500/20 to-cyan-600/20" },
-  { id: "CLASSIC", name: "Classic", description: "Timeless and elegant", color: "from-slate-500 to-gray-600", gradient: "bg-gradient-to-br from-slate-500/20 to-gray-600/20" },
-  { id: "CREATIVE", name: "Creative", description: "Bold and artistic", color: "from-fuchsia-500 to-pink-600", gradient: "bg-gradient-to-br from-fuchsia-500/20 to-pink-600/20" },
+  { id: "MODERN", name: "Modern", description: "Clean and contemporary", color: "from-primary to-primary/60", gradient: "bg-gradient-to-br from-primary/20 to-primary/10" },
+  { id: "PROFESSIONAL", name: "Professional", description: "Traditional corporate", color: "from-slate-600 to-slate-800", gradient: "bg-gradient-to-br from-slate-500/20 to-slate-600/20" },
+  { id: "CLASSIC", name: "Classic", description: "Timeless and elegant", color: "from-zinc-500 to-zinc-700", gradient: "bg-gradient-to-br from-zinc-500/20 to-zinc-600/20" },
+  { id: "CREATIVE", name: "Creative", description: "Bold and artistic", color: "from-sky-500 to-cyan-600", gradient: "bg-gradient-to-br from-sky-500/20 to-cyan-600/20" },
 ];
+
+export const BUILDER_LAYOUT_STYLES = {
+  container: "w-full min-h-screen pb-20",
+  wrapper: "mx-auto max-w-[1700px] space-y-10 px-3 sm:space-y-12 sm:px-6 lg:px-8",
+  bentoGrid: "grid grid-cols-1 gap-8 xl:grid-cols-12 xl:gap-10",
+  heroSection: "col-span-12",
+  mainStage: "col-span-12 space-y-8 xl:col-span-6 xl:space-y-10",
+  sideStage: "col-span-12 space-y-8 xl:col-span-6 xl:space-y-10",
+} as const;

@@ -1,6 +1,8 @@
 import { Input } from "@/shared/components/ui/input";
 import { Label } from "@/shared/components/ui/label";
 import { type LucideIcon } from "lucide-react";
+import { MODULE_ARTIFACT_STYLES } from "../../constants/settings.constants";
+import { cn } from "@/shared/lib/utils";
 
 interface FormFieldProps {
   id: string;
@@ -32,15 +34,15 @@ export function FormField({
   helperText,
 }: FormFieldProps) {
   return (
-    <div className="space-y-2 group">
+    <div className="space-y-3 group">
       <Label
         htmlFor={id}
-        className="text-sm font-medium text-zinc-700 dark:text-zinc-300 flex items-center gap-2"
+        className={MODULE_ARTIFACT_STYLES.label}
       >
-        {Icon && <Icon className="size-4" />}
+        {Icon && <Icon className="size-3 mr-2 inline-block -mt-0.5" />}
         {label}
       </Label>
-      <div className="relative">
+      <div className="relative min-w-0">
         <Input
           id={id}
           type={type}
@@ -52,16 +54,21 @@ export function FormField({
           disabled={disabled}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? `${id}-error` : helperText ? `${id}-help` : undefined}
-          className="h-11 rounded-xl border-2 border-violet-200 bg-white transition-all duration-300 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/20 dark:border-violet-800 dark:bg-zinc-950 dark:focus:border-violet-500"
+          className={cn(
+            MODULE_ARTIFACT_STYLES.input,
+            error && "border-rose-500/50 focus-visible:border-rose-500 focus-visible:ring-rose-500/10",
+            disabled && "opacity-50 grayscale cursor-not-allowed"
+          )}
         />
-        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-violet-500 to-fuchsia-500 opacity-0 group-focus-within:opacity-100 -z-10 blur-xl transition-opacity duration-300" />
+        {/* Subtle Ambient Focus Glow */}
+        <div className="absolute -inset-0.5 rounded-2xl bg-sky-500/10 opacity-0 group-focus-within:opacity-100 blur-sm -z-10 transition-opacity duration-500" />
       </div>
       {error ? (
-        <p id={`${id}-error`} className="text-xs text-red-600 dark:text-red-400">
+        <p id={`${id}-error`} className="text-[10px] font-bold uppercase tracking-widest text-rose-500 ml-1">
           {error}
         </p>
       ) : helperText ? (
-        <p id={`${id}-help`} className="text-xs text-zinc-500 dark:text-zinc-400">
+        <p id={`${id}-help`} className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest ml-1">
           {helperText}
         </p>
       ) : null}

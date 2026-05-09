@@ -1,5 +1,4 @@
-import { Card, CardContent, CardHeader } from "@/shared/components/ui/card";
-import { JOB_DETAILS_CARD_STYLES, TEXTAREA_FIELDS } from "../../constants/cover-letter.constants";
+import { SYNTHESIS_STAGE_STYLES, TEXTAREA_FIELDS } from "../../constants/cover-letter.constants";
 import { FormInputField } from "./FormInputField";
 import { ToneSelector } from "./ToneSelector";
 import { ResumeUploadSection } from "../resume-upload/ResumeUploadSection";
@@ -50,27 +49,26 @@ export function JobDetailsCard({
   onGenerate
 }: JobDetailsCardProps) {
   return (
-    <Card className={JOB_DETAILS_CARD_STYLES.card}>
-      <CardHeader>
+    <div className={SYNTHESIS_STAGE_STYLES.panel}>
+      <div className="p-4 sm:p-8 lg:p-10 xl:p-12">
         <JobDetailsCardHeader />
-      </CardHeader>
-      <CardContent>
-        <form noValidate onSubmit={onGenerate} className={JOB_DETAILS_CARD_STYLES.content}>
+
+        <form noValidate onSubmit={onGenerate} className="mt-6 space-y-6 sm:mt-10 sm:space-y-8 lg:space-y-10">
           <CoverLetterFormErrorSummary messages={formErrors} />
 
-          <div className={JOB_DETAILS_CARD_STYLES.inputGrid}>
+          <div className="grid gap-4 sm:gap-6 md:grid-cols-2 md:gap-8">
             <FormInputField
               id="company"
-              label="Company Name"
-              placeholder="e.g., Google"
+              label="Target Company"
+              placeholder="e.g., Stripe"
               value={company}
               onChange={onCompanyChange}
               error={fieldErrors.company}
             />
             <FormInputField
               id="position"
-              label="Position Title"
-              placeholder="e.g., Senior Software Engineer"
+              label="Mission Role"
+              placeholder="e.g., Product Designer"
               value={position}
               onChange={onPositionChange}
               error={fieldErrors.position}
@@ -87,9 +85,9 @@ export function JobDetailsCard({
 
           <TextareaField
             id={TEXTAREA_FIELDS.jobDescription.id}
-            label={TEXTAREA_FIELDS.jobDescription.label}
-            placeholder={TEXTAREA_FIELDS.jobDescription.placeholder}
-            minHeight={TEXTAREA_FIELDS.jobDescription.minHeight}
+            label="Role Blueprint (Job Description)"
+            placeholder="Paste the complete role requirements here..."
+            minHeight="min-h-[220px]"
             value={jobDescription}
             onChange={onJobDescriptionChange}
             error={fieldErrors.jobDescription}
@@ -97,18 +95,20 @@ export function JobDetailsCard({
 
           <TextareaField
             id={TEXTAREA_FIELDS.highlights.id}
-            label={TEXTAREA_FIELDS.highlights.label}
-            placeholder={TEXTAREA_FIELDS.highlights.placeholder}
-            minHeight={TEXTAREA_FIELDS.highlights.minHeight}
+            label="Strategic Highlights"
+            placeholder="e.g., Led cross-functional teams, Reduced churn by 15%..."
+            minHeight="min-h-[140px]"
             value={highlights}
             onChange={onHighlightsChange}
             error={fieldErrors.highlights}
-            hint={TEXTAREA_FIELDS.highlights.hint}
+            hint="These fragments will be prioritized during synthesis."
           />
 
-          <GenerateButton generating={generating} />
+          <div className="pt-4">
+            <GenerateButton generating={generating} />
+          </div>
         </form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

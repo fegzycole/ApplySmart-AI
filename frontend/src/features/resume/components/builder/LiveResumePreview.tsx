@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useLayoutEffect, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { Download, ExternalLink, FileCheck2 } from "lucide-react";
+import { Download, ExternalLink, FileCheck2, Sparkles } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { Button } from "@/shared/components/ui/button";
 import { invalidateQueries } from "@/shared/lib/query-cache";
@@ -111,23 +112,55 @@ export function LiveResumePreview() {
   const showSavedResumePreview = Boolean(savedResume?.fileUrl) && isResumeDraftPristine(resumeData);
   const savedResumeFileUrl = savedResume?.fileUrl ?? null;
 
-  useEffect(() => {
+  const updatePreviewLayout = useCallback(() => {
     const container = containerRef.current;
     const content = contentRef.current;
     if (!container || !content) return;
 
-    const update = () => {
-      const newScale = Math.min(1, container.clientWidth / PREVIEW_WIDTH);
-      setScale(newScale);
-      setScaledHeight(content.scrollHeight * newScale);
+    const styles = window.getComputedStyle(container);
+    const horizontalPadding =
+      Number.parseFloat(styles.paddingLeft) + Number.parseFloat(styles.paddingRight);
+    const availableWidth = Math.max(container.clientWidth - horizontalPadding, 0);
+    const newScale = Math.min(1, availableWidth / PREVIEW_WIDTH);
+
+    setScale(newScale);
+    setScaledHeight(content.scrollHeight * newScale);
+  }, []);
+
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    const content = contentRef.current;
+    if (!container || !content) return;
+
+    let frameId = 0;
+
+    const scheduleUpdate = () => {
+      cancelAnimationFrame(frameId);
+      frameId = requestAnimationFrame(() => {
+        updatePreviewLayout();
+        requestAnimationFrame(updatePreviewLayout);
+      });
     };
 
-    const ro = new ResizeObserver(update);
-    ro.observe(container);
-    ro.observe(content);
-    update();
-    return () => ro.disconnect();
-  }, [resumeData.template]);
+    const resizeObserver = new ResizeObserver(scheduleUpdate);
+    const mutationObserver = new MutationObserver(scheduleUpdate);
+
+    resizeObserver.observe(container);
+    resizeObserver.observe(content);
+    mutationObserver.observe(content, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+
+    scheduleUpdate();
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      resizeObserver.disconnect();
+      mutationObserver.disconnect();
+    };
+  }, [resumeData, updatePreviewLayout]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -166,105 +199,125 @@ export function LiveResumePreview() {
   };
 
   return (
-    <div className="min-w-0 space-y-4 xl:sticky xl:top-6">
-      <PreviewHeader
-        onSave={handleSave}
-        saving={saving}
-        disabled={!isValid}
-      />
+    <div className="min-w-0 space-y-4 pb-8 sm:space-y-6 lg:pb-0">
+      <div className="group relative">
+        {/* Immersive Background Glow */}
+        <div className="absolute -inset-4 bg-gradient-to-br from-primary/20 via-transparent to-primary/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+        
+        <PreviewHeader
+          onSave={handleSave}
+          saving={saving}
+          disabled={!isValid}
+        />
+      </div>
 
-      {showSavedResumePreview && savedResume && savedResumeFileUrl ? (
-        <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-2xl dark:border-zinc-800 dark:bg-zinc-950">
-          <div className="flex flex-col gap-3 border-b border-zinc-200 px-4 py-4 dark:border-zinc-800 sm:flex-row sm:items-start sm:justify-between sm:px-5">
-            <div className="min-w-0">
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/40 dark:text-emerald-300">
-                <FileCheck2 className="size-3.5" />
-                Saved Resume
-              </div>
-              <h3 className="mt-3 text-base font-semibold text-zinc-950 dark:text-zinc-50 sm:text-lg">
-                {savedResume.name || "Built Resume"}
-              </h3>
-              <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-                Your built resume is ready. Preview it here or download the PDF.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-2 sm:w-auto sm:min-w-[12rem]">
-              <Button
-                type="button"
-                onClick={() => void handleSavedResumeDownload()}
-                disabled={downloadingSavedResume}
-                className="w-full rounded-xl bg-gradient-to-r from-violet-600 via-fuchsia-600 to-cyan-600 text-white shadow-lg shadow-violet-500/30 hover:from-violet-700 hover:via-fuchsia-700 hover:to-cyan-700"
-              >
-                <Download className="mr-2 size-4" />
-                {downloadingSavedResume ? "Downloading..." : "Download Resume"}
-              </Button>
-
-              <Button
-                asChild
-                type="button"
-                variant="outline"
-                className="w-full rounded-xl border-zinc-300 bg-white/80 hover:bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-950/70 dark:hover:bg-zinc-900"
-              >
-                <a href={savedResumeFileUrl} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink className="mr-2 size-4" />
-                  Open PDF
-                </a>
-              </Button>
-            </div>
-          </div>
-
-          <div className="bg-zinc-100 p-2 dark:bg-zinc-900 sm:p-3">
-            <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-              <div className="aspect-[8.5/11] bg-zinc-50 dark:bg-zinc-950">
-                <iframe
-                  src={`${savedResumeFileUrl}#toolbar=0&navpanes=0&scrollbar=0`}
-                  className="h-full w-full"
-                  title="Saved resume preview"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {!showSavedResumePreview ? (
-        <div
-          key={resumeData.template}
-          className="min-w-0 overflow-hidden bg-zinc-100 dark:bg-zinc-800 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-700 p-2 sm:p-4"
-          style={{ height: "clamp(24rem, 72vh, calc(100vh - 180px))" }}
-        >
-          <div
-            ref={containerRef}
-            className="min-w-0 w-full h-full overflow-x-hidden overflow-y-auto rounded-xl bg-zinc-200 dark:bg-zinc-900"
+      <AnimatePresence mode="wait">
+        {showSavedResumePreview && savedResume && savedResumeFileUrl ? (
+          <motion.div
+            key="saved-preview"
+            initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            className="canvas-card relative z-10 overflow-hidden rounded-[2rem] border-2 border-primary/20 bg-card/50 shadow-2xl backdrop-blur-3xl sm:rounded-[3rem]"
           >
-            <div
-              style={{
-                width: `${PREVIEW_WIDTH * scale}px`,
-                height: scaledHeight > 0 ? `${scaledHeight}px` : "auto",
-                margin: "0 auto",
-                position: "relative",
-              }}
-            >
-              <div
-                ref={contentRef}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: `${PREVIEW_WIDTH}px`,
-                  transformOrigin: "top left",
-                  transform: `scale(${scale})`,
-                }}
-              >
-                <div className="shadow-lg">
-                  {renderPreviewComponent(resumeData)}
+            <div className="flex flex-col gap-4 border-b border-primary/10 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:p-8">
+              <div className="min-w-0">
+                <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 sm:px-4 py-1.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                  <FileCheck2 className="size-3 sm:size-3.5" />
+                  Synthesis Verified
+                </div>
+                <h3 className="mt-3 sm:mt-4 text-xl sm:text-2xl font-bold tracking-tight text-foreground truncate">
+                  {savedResume.name || "Synthesized Output"}
+                </h3>
+                <p className="mt-1 text-xs sm:text-sm font-medium text-muted-foreground line-clamp-2">
+                  Your professional narrative has been successfully committed to the workspace.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap gap-3 sm:gap-4 sm:w-auto">
+                <Button
+                  type="button"
+                  onClick={() => void handleSavedResumeDownload()}
+                  disabled={downloadingSavedResume}
+                  className="h-12 sm:h-14 flex-1 sm:flex-none px-6 sm:px-8 rounded-[1.25rem] sm:rounded-2xl bg-primary text-white font-bold shadow-xl shadow-primary/20 transition-all hover:scale-105 active:scale-95 text-xs sm:text-base"
+                >
+                  <Download className="mr-2 sm:mr-3 size-4 sm:size-5" />
+                  {downloadingSavedResume ? "Wait" : "Deploy"}
+                </Button>
+
+                <Button
+                  asChild
+                  type="button"
+                  variant="outline"
+                  className="h-12 sm:h-14 flex-1 sm:flex-none px-6 sm:px-8 rounded-[1.25rem] sm:rounded-2xl border-2 font-bold transition-all hover:bg-background/50 active:scale-95 text-xs sm:text-base"
+                >
+                  <a href={savedResumeFileUrl} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="mr-2 sm:mr-3 size-4 sm:size-5" />
+                    Inspect
+                  </a>
+                </Button>
+              </div>
+            </div>
+
+            <div className="p-3 sm:p-8">
+              <div className="overflow-hidden rounded-2xl sm:rounded-[2rem] border-2 border-border bg-background shadow-inner">
+                <div className="aspect-[8.5/11] bg-zinc-50 dark:bg-zinc-950/50">
+                  <iframe
+                    src={`${savedResumeFileUrl}#toolbar=0&navpanes=0&scrollbar=0`}
+                    className="h-full w-full"
+                    title="Saved resume preview"
+                  />
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      ) : null}
+          </motion.div>
+        ) : !showSavedResumePreview ? (
+          <motion.div
+            key="live-preview"
+            initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="canvas-card relative z-10 min-w-0 overflow-hidden rounded-[2rem] border-2 border-border/50 bg-card/30 p-1.5 shadow-2xl backdrop-blur-3xl sm:rounded-[3rem] sm:p-4 lg:p-6"
+            style={{ height: "clamp(22rem, 72vh, calc(100vh - 180px))" }}
+          >
+            <div className="absolute right-3 top-3 z-20 hidden items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-primary animate-pulse sm:flex">
+              <Sparkles className="size-3" />
+              Live Synthesis
+            </div>
+
+            <div
+              ref={containerRef}
+              className="h-full w-full overflow-x-hidden overflow-y-auto rounded-[1.5rem] bg-zinc-50/50 p-2 shadow-inner dark:bg-zinc-950/50 sm:rounded-[2.5rem] sm:p-5 lg:p-6"
+            >
+              <div
+                style={{
+                  width: `${PREVIEW_WIDTH * scale}px`,
+                  height: scaledHeight > 0 ? `${scaledHeight}px` : "auto",
+                  margin: "0 auto",
+                  position: "relative",
+                }}
+              >
+                <div
+                  ref={contentRef}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: `${PREVIEW_WIDTH}px`,
+                    transformOrigin: "top left",
+                    transform: `scale(${scale})`,
+                  }}
+                >
+                  <div className="shadow-2xl shadow-black/10 overflow-hidden rounded-sm">
+                    {renderPreviewComponent(resumeData)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 }

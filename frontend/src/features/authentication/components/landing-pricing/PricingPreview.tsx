@@ -1,57 +1,62 @@
-import { PricingCard } from "./PricingCard";
 import { FEATURE_FLAGS } from "@/shared/config/feature-flags";
+import { Check, ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "react-router";
+import { Button } from "@/shared/components/ui/button";
+import { motion } from "framer-motion";
 
 const plans = [
   {
     name: "Free",
     price: "$0",
-    period: "/month",
-    features: [
-      "3 resume optimizations",
-      "Basic job tracker",
-      "1 resume template"
-    ],
-    buttonText: "Get Started",
-    buttonVariant: "outline" as const
+    period: "/mo",
+    description: "Ideal for beginners starting their journey.",
+    features: ["3 resume optimizations", "Basic job tracker", "1 resume template"],
+    buttonText: "Start Free",
+    buttonVariant: "outline" as const,
   },
   {
     name: "Pro",
     price: "$29",
-    period: "/month",
+    period: "/mo",
+    description: "The complete toolset for serious hunters.",
     features: [
       "Unlimited optimizations",
       "AI cover letters",
       "Advanced analytics",
-      "All templates"
+      "All templates",
+      "Priority AI queue",
     ],
-    buttonText: "Start Free Trial",
+    buttonText: "Get Started Now",
+    buttonVariant: "default" as const,
     isPopular: true,
-    gradient: {
-      card: "bg-gradient-to-br from-violet-600 to-fuchsia-600",
-      price: "text-white",
-      check: "bg-white/20",
-      button: "w-full bg-white text-violet-600 hover:bg-violet-50 font-semibold shadow-lg"
-    }
   },
   {
     name: "Career Boost",
     price: "$79",
-    period: "/month",
-    features: [
-      "Everything in Pro",
-      "Priority support",
-      "Career coaching",
-      "LinkedIn optimization"
-    ],
-    buttonText: "Contact Sales",
+    period: "/mo",
+    description: "White-glove service for executives.",
+    features: ["Everything in Pro", "Career coaching", "LinkedIn optimization", "1-on-1 support"],
+    buttonText: "Join Elite",
     buttonVariant: "outline" as const,
-    gradient: {
-      card: "border-cyan-200/50 dark:border-cyan-800/50 bg-white/80 dark:bg-zinc-900/80",
-      price: "bg-gradient-to-r from-cyan-600 to-teal-600 bg-clip-text text-transparent",
-      check: "bg-cyan-100 dark:bg-cyan-950/50"
-    }
-  }
+  },
 ];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 export function PricingPreview() {
   if (!FEATURE_FLAGS.SUBSCRIPTIONS_ENABLED) {
@@ -59,24 +64,76 @@ export function PricingPreview() {
   }
 
   return (
-    <section className="relative z-10 py-16 sm:py-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">
-            <span className="bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-              Simple, Transparent Pricing
-            </span>
+    <section className="relative py-24 lg:py-40 px-6 overflow-hidden">
+      <div className="max-w-[1400px] mx-auto relative z-10">
+        <motion.div 
+          className="text-center mb-24"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-5xl lg:text-7xl font-bold tracking-tight mb-8">
+            Simple, honest<br />
+            <span className="text-muted-foreground/40 italic">investments.</span>
           </h2>
-          <p className="text-base sm:text-lg lg:text-xl text-zinc-600 dark:text-zinc-400 px-4">
-            Choose the plan that works for you
-          </p>
-        </div>
+        </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
           {plans.map((plan) => (
-            <PricingCard key={plan.name} {...plan} />
+            <motion.div 
+              key={plan.name}
+              variants={itemVariants}
+              className={`canvas-card rounded-[3.5rem] p-12 flex flex-col relative overflow-hidden group ${
+                plan.isPopular ? "border-primary/20 bg-primary/5 scale-105 z-10 shadow-primary/10" : ""
+              }`}
+            >
+              {plan.isPopular && (
+                <div className="absolute top-8 right-8 bg-primary text-primary-foreground px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2">
+                  <Sparkles className="size-3" /> Popular
+                </div>
+              )}
+
+              <div className="mb-12">
+                <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                <div className="flex items-baseline gap-1 mb-4">
+                  <span className="text-6xl font-bold tracking-tighter">{plan.price}</span>
+                  <span className="text-muted-foreground text-xl">{plan.period}</span>
+                </div>
+                <p className="text-muted-foreground">{plan.description}</p>
+              </div>
+
+              <div className="space-y-4 mb-12">
+                {plan.features.map((feature) => (
+                  <div key={feature} className="flex items-center gap-3">
+                    <div className="size-6 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <Check className="size-4" />
+                    </div>
+                    <span className="text-lg font-medium">{feature}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-auto pt-8">
+                <Link to="/signup">
+                  <Button 
+                    variant={plan.buttonVariant} 
+                    className={`w-full h-16 text-lg rounded-[1.5rem] group-hover:shadow-xl transition-all ${
+                      plan.isPopular ? "shadow-primary/20" : ""
+                    }`}
+                  >
+                    {plan.buttonText} <ArrowRight className="size-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Button>
+                </Link>
+              </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
