@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import {
   Navigation,
   HeroSection,
@@ -33,18 +32,13 @@ export function LandingPage() {
 
       <Navigation />
       
-      <motion.main 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}
-        className="relative z-20"
-      >
+      <main className="relative z-20">
         <HeroSection />
         <FeaturesSection />
         <PricingPreview />
         <TestimonialsSection />
         <CTASection />
-      </motion.main>
+      </main>
       
       <Footer />
     </div>
