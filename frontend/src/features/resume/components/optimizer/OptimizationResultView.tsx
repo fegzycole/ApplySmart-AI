@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/shared/lib/utils";
 import { ArrowLeft, Download, ExternalLink, ShieldCheck, FileCheck2 } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { toast } from "sonner";
 import { OPTIMIZER_RESULT_STYLES } from "../../constants/optimizer.constants";
 import type { ResumeOptimization } from "../../services/resume.service";
+import { downloadResumeFile } from "../../services/resume.service";
+import { getResumeDownloadFilename, triggerBrowserDownload } from "../../utils/resume-download";
 import { CoverLetterResultCard } from "./CoverLetterResultCard";
 import { ResultHeader } from "./ResultHeader";
 import { ScoreComparison } from "./ScoreComparison";
@@ -20,11 +24,26 @@ interface OptimizationResultProps {
 }
 
 export function OptimizationResultView({ result, onStartOver }: OptimizationResultProps) {
+  const [downloading, setDownloading] = useState(false);
   const originalScore = result.originalScore ?? 0;
   const optimizedScore = result.optimizedScore ?? 0;
   const changes = result.changes ?? [];
   const analysis = result.analysis;
   const fileUrl = result.fileUrl;
+
+  const handleDownload = async () => {
+    if (!fileUrl) return;
+    setDownloading(true);
+    try {
+      const blob = await downloadResumeFile(fileUrl);
+      triggerBrowserDownload(blob, getResumeDownloadFilename(fileUrl));
+      toast.success("Artifact exported successfully.");
+    } catch {
+      toast.error("Failed to export professional artifact.");
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   return (
     <motion.div
@@ -76,12 +95,24 @@ export function OptimizationResultView({ result, onStartOver }: OptimizationResu
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0 sm:gap-4">
-                  <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl bg-zinc-900/5 dark:bg-white/5 border-2 border-zinc-100 dark:border-zinc-800 hover:border-sky-500/50 hover:text-sky-500 transition-all active:scale-90 sm:h-14 sm:w-14 sm:rounded-2xl">
-                    <ExternalLink className="size-4 sm:size-6" />
+                  <Button
+                    asChild
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-xl bg-zinc-900/5 dark:bg-white/5 border-2 border-zinc-100 dark:border-zinc-800 hover:border-sky-500/50 hover:text-sky-500 transition-all active:scale-90 sm:h-14 sm:w-14 sm:rounded-2xl"
+                    disabled={!fileUrl}
+                  >
+                    <a href={fileUrl ?? "#"} target="_blank" rel="noopener noreferrer">
+                      <ExternalLink className="size-4 sm:size-6" />
+                    </a>
                   </Button>
-                  <Button className="h-10 px-4 rounded-xl bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all sm:h-14 sm:px-8 sm:rounded-2xl sm:text-[11px]">
+                  <Button
+                    onClick={handleDownload}
+                    disabled={!fileUrl || downloading}
+                    className="h-10 px-4 rounded-xl bg-emerald-500 text-white font-black uppercase tracking-widest text-[10px] shadow-xl shadow-emerald-500/20 hover:scale-105 active:scale-95 transition-all sm:h-14 sm:px-8 sm:rounded-2xl sm:text-[11px]"
+                  >
                     <Download className="size-3.5 mr-2 sm:size-4 sm:mr-3" />
-                    Deploy PDF
+                    {downloading ? "Exporting..." : "Deploy PDF"}
                   </Button>
                 </div>
               </div>
