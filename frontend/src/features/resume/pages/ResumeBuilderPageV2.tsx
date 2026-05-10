@@ -4,7 +4,7 @@ import { ResumeBuilderWorkspace } from "../components/builder";
 import { ResumeBuilderProvider } from "../contexts/ResumeBuilderContext";
 import { useResume } from "../hooks/useResumeQueries";
 import { contentToResumeData } from "../utils/resume-builder-payload";
-import { ResumesPageSkeleton } from "../components/skeletons";
+import { ResumeBuilderSkeleton } from "../components/skeletons";
 
 function ResumeBuilderWithData({ resumeId }: { resumeId: number }) {
   const { data: resume, isLoading } = useResume(resumeId);
@@ -14,7 +14,7 @@ function ResumeBuilderWithData({ resumeId }: { resumeId: number }) {
     return contentToResumeData(resume.content) ?? undefined;
   }, [resume]);
 
-  if (isLoading) return <ResumesPageSkeleton />;
+  if (isLoading) return <ResumeBuilderSkeleton />;
 
   return (
     <ResumeBuilderProvider initialData={initialData}>

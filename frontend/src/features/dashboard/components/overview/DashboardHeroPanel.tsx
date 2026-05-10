@@ -40,8 +40,8 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
     <section className="group relative overflow-hidden rounded-[3rem] border-2 border-white/60 bg-white/40 shadow-[0_64px_128px_-32px_rgba(0,0,0,0.12)] backdrop-blur-3xl transition-all duration-1000 hover:shadow-[0_80px_160px_-32px_rgba(0,0,0,0.16)] dark:border-zinc-800/40 dark:bg-zinc-900/40 sm:rounded-[4.5rem]">
       {/* Immersive Background Visualizer - "Neural Pulse" */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -left-20 -top-20 h-[500px] w-[500px] rounded-full bg-sky-500/10 blur-[120px] animate-pulse" />
-        <div className="absolute -right-20 -bottom-20 h-[500px] w-[500px] rounded-full bg-amber-500/10 blur-[120px] animate-pulse [animation-delay:2s]" />
+        <div className="absolute -left-20 -top-20 h-[500px] w-[500px] rounded-full bg-sky-500/10 blur-[120px]" />
+        <div className="absolute -right-20 -bottom-20 h-[500px] w-[500px] rounded-full bg-amber-500/10 blur-[120px]" />
 
         {/* Dynamic Trajectory Lines */}
         <svg className="absolute bottom-0 left-0 w-full h-[300px] opacity-[0.08] dark:opacity-[0.15]" preserveAspectRatio="none">
@@ -52,12 +52,7 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
               <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
             </linearGradient>
           </defs>
-          <path d="M0,150 C300,250 600,50 1000,150" fill="none" stroke="url(#pulse-grad)" strokeWidth="4" className="text-sky-500">
-            <animate attributeName="d" dur="15s" repeatCount="indefinite"
-              values="M0,150 C300,250 600,50 1000,150;
-                      M0,150 C400,50 700,250 1000,150;
-                      M0,150 C300,250 600,50 1000,150" />
-          </path>
+          <path d="M0,150 C300,250 600,50 1000,150" fill="none" stroke="url(#pulse-grad)" strokeWidth="4" className="text-sky-500" />
         </svg>
         
         {/* Frosted Grain Texture - Optimized */}

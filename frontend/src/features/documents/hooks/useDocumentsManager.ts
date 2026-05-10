@@ -34,17 +34,28 @@ function getNextPageParam(lastPage: { last: boolean; number: number }) {
 export function useDocumentsManager() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<DocumentsTabId>("original");
+  const [visitedTabs, setVisitedTabs] = useState<Set<DocumentsTabId>>(() => new Set(["original"]));
   const [resumeToDelete, setResumeToDelete] = useState<Resume | null>(null);
   const [coverLetterToDelete, setCoverLetterToDelete] = useState<CoverLetter | null>(null);
   const [previewTarget, setPreviewTarget] = useState<DocumentsPreviewTarget | null>(null);
   const deferredSearchQuery = useDeferredValue(searchQuery.trim());
 
+  const handleSetActiveTab = (tab: DocumentsTabId) => {
+    setVisitedTabs((prev) => {
+      if (prev.has(tab)) return prev;
+      const next = new Set(prev);
+      next.add(tab);
+      return next;
+    });
+    setActiveTab(tab);
+  };
+
   const deleteResumeMutation = useDeleteResume();
   const deleteCoverLetterMutation = useDeleteCoverLetter();
-  const originalResumesQuery = useResumeDocumentsInfiniteQuery("original", deferredSearchQuery);
-  const optimizedResumesQuery = useResumeDocumentsInfiniteQuery("optimized", deferredSearchQuery);
-  const builtResumesQuery = useResumeDocumentsInfiniteQuery("built", deferredSearchQuery);
-  const coverLettersQuery = useCoverLettersInfiniteQuery(deferredSearchQuery);
+  const originalResumesQuery = useResumeDocumentsInfiniteQuery("original", deferredSearchQuery, visitedTabs.has("original"));
+  const optimizedResumesQuery = useResumeDocumentsInfiniteQuery("optimized", deferredSearchQuery, visitedTabs.has("optimized"));
+  const builtResumesQuery = useResumeDocumentsInfiniteQuery("built", deferredSearchQuery, visitedTabs.has("built"));
+  const coverLettersQuery = useCoverLettersInfiniteQuery(deferredSearchQuery, visitedTabs.has("coverLetters"));
 
   const documentsByTab = useMemo<DocumentsTabData>(
     () => ({
@@ -176,20 +187,23 @@ export function useDocumentsManager() {
     setPreviewTarget(null);
   };
 
+  const activeTabQueryMap = {
+    original: originalResumesQuery,
+    optimized: optimizedResumesQuery,
+    built: builtResumesQuery,
+    coverLetters: coverLettersQuery,
+  };
+
   return {
     activeTab,
-    setActiveTab,
+    setActiveTab: handleSetActiveTab,
     searchQuery,
     setSearchQuery,
     overview,
     tabs,
     documentsByTab,
     paginationByTab,
-    isLoading:
-      originalResumesQuery.isPending ||
-      optimizedResumesQuery.isPending ||
-      builtResumesQuery.isPending ||
-      coverLettersQuery.isPending,
+    isLoading: activeTabQueryMap[activeTab].isPending,
     resumeToDelete,
     setResumeToDelete,
     deleteResume,
@@ -203,7 +217,7 @@ export function useDocumentsManager() {
   };
 }
 
-function useResumeDocumentsInfiniteQuery(documentKind: ResumeDocumentKind, searchQuery: string) {
+function useResumeDocumentsInfiniteQuery(documentKind: ResumeDocumentKind, searchQuery: string, enabled: boolean) {
   return useInfiniteQuery({
     queryKey: [...RESUME_KEYS.lists(), "documents", documentKind, searchQuery],
     initialPageParam: 0,
@@ -215,10 +229,11 @@ function useResumeDocumentsInfiniteQuery(documentKind: ResumeDocumentKind, searc
         documentKind,
       } satisfies ResumePageParams),
     getNextPageParam,
+    enabled,
   });
 }
 
-function useCoverLettersInfiniteQuery(searchQuery: string) {
+function useCoverLettersInfiniteQuery(searchQuery: string, enabled: boolean) {
   return useInfiniteQuery({
     queryKey: [...COVER_LETTER_KEYS.lists(), "documents", searchQuery],
     initialPageParam: 0,
@@ -229,5 +244,6 @@ function useCoverLettersInfiniteQuery(searchQuery: string) {
         query: searchQuery || undefined,
       } satisfies CoverLetterPageParams),
     getNextPageParam,
+    enabled,
   });
 }

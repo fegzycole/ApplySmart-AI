@@ -27,7 +27,10 @@ export function useResumeBuilderState(initialData?: ResumeData): ResumeBuilderCo
   const [resumeData, setResumeData] = useState<ResumeData>(() => initialData ?? loadResumeBuilderData());
 
   useEffect(() => {
-    saveResumeBuilderData(resumeData);
+    const timer = setTimeout(() => {
+      saveResumeBuilderData(resumeData);
+    }, 400);
+    return () => clearTimeout(timer);
   }, [resumeData]);
 
   const updatePersonalInfo = (info: Partial<PersonalInfo>) => {

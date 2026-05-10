@@ -46,7 +46,8 @@ export const generateCoverLetter = async (
 ): Promise<CoverLetter> => {
   return apiClient.post<CoverLetter, CoverLetterRequest>(
     ENDPOINTS.GENERATE,
-    request
+    request,
+    180000
   );
 };
 

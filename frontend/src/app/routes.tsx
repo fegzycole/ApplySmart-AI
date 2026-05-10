@@ -4,18 +4,22 @@ import { ErrorBoundary } from "@/shared/components";
 import { ProtectedRoute, PublicRoute } from "@/shared/components/guards";
 import { ROUTES } from "@/shared/constants";
 import { DashboardSkeleton } from "@/features/dashboard/components/skeletons";
+import { JobTrackerSkeleton } from "@/features/job-tracker/components/skeletons";
+import { DocumentsPageSkeleton } from "@/features/documents/components";
+import { ResumeBuilderSkeleton } from "@/features/resume/components/skeletons";
+import { AdminDashboardSkeleton } from "@/features/admin/components/skeletons";
 
 // Authentication
-const LandingPage = lazy(() => import("@/features/authentication").then(m => ({ default: m.LandingPage })));
-const LoginPage = lazy(() => import("@/features/authentication").then(m => ({ default: m.LoginPage })));
-const SignupPage = lazy(() => import("@/features/authentication").then(m => ({ default: m.SignupPage })));
-const PasswordResetPage = lazy(() => import("@/features/authentication").then(m => ({ default: m.PasswordResetPage })));
-const VerifyEmailPage = lazy(() => import("@/features/authentication").then(m => ({ default: m.VerifyEmailPage })));
-const OAuthCallbackPage = lazy(() => import("@/features/authentication").then(m => ({ default: m.OAuthCallbackPage })));
+const LandingPage = lazy(() => import("@/features/authentication/pages/LandingPage").then(m => ({ default: m.LandingPage })));
+const LoginPage = lazy(() => import("@/features/authentication/pages/LoginPage").then(m => ({ default: m.LoginPage })));
+const SignupPage = lazy(() => import("@/features/authentication/pages/SignupPage").then(m => ({ default: m.SignupPage })));
+const PasswordResetPage = lazy(() => import("@/features/authentication/pages/PasswordResetPage").then(m => ({ default: m.PasswordResetPage })));
+const VerifyEmailPage = lazy(() => import("@/features/authentication/pages/VerifyEmailPage").then(m => ({ default: m.VerifyEmailPage })));
+const OAuthCallbackPage = lazy(() => import("@/features/authentication/pages/OAuthCallbackPage").then(m => ({ default: m.OAuthCallbackPage })));
 
 // Layout & Dashboard
-const AppLayout = lazy(() => import("@/features/dashboard").then(m => ({ default: m.AppLayout })));
-const DashboardHomePage = lazy(() => import("@/features/dashboard").then(m => ({ default: m.DashboardHomePage })));
+const AppLayout = lazy(() => import("@/features/dashboard/components/layout/AppLayout").then(m => ({ default: m.AppLayout })));
+const DashboardHomePage = lazy(() => import("@/features/dashboard/pages/DashboardHomePage").then(m => ({ default: m.DashboardHomePage })));
 
 // Features
 const ResumeOptimizerPage = lazy(() => import("@/features/resume").then(m => ({ default: m.ResumeOptimizerPage })));
@@ -29,16 +33,17 @@ const PricingPage = lazy(() => import("@/features/pricing").then(m => ({ default
 // Admin
 const AdminDashboardPage = lazy(() => import("@/features/admin").then(m => ({ default: m.AdminDashboardPage })));
 
-const SuspenseLayout = ({ children }: { children: React.ReactNode }) => (
-  <Suspense fallback={<DashboardSkeleton />}>
-    {children}
-  </Suspense>
-);
-
+// Fallback for public routes during JS chunk load
 const PublicSuspense = ({ children }: { children: React.ReactNode }) => (
   <Suspense fallback={<div className="min-h-screen bg-background animate-pulse" />}>
     {children}
   </Suspense>
+);
+
+// Fallback for app pages that don't have a dedicated skeleton
+// (form-only pages: optimizer, cover letter, settings)
+const AppPageFallback = () => (
+  <div className="w-full min-h-screen bg-[#fafafa] dark:bg-zinc-950 animate-pulse" />
 );
 
 export const router = createBrowserRouter([
@@ -115,31 +120,91 @@ export const router = createBrowserRouter([
     path: "/app",
     element: (
       <ProtectedRoute>
-        <SuspenseLayout>
+        {/* Suspense for the AppLayout shell chunk only */}
+        <Suspense fallback={<DashboardSkeleton />}>
           <AppLayout />
-        </SuspenseLayout>
+        </Suspense>
       </ProtectedRoute>
     ),
     errorElement: <ErrorBoundary />,
     children: [
-      { index: true, element: <DashboardHomePage /> },
-      { path: "resume-optimizer", element: <ResumeOptimizerPage /> },
-      { path: "resume-builder", element: <ResumeBuilderPageV2 /> },
-      { path: "documents", element: <DocumentsPage /> },
-      { path: "resumes", element: <Navigate to={ROUTES.DASHBOARD.DOCUMENTS} replace /> },
-      { path: "cover-letter", element: <CoverLetterGeneratorPage /> },
-      { path: "job-tracker", element: <JobTrackerPage /> },
-      { path: "analytics", element: <DashboardHomePage /> },
-      { path: "settings", element: <SettingsPage /> },
+      {
+        index: true,
+        element: (
+          <Suspense fallback={<DashboardSkeleton />}>
+            <DashboardHomePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "resume-optimizer",
+        element: (
+          <Suspense fallback={<AppPageFallback />}>
+            <ResumeOptimizerPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "resume-builder",
+        element: (
+          <Suspense fallback={<ResumeBuilderSkeleton />}>
+            <ResumeBuilderPageV2 />
+          </Suspense>
+        ),
+      },
+      {
+        path: "documents",
+        element: (
+          <Suspense fallback={<DocumentsPageSkeleton />}>
+            <DocumentsPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "resumes",
+        element: <Navigate to={ROUTES.DASHBOARD.DOCUMENTS} replace />,
+      },
+      {
+        path: "cover-letter",
+        element: (
+          <Suspense fallback={<AppPageFallback />}>
+            <CoverLetterGeneratorPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "job-tracker",
+        element: (
+          <Suspense fallback={<JobTrackerSkeleton />}>
+            <JobTrackerPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "analytics",
+        element: (
+          <Suspense fallback={<DashboardSkeleton />}>
+            <DashboardHomePage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "settings",
+        element: (
+          <Suspense fallback={<AppPageFallback />}>
+            <SettingsPage />
+          </Suspense>
+        ),
+      },
     ],
   },
   {
     path: "/admin",
     element: (
       <ProtectedRoute>
-        <SuspenseLayout>
+        <Suspense fallback={<AdminDashboardSkeleton />}>
           <AdminDashboardPage />
-        </SuspenseLayout>
+        </Suspense>
       </ProtectedRoute>
     ),
     errorElement: <ErrorBoundary />,

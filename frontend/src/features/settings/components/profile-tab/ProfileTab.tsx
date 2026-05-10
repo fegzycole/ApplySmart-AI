@@ -1,5 +1,6 @@
 import { toast } from "sonner";
 import { User } from "lucide-react";
+import { Skeleton } from "@/shared/components/ui/skeleton";
 import { SectionCard } from "../shared/SectionCard";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { ProfileForm } from "./ProfileForm";
@@ -31,6 +32,54 @@ export function ProfileTab() {
       toast.error(error instanceof Error ? error.message : "Failed to update profile photo.");
     }
   };
+
+  if (profileQuery.isLoading) {
+    return (
+      <SectionCard
+        icon={User}
+        title="Profile Information"
+        description="Manage the profile details supported by your account settings"
+      >
+        <div className="grid gap-6 xl:grid-cols-[minmax(0,320px)_minmax(0,1fr)]">
+          {/* Avatar card skeleton */}
+          <div className="rounded-[2rem] border-2 border-zinc-100 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900 sm:rounded-[2.5rem] sm:p-8">
+            <div className="flex flex-col items-center gap-6 text-center sm:gap-8">
+              <Skeleton className="h-28 w-28 rounded-[2rem] sm:h-32 sm:w-32 sm:rounded-[2.5rem]" />
+              <div className="flex w-full flex-col items-center gap-4">
+                <div className="space-y-2">
+                  <Skeleton className="h-6 w-36 mx-auto" />
+                  <Skeleton className="h-4 w-44 mx-auto" />
+                </div>
+                <div className="flex flex-wrap justify-center gap-2">
+                  <Skeleton className="h-7 w-24 rounded-full" />
+                  <Skeleton className="h-7 w-20 rounded-full" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Form skeleton */}
+          <div className="space-y-5">
+            <div className="grid gap-4 md:grid-cols-2">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="space-y-1.5">
+                  <Skeleton className="h-3 w-20" />
+                  <Skeleton className="h-12 w-full rounded-2xl sm:h-14" />
+                </div>
+              ))}
+            </div>
+            <div className="space-y-1.5">
+              <Skeleton className="h-3 w-16" />
+              <Skeleton className="h-12 w-full rounded-2xl sm:h-14" />
+            </div>
+            <div className="pt-8 flex justify-end">
+              <Skeleton className="h-16 w-48 rounded-2xl" />
+            </div>
+          </div>
+        </div>
+      </SectionCard>
+    );
+  }
 
   return (
     <SectionCard

@@ -1,28 +1,28 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Outlet, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import { AppHeader } from "./AppHeader";
 
 export function AppLayout() {
   const { pathname } = useLocation();
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const spotlightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const spotlight = spotlightRef.current;
+    if (!spotlight) return;
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
+      spotlight.style.backgroundImage = `radial-gradient(800px circle at ${e.clientX}px ${e.clientY}px, var(--color-primary), transparent 80%)`;
     };
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   return (
     <div className="min-h-screen bg-background relative flex flex-col overflow-hidden antialiased selection:bg-primary/20 selection:text-primary">
       {/* Optimized Spotlight Effect */}
-      <div 
+      <div
+        ref={spotlightRef}
         className="pointer-events-none fixed inset-0 z-10 opacity-30 dark:opacity-10 transition-opacity duration-1000"
-        style={{
-          background: `radial-gradient(800px circle at ${mousePos.x}px ${mousePos.y}px, var(--color-primary), transparent 80%)`,
-        }}
       />
 
 

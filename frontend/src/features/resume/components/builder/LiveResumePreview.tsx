@@ -1,4 +1,4 @@
-import { useState, useRef, useLayoutEffect, useCallback } from "react";
+import { useState, useRef, useLayoutEffect, useCallback, useMemo } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Download, ExternalLink, FileCheck2, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -109,7 +109,8 @@ export function LiveResumePreview() {
   const [scaledHeight, setScaledHeight] = useState(0);
 
   const isValid = getValidationError(resumeData) === null;
-  const showSavedResumePreview = Boolean(savedResume?.fileUrl) && isResumeDraftPristine(resumeData);
+  const isDraftPristine = useMemo(() => isResumeDraftPristine(resumeData), [resumeData]);
+  const showSavedResumePreview = Boolean(savedResume?.fileUrl) && isDraftPristine;
   const savedResumeFileUrl = savedResume?.fileUrl ?? null;
 
   const updatePreviewLayout = useCallback(() => {
@@ -136,10 +137,7 @@ export function LiveResumePreview() {
 
     const scheduleUpdate = () => {
       cancelAnimationFrame(frameId);
-      frameId = requestAnimationFrame(() => {
-        updatePreviewLayout();
-        requestAnimationFrame(updatePreviewLayout);
-      });
+      frameId = requestAnimationFrame(updatePreviewLayout);
     };
 
     const resizeObserver = new ResizeObserver(scheduleUpdate);
@@ -160,7 +158,7 @@ export function LiveResumePreview() {
       resizeObserver.disconnect();
       mutationObserver.disconnect();
     };
-  }, [resumeData, updatePreviewLayout]);
+  }, [updatePreviewLayout]);
 
   const handleSave = async () => {
     setSaving(true);
@@ -215,9 +213,9 @@ export function LiveResumePreview() {
         {showSavedResumePreview && savedResume && savedResumeFileUrl ? (
           <motion.div
             key="saved-preview"
-            initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            exit={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="canvas-card relative z-10 overflow-hidden rounded-[2rem] border-2 border-primary/20 bg-card/50 shadow-2xl backdrop-blur-3xl sm:rounded-[3rem]"
           >
@@ -275,8 +273,8 @@ export function LiveResumePreview() {
         ) : !showSavedResumePreview ? (
           <motion.div
             key="live-preview"
-            initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             className="canvas-card relative z-10 min-w-0 overflow-hidden rounded-[2rem] border-2 border-border/50 bg-card/30 p-1.5 shadow-2xl backdrop-blur-3xl sm:rounded-[3rem] sm:p-4 lg:p-6"
             style={{ height: "clamp(22rem, 72vh, calc(100vh - 180px))" }}

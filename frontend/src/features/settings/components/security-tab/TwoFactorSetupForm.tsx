@@ -1,5 +1,4 @@
 import { useEffect, useState, type FormEvent } from "react";
-import QRCode from "qrcode";
 import { Copy, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/shared/components/ui/button";
@@ -36,20 +35,19 @@ export function TwoFactorSetupForm({
   useEffect(() => {
     let active = true;
 
-    void QRCode.toDataURL(setup.otpAuthUri, {
-      errorCorrectionLevel: "M",
-      margin: 1,
-      width: 192,
-    })
+    void import("qrcode")
+      .then(({ default: QRCode }) =>
+        QRCode.toDataURL(setup.otpAuthUri, {
+          errorCorrectionLevel: "M",
+          margin: 1,
+          width: 192,
+        })
+      )
       .then((dataUrl: string) => {
-        if (active) {
-          setQrCodeDataUrl(dataUrl);
-        }
+        if (active) setQrCodeDataUrl(dataUrl);
       })
       .catch(() => {
-        if (active) {
-          setQrCodeDataUrl(null);
-        }
+        if (active) setQrCodeDataUrl(null);
       });
 
     return () => {

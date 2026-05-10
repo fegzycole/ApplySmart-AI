@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef } from "react";
 import {
   Navigation,
   HeroSection,
@@ -10,26 +10,24 @@ import {
 } from "../components";
 
 export function LandingPage() {
-  const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
+  const spotlightRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const spotlight = spotlightRef.current;
+    if (!spotlight) return;
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
+      spotlight.style.backgroundImage = `radial-gradient(800px circle at ${e.clientX}px ${e.clientY}px, var(--color-primary), transparent 80%)`;
     };
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden antialiased selection:bg-primary/20 selection:text-primary">
-      {mousePos && (
-        <div
-          className="pointer-events-none fixed inset-0 z-10 opacity-30 dark:opacity-10 transition-opacity duration-1000"
-          style={{
-            background: `radial-gradient(800px circle at ${mousePos.x}px ${mousePos.y}px, var(--color-primary), transparent 80%)`,
-          }}
-        />
-      )}
+      <div
+        ref={spotlightRef}
+        className="pointer-events-none fixed inset-0 z-10 opacity-30 dark:opacity-10 transition-opacity duration-1000"
+      />
 
       <Navigation />
       
