@@ -60,8 +60,8 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
           </path>
         </svg>
         
-        {/* Frosted Grain Texture */}
-        <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+        {/* Frosted Grain Texture - Optimized */}
+        <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay" style={{ backgroundImage: `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAA699uFAAAABlBMVEUAAAD///+l2Z/dAAAAbUlEQVR42u3TQQqAMAgE0On9T+0v7L8EByIidD+YByIs6v3mAs6C6Iu6v9mAsyD6ou5vNuAsiL6o+5sNOAuiL+r+ZgPOguiLur/ZgLMg+qLubzbgLIi+qPubDTgLoi/q/mYDzoLoi7q/2YCzIPrqX74AGoUBFv6Zk0UAAAAASUVORK5CYII=")`, backgroundRepeat: 'repeat' }} />
       </div>
 
       <div className="relative grid gap-6 p-5 sm:gap-8 sm:p-8 lg:gap-10 lg:grid-cols-[1fr_420px] lg:p-10 xl:gap-14 xl:p-16 items-start">

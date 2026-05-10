@@ -24,10 +24,9 @@ export function LandingPage() {
     <div className="min-h-screen bg-background relative overflow-hidden antialiased selection:bg-primary/20 selection:text-primary">
       {mousePos && (
         <div
-          className="pointer-events-none fixed inset-0 z-10 opacity-30 dark:opacity-10"
+          className="pointer-events-none fixed inset-0 z-10 opacity-30 dark:opacity-10 transition-opacity duration-1000"
           style={{
-            background: `radial-gradient(1200px circle at ${mousePos.x}px ${mousePos.y}px, var(--color-primary), transparent 80%)`,
-            filter: "blur(120px)",
+            background: `radial-gradient(800px circle at ${mousePos.x}px ${mousePos.y}px, var(--color-primary), transparent 80%)`,
           }}
         />
       )}

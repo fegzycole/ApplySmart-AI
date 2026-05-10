@@ -52,12 +52,15 @@ export function DashboardPageHeader() {
           </p>
         </div>
       </div>
-      
-      <div className="group relative self-start lg:self-auto overflow-hidden rounded-[2rem] border border-zinc-100 bg-white/50 p-6 shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40 backdrop-blur-xl transition-all duration-700 hover:shadow-xl">
-        {/* Vital Monitor Background */}
+      <div className="group relative self-start lg:self-auto overflow-hidden rounded-[2rem] border border-zinc-100 bg-white/50 p-6 shadow-sm dark:border-zinc-800/60 dark:bg-zinc-950/40 backdrop-blur-lg transition-all duration-700 hover:shadow-xl">
+        {/* Vital Monitor Background - Optimized */}
         <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-        
+
+        {/* Frosted Grain Texture - Optimized */}
+        <div className="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-overlay" style={{ backgroundImage: `url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAMAAAA699uFAAAABlBMVEUAAAD///+l2Z/dAAAAbUlEQVR42u3TQQqAMAgE0On9T+0v7L8EByIidD+YByIs6v3mAs6C6Iu6v9mAsyD6ou5vNuAsiL6o+5sNOAuiL+r+ZgPOguiLur/ZgLMg+qLubzbgLIi+qPubDTgLoi/q/mYDzoLoi7q/2YCzIPrqX74AGoUBFv6Zk0UAAAAASUVORK5CYII=")`, backgroundRepeat: 'repeat' }} />
+
         <div className="relative z-10 flex items-center gap-8">
+
           <div className="flex flex-col items-end gap-4 min-w-[140px]">
             <div className="flex items-center gap-3">
                <Activity className="size-4 text-emerald-500" />

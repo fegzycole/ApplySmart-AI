@@ -41,9 +41,9 @@ export function JobTrackerPage() {
         variants={MISSION_CONTROL_ANIMATIONS.stagger.container}
         initial="hidden"
         animate="visible"
-        className="min-h-screen pb-12 sm:pb-20 bg-[#fafafa] dark:bg-zinc-950"
+        className="min-h-screen w-full pb-12 sm:pb-20 bg-[#fafafa] dark:bg-zinc-950 overflow-hidden"
       >
-        <div className="mx-auto max-w-[1800px] px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-16 pt-8 sm:pt-12">
+        <div className="mx-auto w-full max-w-[1800px] min-w-0 px-4 sm:px-6 lg:px-8 space-y-10 sm:space-y-16 pt-8 sm:pt-12">
           <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
             <TrackerHeader onAddClick={openCreateDialog} />
           </motion.div>

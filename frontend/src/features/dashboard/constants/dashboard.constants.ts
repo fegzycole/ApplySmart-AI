@@ -9,7 +9,7 @@ export { MISSION_CONTROL_ANIMATIONS };
 
 export const DASHBOARD_PAGE_STYLES = {
   container: "w-full min-h-screen pb-24 lg:pb-32",
-  wrapper: "mx-auto max-w-[1700px] space-y-12 sm:space-y-16 lg:space-y-20",
+  wrapper: "mx-auto w-full max-w-[1700px] min-w-0 space-y-12 sm:space-y-16 lg:space-y-20",
   bentoGrid: "grid grid-cols-1 gap-8 sm:gap-10 lg:grid-cols-12 lg:gap-12",
   heroSection: "col-span-12",
   mainStage: "col-span-12 space-y-10 sm:space-y-12 2xl:col-span-8 2xl:space-y-16",

@@ -16,19 +16,19 @@ export function AppLayout() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden antialiased selection:bg-primary/20 selection:text-primary">
-      {/* Spotlight Effect - Matching Landing Page */}
+    <div className="min-h-screen bg-background relative flex flex-col overflow-hidden antialiased selection:bg-primary/20 selection:text-primary">
+      {/* Optimized Spotlight Effect */}
       <div 
-        className="pointer-events-none fixed inset-0 z-10 opacity-30 dark:opacity-10"
+        className="pointer-events-none fixed inset-0 z-10 opacity-30 dark:opacity-10 transition-opacity duration-1000"
         style={{
-          background: `radial-gradient(1200px circle at ${mousePos.x}px ${mousePos.y}px, var(--color-primary), transparent 80%)`,
-          filter: "blur(120px)",
+          background: `radial-gradient(800px circle at ${mousePos.x}px ${mousePos.y}px, var(--color-primary), transparent 80%)`,
         }}
       />
 
+
       <AppHeader />
 
-      <main className="relative z-40 mx-auto max-w-[1700px] px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-12 lg:pt-36">
+      <main className="relative z-40 mx-auto w-full max-w-[1700px] min-w-0 px-4 pt-28 pb-16 sm:px-6 sm:pt-32 sm:pb-20 lg:px-12 lg:pt-36">
         <motion.div
           key={pathname}
           initial={{ opacity: 0, y: 12 }}
@@ -37,6 +37,7 @@ export function AppLayout() {
             duration: 0.3,
             ease: [0.22, 1, 0.36, 1],
           }}
+          className="w-full min-w-0"
         >
           <Outlet />
         </motion.div>

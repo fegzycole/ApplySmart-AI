@@ -3,7 +3,7 @@ import type { HowItWorksStep, AIFeature, ToneSelectOption } from "../types/cover
 
 export const COVER_LETTER_PAGE_STYLES = {
   container: "min-h-screen pb-20 bg-[#fafafa] dark:bg-zinc-950",
-  wrapper: "mx-auto flex max-w-[1700px] flex-col gap-8 px-3 pt-8 sm:gap-10 sm:px-6 sm:pt-10 lg:gap-12 lg:px-8 lg:pt-12",
+  wrapper: "mx-auto flex w-full max-w-[1700px] min-w-0 flex-col gap-8 px-3 pt-8 sm:gap-10 sm:px-6 sm:pt-10 lg:gap-12 lg:px-8 lg:pt-12",
   header: "relative flex flex-col items-center text-center space-y-6 border-b border-zinc-100 pb-10 dark:border-zinc-800 sm:space-y-10 sm:pb-16",
   grid: "grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_480px] xl:gap-12",
   leftColumn: "space-y-10 min-w-0",

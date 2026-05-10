@@ -61,7 +61,7 @@ export const TEMPLATES: Array<{ id: ResumeTemplate; name: string; description: s
 
 export const BUILDER_LAYOUT_STYLES = {
   container: "w-full min-h-screen pb-20",
-  wrapper: "mx-auto max-w-[1700px] space-y-10 px-3 sm:space-y-12 sm:px-6 lg:px-8",
+  wrapper: "mx-auto w-full max-w-[1700px] min-w-0 space-y-10 px-3 sm:space-y-12 sm:px-6 lg:px-8",
   bentoGrid: "grid grid-cols-1 gap-8 xl:grid-cols-12 xl:gap-10",
   heroSection: "col-span-12",
   mainStage: "col-span-12 space-y-8 xl:col-span-6 xl:space-y-10",
