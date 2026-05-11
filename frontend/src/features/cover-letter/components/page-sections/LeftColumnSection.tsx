@@ -16,6 +16,7 @@ interface LeftColumnSectionProps {
   onToneChange: (value: ToneOption) => void;
   uploadedFile: File | null;
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileDrop: (file: File) => void;
   onRemoveFile: () => void;
   fieldErrors: Partial<Record<keyof CoverLetterFormData, string>>;
   formErrors: string[];
@@ -36,6 +37,7 @@ export function LeftColumnSection({
   onToneChange,
   uploadedFile,
   onFileUpload,
+  onFileDrop,
   onRemoveFile,
   fieldErrors,
   formErrors,
@@ -57,6 +59,7 @@ export function LeftColumnSection({
         onToneChange={onToneChange}
         uploadedFile={uploadedFile}
         onFileUpload={onFileUpload}
+        onFileDrop={onFileDrop}
         onRemoveFile={onRemoveFile}
         fieldErrors={fieldErrors}
         formErrors={formErrors}

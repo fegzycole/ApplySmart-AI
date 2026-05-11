@@ -1,24 +1,59 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/shared/components/ui/button";
 import { Label } from "@/shared/components/ui/label";
 import { Upload, X, ShieldCheck } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 import { SYNTHESIS_STAGE_STYLES } from "../../constants/cover-letter.constants";
 
 interface ResumeUploadSectionProps {
   uploadedFile: File | null;
   onFileUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFileDrop: (file: File) => void;
   onRemoveFile: () => void;
 }
 
-export function ResumeUploadSection({ uploadedFile, onFileUpload, onRemoveFile }: ResumeUploadSectionProps) {
+export function ResumeUploadSection({ uploadedFile, onFileUpload, onFileDrop, onRemoveFile }: ResumeUploadSectionProps) {
+  const [isDragOver, setIsDragOver] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setIsDragOver(false);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      onFileDrop(file);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <Label className={SYNTHESIS_STAGE_STYLES.label}>
         Source Artifact Injection (Optional)
       </Label>
-      
+
       {!uploadedFile ? (
-        <div className="group relative overflow-hidden rounded-[1.75rem] border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 transition-all duration-500 hover:border-amber-500 hover:bg-white dark:hover:bg-zinc-900/50 sm:rounded-[2.5rem]">
+        <div
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={cn(
+            "group relative overflow-hidden rounded-[1.75rem] border-2 border-dashed bg-zinc-50/50 transition-all duration-500 sm:rounded-[2.5rem]",
+            isDragOver
+              ? "border-amber-500 bg-white scale-[1.01] dark:bg-zinc-900/50"
+              : "border-zinc-200 dark:border-zinc-800 hover:border-amber-500 hover:bg-white dark:hover:bg-zinc-900/50"
+          )}
+        >
           <input
             type="file"
             id="resume-upload"
@@ -46,7 +81,7 @@ export function ResumeUploadSection({ uploadedFile, onFileUpload, onRemoveFile }
             </p>
           </label>
           {/* Ambient Aura */}
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </div>
       ) : (
         <div className="relative group overflow-hidden rounded-[1.75rem] border-2 border-emerald-500/20 bg-emerald-50/10 p-4 dark:bg-emerald-950/5 sm:rounded-[2.5rem] sm:p-6">

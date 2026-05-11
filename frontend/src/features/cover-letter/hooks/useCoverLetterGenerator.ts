@@ -89,6 +89,10 @@ export function useCoverLetterGenerator() {
     }
   };
 
+  const handleFileDrop = (file: File) => {
+    setUploadedFile(file);
+  };
+
   const removeFile = () => {
     setUploadedFile(null);
   };
@@ -121,6 +125,7 @@ export function useCoverLetterGenerator() {
     setHighlights: (value: string) => updateField("highlights", value),
     handleGenerate,
     handleFileUpload,
+    handleFileDrop,
     removeFile,
     handleNewLetter,
   };

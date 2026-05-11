@@ -24,11 +24,10 @@ export function JobCard({ job, onEdit, onDelete }: JobCardProps) {
   const auraGradient = column?.gradient ?? "from-primary/20 to-transparent";
 
   return (
+    <div ref={drag as unknown as React.Ref<HTMLDivElement>} className="min-w-0">
     <motion.div
-      ref={drag as unknown as React.Ref<HTMLDivElement>}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      layout
       className={cn(
         ARTIFACT_STYLES.card.wrapper,
         isDragging && ARTIFACT_STYLES.card.dragging,
@@ -80,5 +79,6 @@ export function JobCard({ job, onEdit, onDelete }: JobCardProps) {
         </div>
       </div>
     </motion.div>
+    </div>
   );
 }

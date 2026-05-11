@@ -26,6 +26,7 @@ export function CoverLetterGeneratorPage() {
     setTone,
     handleGenerate,
     handleFileUpload,
+    handleFileDrop,
     removeFile,
     handleNewLetter
   } = useCoverLetterGenerator();
@@ -57,6 +58,7 @@ export function CoverLetterGeneratorPage() {
               onToneChange={setTone}
               uploadedFile={uploadedFile}
               onFileUpload={handleFileUpload}
+              onFileDrop={handleFileDrop}
               onRemoveFile={removeFile}
               fieldErrors={fieldErrors}
               formErrors={formErrors}

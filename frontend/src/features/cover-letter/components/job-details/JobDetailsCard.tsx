@@ -22,6 +22,7 @@ interface JobDetailsCardProps {
   onToneChange: (value: ToneOption) => void;
   uploadedFile: File | null;
   onFileUpload: (e: ChangeEvent<HTMLInputElement>) => void;
+  onFileDrop: (file: File) => void;
   onRemoveFile: () => void;
   fieldErrors: Partial<Record<keyof CoverLetterFormData, string>>;
   formErrors: string[];
@@ -42,6 +43,7 @@ export function JobDetailsCard({
   onToneChange,
   uploadedFile,
   onFileUpload,
+  onFileDrop,
   onRemoveFile,
   fieldErrors,
   formErrors,
@@ -80,6 +82,7 @@ export function JobDetailsCard({
           <ResumeUploadSection
             uploadedFile={uploadedFile}
             onFileUpload={onFileUpload}
+            onFileDrop={onFileDrop}
             onRemoveFile={onRemoveFile}
           />
 
