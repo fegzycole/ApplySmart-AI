@@ -1,4 +1,5 @@
 import { FileText, Sparkles, CheckCircle2, Files } from "lucide-react";
+import { Link } from "react-router";
 import type { DashboardDocumentStats } from "../../types/dashboard.types";
 import { DashboardSectionCard } from "./DashboardSectionCard";
 
@@ -42,9 +43,13 @@ export function DocumentCoveragePanel({ documents }: DocumentCoveragePanelProps)
       title="Document Readiness"
       description="See how much polished material you have available before you start tailoring again."
       action={
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-lg dark:bg-sky-600">
+        <Link
+          to="/app/documents"
+          title="View all documents"
+          className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-lg transition-colors hover:bg-sky-600 dark:bg-sky-600 dark:hover:bg-sky-500"
+        >
           <Files className="size-4" />
-        </div>
+        </Link>
       }
     >
       <div className="space-y-4">

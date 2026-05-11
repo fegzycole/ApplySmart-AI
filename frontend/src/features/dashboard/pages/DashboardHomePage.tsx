@@ -33,7 +33,7 @@ export function DashboardHomePage() {
     >
       <div className={DASHBOARD_PAGE_STYLES.wrapper}>
         <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
-          <DashboardPageHeader />
+          <DashboardPageHeader data={data} />
         </motion.div>
 
         <div className={DASHBOARD_PAGE_STYLES.bentoGrid}>

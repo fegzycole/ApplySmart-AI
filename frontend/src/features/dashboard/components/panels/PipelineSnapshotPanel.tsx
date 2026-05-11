@@ -119,7 +119,7 @@ export function PipelineSnapshotPanel({ data }: PipelineSnapshotPanelProps) {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-black text-zinc-900 dark:text-zinc-50 uppercase tracking-tight">{stage.name}</p>
                     <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest mt-0.5 opacity-60">
-                      {formatPercent(stage.percentage)} Mass
+                      {formatPercent(stage.percentage)} of pipeline
                     </p>
                   </div>
                 </div>

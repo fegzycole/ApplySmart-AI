@@ -24,7 +24,6 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
     {
       label: "Response rate",
       value: formatPercent(overview.responseRate),
-      trend: "+2.4% velocity",
       icon: Target,
       color: "text-amber-500",
     },
@@ -96,19 +95,9 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
                     </div>
                   </div>
 
-                  <div className="space-y-1">
-                    <p className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 sm:text-4xl xl:text-5xl">
-                      {stat.value}
-                    </p>
-                    {stat.trend && (
-                      <div className="flex items-start gap-2">
-                        <div className="mt-[0.22rem] h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500 animate-pulse" />
-                        <p className="text-[11px] font-black uppercase leading-[1.1] tracking-widest text-emerald-600 dark:text-emerald-400">
-                          {stat.trend}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+                  <p className="text-3xl font-black tracking-tighter text-zinc-900 dark:text-zinc-50 sm:text-4xl xl:text-5xl">
+                    {stat.value}
+                  </p>
                 </div>
                 
                 {/* Active Aura */}
@@ -126,9 +115,13 @@ export function DashboardHeroPanel({ data }: DashboardHeroPanelProps) {
             <h3 className="text-xs font-black uppercase tracking-[0.4em] text-zinc-400 leading-none">
               Command Modules
             </h3>
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white shadow-sm dark:bg-zinc-800">
-              <Plus className="size-4 text-zinc-400" />
-            </div>
+            <Link
+              to="/app/job-tracker"
+              title="Add new application"
+              className="flex h-8 w-8 items-center justify-center rounded-xl bg-white shadow-sm transition-colors hover:bg-sky-600 hover:text-white dark:bg-zinc-800 dark:hover:bg-sky-600"
+            >
+              <Plus className="size-4 text-zinc-400 group-hover:text-white" />
+            </Link>
           </div>
 
           <div className="space-y-3 sm:space-y-4">

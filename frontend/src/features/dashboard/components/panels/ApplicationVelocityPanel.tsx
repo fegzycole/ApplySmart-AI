@@ -115,11 +115,11 @@ export function ApplicationVelocityPanel({ data }: ApplicationVelocityPanelProps
         <div className="flex flex-wrap items-center gap-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
           <div className="flex items-center gap-3">
              <div className="h-2 w-2 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.6)]" />
-             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Transmission Log</span>
+             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Applications</span>
           </div>
           <div className="flex items-center gap-3">
              <div className="h-0.5 w-6 bg-amber-500/50 rounded-full" />
-             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Target Pulse</span>
+             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Weekly Target</span>
           </div>
         </div>
       </div>

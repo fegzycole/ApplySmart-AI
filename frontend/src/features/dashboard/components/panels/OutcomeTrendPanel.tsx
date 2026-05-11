@@ -110,7 +110,7 @@ function LegendItem({ color, label }: { color: string; label: string }) {
          <div className="absolute inset-0 rounded-full bg-current opacity-20 animate-ping" style={{ color }} />
          <div className="relative h-full w-full rounded-full bg-current" style={{ color }} />
       </div>
-      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{label} Sector</span>
+      <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{label} Rate</span>
     </div>
   );
 }

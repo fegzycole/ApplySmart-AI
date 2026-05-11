@@ -1,4 +1,5 @@
 import { History, MapPin, Calendar, Clock, ArrowRight } from "lucide-react";
+import { Link } from "react-router";
 import type { DashboardRecentApplication } from "../../types/dashboard.types";
 import { DashboardSectionCard } from "./DashboardSectionCard";
 import { DashboardStatusBadge } from "./DashboardStatusBadge";
@@ -13,9 +14,13 @@ export function RecentApplicationsPanel({ applications }: RecentApplicationsPane
       title="Live Trajectory Feed"
       description="Real-time calibration and movement of your career artifacts."
       action={
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-lg dark:bg-sky-600">
+        <Link
+          to="/app/job-tracker"
+          title="View all applications"
+          className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-lg transition-colors hover:bg-sky-600 dark:bg-sky-600 dark:hover:bg-sky-500"
+        >
           <History className="size-4" />
-        </div>
+        </Link>
       }
     >
       {applications.length === 0 ? (
@@ -81,9 +86,13 @@ export function RecentApplicationsPanel({ applications }: RecentApplicationsPane
                          {application.updatedAt}
                        </div>
                     </div>
-                    <button className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-50 text-zinc-900 shadow-inner transition-all duration-500 hover:bg-zinc-900 hover:text-white hover:scale-110 active:scale-95 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-sky-600">
+                    <Link
+                      to="/app/job-tracker"
+                      title={`View ${application.company} in tracker`}
+                      className="flex h-12 w-12 items-center justify-center rounded-2xl bg-zinc-50 text-zinc-900 shadow-inner transition-all duration-500 hover:bg-zinc-900 hover:text-white hover:scale-110 active:scale-95 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-sky-600"
+                    >
                       <ArrowRight className="size-5" />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

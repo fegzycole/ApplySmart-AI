@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import { Link } from "react-router";
 import type { DashboardData } from "../../types/dashboard.types";
 import { buildDashboardInsights } from "../../utils/dashboard-insights";
 import { DashboardSectionCard } from "./DashboardSectionCard";
@@ -22,9 +23,13 @@ export function DashboardInsightsPanel({ data }: DashboardInsightsPanelProps) {
       description="System-generated suggestions and search signals."
       className="bg-gradient-to-b from-secondary/50 to-card"
       action={
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-lg dark:bg-sky-600">
+        <Link
+          to="/app/resume-optimizer"
+          title="Optimise a resume"
+          className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-white shadow-lg transition-colors hover:bg-sky-600 dark:bg-sky-600 dark:hover:bg-sky-500"
+        >
           <Sparkles className="size-4" />
-        </div>
+        </Link>
       }
     >
       <div className="space-y-4">
