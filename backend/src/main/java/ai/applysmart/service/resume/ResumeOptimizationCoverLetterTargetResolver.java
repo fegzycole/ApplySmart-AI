@@ -23,17 +23,16 @@ public class ResumeOptimizationCoverLetterTargetResolver {
             return new ResumeOptimizationJobTarget(company, position);
         }
 
-        List<String> missingFields = new ArrayList<>();
-        if (company == null) {
-            missingFields.add("company");
-        }
-        if (position == null) {
-            missingFields.add("position");
-        }
-
-        throw new BadRequestException(
-                "Could not infer the " + String.join(" and ", missingFields)
-                        + " from the job description. Please use a job description that clearly includes both."
-        );
+        // Regex couldn't extract one or both fields — fall back to AI extraction.
+        return jobDescriptionParser.extractTargetWithAI(jobDescription)
+                .orElseThrow(() -> {
+                    List<String> missingFields = new ArrayList<>();
+                    if (company == null) missingFields.add("company");
+                    if (position == null) missingFields.add("position");
+                    return new BadRequestException(
+                            "Could not infer the " + String.join(" and ", missingFields)
+                                    + " from the job description. Please use a job description that clearly includes both."
+                    );
+                });
     }
 }

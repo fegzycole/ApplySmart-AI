@@ -1,6 +1,9 @@
 package ai.applysmart.service.resume;
 
+import ai.applysmart.service.ai.AnthropicClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -8,7 +11,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ResumeOptimizationJobDescriptionParserTest {
 
     private final ResumeOptimizationJobDescriptionParser parser =
-            new ResumeOptimizationJobDescriptionParser();
+            new ResumeOptimizationJobDescriptionParser(
+                    Mockito.mock(AnthropicClient.class),
+                    new ObjectMapper()
+            );
 
     @Test
     void extractCompanyNameReadsExplicitCompanyLine() {

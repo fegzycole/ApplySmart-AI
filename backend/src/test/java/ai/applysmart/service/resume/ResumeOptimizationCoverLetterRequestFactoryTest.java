@@ -5,7 +5,10 @@ import ai.applysmart.dto.resume.OptimizeCoverLetterRequest;
 import ai.applysmart.dto.resume.OptimizeResumeRequest;
 import ai.applysmart.entity.Resume;
 import ai.applysmart.exception.BadRequestException;
+import ai.applysmart.service.ai.AnthropicClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -16,7 +19,10 @@ class ResumeOptimizationCoverLetterRequestFactoryTest {
     private final ResumeOptimizationCoverLetterRequestFactory factory =
             new ResumeOptimizationCoverLetterRequestFactory(
                     new ResumeOptimizationCoverLetterTargetResolver(
-                            new ResumeOptimizationJobDescriptionParser()
+                            new ResumeOptimizationJobDescriptionParser(
+                                    Mockito.mock(AnthropicClient.class),
+                                    new ObjectMapper()
+                            )
                     )
             );
 

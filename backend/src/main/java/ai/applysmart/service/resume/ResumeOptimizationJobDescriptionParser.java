@@ -1,6 +1,10 @@
 package ai.applysmart.service.resume;
 
+import ai.applysmart.service.ai.AnthropicClient;
 import ai.applysmart.util.TextUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -8,8 +12,17 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Component
 public class ResumeOptimizationJobDescriptionParser {
+
+    private final AnthropicClient anthropicClient;
+    private final ObjectMapper objectMapper;
+
+    public ResumeOptimizationJobDescriptionParser(AnthropicClient anthropicClient, ObjectMapper objectMapper) {
+        this.anthropicClient = anthropicClient;
+        this.objectMapper = objectMapper;
+    }
 
     private static final List<Pattern> COMPANY_PATTERNS = List.of(
             Pattern.compile("(?i)^(?:company|organization|employer)\\s*[:\\-]\\s*(.+)$"),
@@ -120,7 +133,7 @@ public class ResumeOptimizationJobDescriptionParser {
 
         String cleaned = candidate
                 .replaceAll("\\s+", " ")
-                .replaceAll("^[\"'“”‘’]+|[\"'“”‘’]+$", "")
+                .replaceAll("^[\"'\u201c\u201d\u2018\u2019]+|[\"'\u201c\u201d\u2018\u2019]+$", "")
                 .replaceAll("[\\s,.;:!\\-]+$", "")
                 .trim();
 
@@ -136,5 +149,33 @@ public class ResumeOptimizationJobDescriptionParser {
         }
 
         return cleaned;
+    }
+
+    public Optional<ResumeOptimizationJobTarget> extractTargetWithAI(String jobDescription) {
+        String prompt = "Extract the company name and job position/title from the following job description.\n"
+                + "Return ONLY a JSON object with exactly two fields: \"company\" and \"position\".\n"
+                + "If either cannot be determined, use null for that field.\n"
+                + "Do not include any explanation, markdown, or extra text.\n\n"
+                + "Example output:\n"
+                + "{\"company\": \"Acme Corp\", \"position\": \"Senior Software Engineer\"}\n\n"
+                + "Job description:\n"
+                + jobDescription;
+
+        try {
+            String response = anthropicClient.complete(prompt);
+            JsonNode node = objectMapper.readTree(response);
+            String company = node.has("company") && !node.get("company").isNull()
+                    ? node.get("company").asText().trim() : null;
+            String position = node.has("position") && !node.get("position").isNull()
+                    ? node.get("position").asText().trim() : null;
+
+            if (company != null && position != null) {
+                return Optional.of(new ResumeOptimizationJobTarget(company, position));
+            }
+        } catch (Exception e) {
+            log.warn("AI-based job description parsing failed", e);
+        }
+
+        return Optional.empty();
     }
 }
