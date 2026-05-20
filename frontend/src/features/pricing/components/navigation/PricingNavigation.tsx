@@ -1,5 +1,6 @@
 import { Link } from "react-router";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import { Sparkles, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { NAVIGATION_STYLES } from "../../constants/pricing.constants";
@@ -21,9 +22,9 @@ export function PricingNavigation() {
               className={NAVIGATION_STYLES.actions.themeButton}
             >
               {theme === "dark" ? (
-                <Sun className={`${NAVIGATION_STYLES.actions.themeIcon} text-zinc-400`} />
+                <Sun className={cn(NAVIGATION_STYLES.actions.themeIcon, "text-zinc-400")} />
               ) : (
-                <Moon className={`${NAVIGATION_STYLES.actions.themeIcon} text-zinc-600`} />
+                <Moon className={cn(NAVIGATION_STYLES.actions.themeIcon, "text-zinc-600")} />
               )}
             </button>
             <Link to="/login">

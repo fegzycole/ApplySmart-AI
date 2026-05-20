@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { cn } from "@/shared/lib/utils";
 
 interface DashboardSectionCardProps {
   title: string;
@@ -19,7 +20,12 @@ export function DashboardSectionCard({
   contentClassName,
 }: DashboardSectionCardProps) {
   return (
-    <Card className={`overflow-hidden rounded-[3rem] border-zinc-100 bg-white shadow-[0_40px_80px_-24px_rgba(0,0,0,0.06)] dark:border-zinc-800 dark:bg-zinc-900/60 backdrop-blur-3xl transition-all duration-700 hover:shadow-[0_48px_96px_-24px_rgba(0,0,0,0.1)] ${className ?? ""}`}>
+    <Card
+      className={cn(
+        "overflow-hidden rounded-[3rem] border-zinc-100 bg-white shadow-[0_40px_80px_-24px_rgba(0,0,0,0.06)] dark:border-zinc-800 dark:bg-zinc-900/60 backdrop-blur-3xl transition-all duration-700 hover:shadow-[0_48px_96px_-24px_rgba(0,0,0,0.1)]",
+        className,
+      )}
+    >
       <CardHeader className="flex flex-row items-start justify-between gap-6 px-6 py-8 sm:px-10 sm:py-10 dark:border-zinc-800 lg:px-12">
         <div className="space-y-3 min-w-0">
           <div className="flex items-center gap-3">
@@ -32,7 +38,9 @@ export function DashboardSectionCard({
         </div>
         {action ? <div className="shrink-0">{action}</div> : null}
       </CardHeader>
-      <CardContent className={`px-6 pb-10 sm:px-10 sm:pb-12 lg:px-12 lg:pb-16 ${contentClassName ?? ""}`}>{children}</CardContent>
+      <CardContent className={cn("px-6 pb-10 sm:px-10 sm:pb-12 lg:px-12 lg:pb-16", contentClassName)}>
+        {children}
+      </CardContent>
     </Card>
   );
 }

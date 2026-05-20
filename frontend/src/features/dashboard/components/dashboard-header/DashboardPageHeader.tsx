@@ -1,6 +1,7 @@
 import { LayoutDashboard, Zap, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCurrentUser } from "@/features/authentication/hooks/useAuthQueries";
+import { cn } from "@/shared/lib/utils";
 import { DASHBOARD_HEADER_CONTENT } from "../../constants/dashboard.constants";
 import type { DashboardData } from "../../types/dashboard.types";
 
@@ -110,7 +111,7 @@ export function DashboardPageHeader({ data }: DashboardPageHeaderProps) {
                 </span>
                 <div className="h-10 w-px bg-zinc-100 dark:bg-zinc-800" />
                 <div className="flex flex-col items-start">
-                  <span className={`text-[10px] font-black uppercase tracking-widest ${vitalityColor}`}>{vitalityLabel}</span>
+                  <span className={cn("text-[10px] font-black uppercase tracking-widest", vitalityColor)}>{vitalityLabel}</span>
                   <span className="text-[9px] font-bold text-zinc-400">Search Posture</span>
                 </div>
               </div>

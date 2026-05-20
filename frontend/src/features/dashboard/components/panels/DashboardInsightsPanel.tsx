@@ -1,5 +1,6 @@
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router";
+import { cn } from "@/shared/lib/utils";
 import type { DashboardData } from "../../types/dashboard.types";
 import { buildDashboardInsights } from "../../utils/dashboard-insights";
 import { DashboardSectionCard } from "./DashboardSectionCard";
@@ -38,7 +39,10 @@ export function DashboardInsightsPanel({ data }: DashboardInsightsPanelProps) {
           return (
             <div
               key={insight.id}
-              className={`relative overflow-hidden rounded-[1.25rem] border bg-gradient-to-br p-4 transition-all hover:scale-[1.02] sm:rounded-[1.5rem] sm:p-5 ${TONE_STYLES[insight.tone]}`}
+              className={cn(
+                "relative overflow-hidden rounded-[1.25rem] border bg-gradient-to-br p-4 transition-all hover:scale-[1.02] sm:rounded-[1.5rem] sm:p-5",
+                TONE_STYLES[insight.tone],
+              )}
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="space-y-1">
@@ -63,4 +67,3 @@ export function DashboardInsightsPanel({ data }: DashboardInsightsPanelProps) {
     </DashboardSectionCard>
   );
 }
-

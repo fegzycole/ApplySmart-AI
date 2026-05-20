@@ -1,6 +1,7 @@
 import { Link } from "react-router";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { cn } from "@/shared/lib/utils";
 import { Check } from "lucide-react";
 import type { PricingPlan } from "../../types/pricing.types";
 import { PRICING_CARD_STYLES } from "../../constants/pricing.constants";
@@ -10,9 +11,10 @@ interface PricingCardProps {
 }
 
 export function PricingCard({ plan }: PricingCardProps) {
-  const cardClassName = `${PRICING_CARD_STYLES.card.base} ${
-    plan.popular ? PRICING_CARD_STYLES.card.popular : PRICING_CARD_STYLES.card.regular
-  }`;
+  const cardClassName = cn(
+    PRICING_CARD_STYLES.card.base,
+    plan.popular ? PRICING_CARD_STYLES.card.popular : PRICING_CARD_STYLES.card.regular,
+  );
 
   return (
     <Card className={cardClassName}>
@@ -42,10 +44,11 @@ export function PricingCard({ plan }: PricingCardProps) {
         </ul>
         <Link to="/signup">
           <Button
-            className={`${PRICING_CARD_STYLES.button.base} ${
-              plan.popular ? PRICING_CARD_STYLES.button.popular : PRICING_CARD_STYLES.button.regular
-            }`}
-            variant={plan.popular ? 'default' : 'outline'}
+            className={cn(
+              PRICING_CARD_STYLES.button.base,
+              plan.popular ? PRICING_CARD_STYLES.button.popular : PRICING_CARD_STYLES.button.regular,
+            )}
+            variant={plan.popular ? "default" : "outline"}
           >
             {plan.cta}
           </Button>

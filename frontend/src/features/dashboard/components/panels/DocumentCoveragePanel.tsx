@@ -1,5 +1,6 @@
 import { FileText, Sparkles, CheckCircle2, Files } from "lucide-react";
 import { Link } from "react-router";
+import { cn } from "@/shared/lib/utils";
 import type { DashboardDocumentStats } from "../../types/dashboard.types";
 import { DashboardSectionCard } from "./DashboardSectionCard";
 
@@ -59,7 +60,7 @@ export function DocumentCoveragePanel({ documents }: DocumentCoveragePanelProps)
             key={doc.label}
             className="group relative overflow-hidden flex items-center gap-4 rounded-[1.25rem] border border-border bg-background/50 p-4 transition-all hover:border-primary/20 hover:bg-card"
           >
-            <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${doc.bg} ${doc.color} shadow-inner`}>
+            <div className={cn("flex h-10 w-10 shrink-0 items-center justify-center rounded-xl shadow-inner", doc.bg, doc.color)}>
               <doc.icon className="size-5" />
             </div>
 
@@ -113,4 +114,3 @@ export function DocumentCoveragePanel({ documents }: DocumentCoveragePanelProps)
     </DashboardSectionCard>
   );
 }
-
