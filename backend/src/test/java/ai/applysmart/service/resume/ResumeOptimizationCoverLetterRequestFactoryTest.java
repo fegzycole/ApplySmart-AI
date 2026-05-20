@@ -146,6 +146,32 @@ class ResumeOptimizationCoverLetterRequestFactoryTest {
     }
 
     @Test
+    void buildUsesHiringHeadlinePositionAndFallbackCompanyWhenCompanyCannotBeInferred() {
+        Mockito.when(anthropicClient.complete(Mockito.anyString()))
+                .thenReturn("{\"company\": null, \"position\": null}");
+
+        OptimizeCoverLetterRequest coverLetterOptions = new OptimizeCoverLetterRequest();
+        coverLetterOptions.setEnabled(true);
+
+        OptimizeResumeRequest request = new OptimizeResumeRequest();
+        request.setJobDescription("""
+                We're Hiring: Software Engineers
+
+                What you'll do:
+                1. Write clean, production-ready code.
+                2. Build systems that scale.
+                """);
+        request.setCoverLetter(coverLetterOptions);
+        Resume optimizedResume = new Resume();
+        optimizedResume.setId(9L);
+
+        CoverLetterRequest result = factory.build(request, optimizedResume);
+
+        assertEquals(ResumeOptimizationCoverLetterTargetResolver.DEFAULT_COMPANY_NAME, result.getCompany());
+        assertEquals("Software Engineers", result.getPosition());
+    }
+
+    @Test
     void buildRejectsJobDescriptionWhenPositionCannotBeInferred() {
         Mockito.when(anthropicClient.complete(Mockito.anyString()))
                 .thenReturn("{\"company\": \"Stripe\", \"position\": null}");

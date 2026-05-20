@@ -24,13 +24,16 @@ class ResumeOptimizationJobDescriptionCandidateExtractor {
 
     private static final List<Pattern> POSITION_PATTERNS = List.of(
             Pattern.compile("(?i)^(?:position|role|job title|title)\\s*[:\\-]\\s*(.+)$"),
+            Pattern.compile("(?i)^(?:(?:we(?:'|\\u2019)re|we\\s+are)\\s+)?(?:now\\s+)?"
+                    + "hiring\\s*[:\\-]\\s*(?:an?\\s+)?"
+                    + "([A-Z][\\p{L}0-9/&,.'()\\- ]{2,80})(?:[.!,:;\\n]|$)"),
             Pattern.compile("(?i)^join\\s+[A-Z][\\p{L}0-9&.,'()\\-/ ]{1,80}?\\s+as\\s+(.+?)(?:\\s+to\\b|\\s+in\\b|\\s+for\\b|[.!,:-]|$)"),
             Pattern.compile("(?i)^([A-Z][\\p{L}0-9/&,.'()\\- ]{2,80}?)\\s+at\\s+[A-Z][\\p{L}0-9&.,'()\\-/ ]{1,80}(?:[.!,:;\\n]|$)"),
             Pattern.compile("(?i)(?:looking for|hiring|seeking|seeks)\\s+(?:an?\\s+)?([A-Z][\\p{L}0-9/&,.'()\\- ]{2,80}?)(?:\\s+to\\b|\\s+who\\b|\\s+with\\b|[.!,:;\\n]|$)")
     );
 
     private static final Pattern POSITION_TITLE_KEYWORD_PATTERN = Pattern.compile(
-            "(?i)\\b(engineer|developer|designer|manager|analyst|specialist|coordinator|director|lead|architect|consultant|scientist|administrator|product|program|project|marketing|sales|account|operations|recruiter)\\b"
+            "(?i)\\b(engineers?|developers?|designers?|managers?|analysts?|specialists?|coordinators?|directors?|leads?|architects?|consultants?|scientists?|administrators?|product|program|project|marketing|sales|accounts?|operations|recruiters?)\\b"
     );
 
     private static final List<String> REJECTED_COMPANY_VALUES = List.of(
@@ -41,6 +44,12 @@ class ResumeOptimizationJobDescriptionCandidateExtractor {
             "the role",
             "company",
             "role",
+            "we",
+            "we're",
+            "we\u2019re",
+            "we are",
+            "now",
+            "currently",
             "position",
             "job description",
             "responsibilities",

@@ -59,6 +59,20 @@ class ResumeOptimizationJobDescriptionParserTest {
     }
 
     @Test
+    void extractPositionTitleReadsHiringHeadlineWithoutCompany() {
+        String jobDescription = """
+                We're Hiring: Software Engineers
+
+                What you'll do:
+                1. Write clean, production-ready code.
+                2. Build systems that scale.
+                """;
+
+        assertEquals("Software Engineers", parser.extractPositionTitle(jobDescription).orElseThrow());
+        assertTrue(parser.extractCompanyName(jobDescription).isEmpty());
+    }
+
+    @Test
     void extractTargetUsesHiringSentenceWhenPresent() {
         ResumeOptimizationJobTarget target = parser.extractTarget(
                 "Moniepoint is hiring a Senior Product Designer to shape financial tools across Africa."
