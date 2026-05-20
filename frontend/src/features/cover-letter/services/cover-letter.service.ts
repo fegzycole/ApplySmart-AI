@@ -1,5 +1,7 @@
 import { apiClient } from '@/shared/services/api-client';
 import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
+import { AI_REQUEST_TIMEOUT_MS } from '@/shared/constants/timeouts';
+import type { ApiSuccessResponse } from '@/shared/types/api-response.types';
 import type { PageResponse } from '@/shared/types/pagination.types';
 import type { ToneOption } from '../types/cover-letter.types';
 
@@ -47,7 +49,7 @@ export const generateCoverLetter = async (
   return apiClient.post<CoverLetter, CoverLetterRequest>(
     ENDPOINTS.GENERATE,
     request,
-    180000
+    AI_REQUEST_TIMEOUT_MS
   );
 };
 
@@ -69,7 +71,7 @@ export const generateCoverLetterFromFile = async (
     formData.append('keyAchievements', payload.highlights.trim());
   }
 
-  return apiClient.post<CoverLetter>(ENDPOINTS.GENERATE_FROM_FILE, formData, 180000);
+  return apiClient.post<CoverLetter>(ENDPOINTS.GENERATE_FROM_FILE, formData, AI_REQUEST_TIMEOUT_MS);
 };
 
 export const fetchCoverLetters = async (): Promise<CoverLetter[]> => {
@@ -107,8 +109,8 @@ export const updateCoverLetter = async (
   );
 };
 
-export const deleteCoverLetter = async (id: number): Promise<{ success: boolean }> => {
-  return apiClient.delete(ENDPOINTS.DELETE(id));
+export const deleteCoverLetter = async (id: number): Promise<ApiSuccessResponse> => {
+  return apiClient.delete<ApiSuccessResponse>(ENDPOINTS.DELETE(id));
 };
 
 export const regenerateCoverLetter = async (
@@ -122,5 +124,5 @@ export const regenerateCoverLetter = async (
 };
 
 export const downloadCoverLetterPdf = async (pdfUrl: string): Promise<Blob> => {
-  return apiClient.getBlobByUrl(pdfUrl, 180000);
+  return apiClient.getBlobByUrl(pdfUrl, AI_REQUEST_TIMEOUT_MS);
 };

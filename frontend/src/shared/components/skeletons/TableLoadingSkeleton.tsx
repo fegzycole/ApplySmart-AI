@@ -1,10 +1,12 @@
+import { cn } from "@/shared/lib/utils";
+
 interface TableLoadingSkeletonProps {
   height?: string;
 }
 
 export const TableLoadingSkeleton = ({ height }: TableLoadingSkeletonProps) => {
   return (
-    <div className={`${height} space-y-3 animate-pulse`}>
+    <div className={cn("space-y-3 animate-pulse", height)}>
       {[...Array(5)].map((_, i) => (
         <div
           key={i}

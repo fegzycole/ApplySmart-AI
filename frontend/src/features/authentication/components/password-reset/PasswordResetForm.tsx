@@ -3,7 +3,8 @@ import { toast } from "sonner";
 import { Button } from "@/shared/components/ui/button";
 import { useFormState } from "@/shared/hooks/useFormState";
 import { AUTH_CONTENT, FORM_STYLES, PASSWORD_RESET_FIELDS } from "../../constants";
-import { useResetPassword } from "../../hooks/useAuthQueries";
+import { useRequestPasswordReset } from "../../hooks/useAuthQueries";
+import { getAuthErrorMessage } from "../../utils/auth-errors";
 import { ControlledFormField } from "../shared";
 
 const initialValues = {
@@ -12,7 +13,7 @@ const initialValues = {
 
 export function PasswordResetForm() {
   const { values, handleChange, hasEmptyRequiredFields } = useFormState(initialValues);
-  const resetPasswordMutation = useResetPassword();
+  const requestPasswordResetMutation = useRequestPasswordReset();
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -23,10 +24,10 @@ export function PasswordResetForm() {
     }
 
     try {
-      await resetPasswordMutation.mutateAsync(values);
+      await requestPasswordResetMutation.mutateAsync(values);
       toast.success("Password reset instructions have been sent to your email.");
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to send reset instructions");
+    } catch (error: unknown) {
+      toast.error(getAuthErrorMessage(error, "Failed to send reset instructions"));
     }
   };
 
@@ -43,9 +44,9 @@ export function PasswordResetForm() {
       <Button
         type="submit"
         className={FORM_STYLES.submitButton}
-        disabled={resetPasswordMutation.isPending}
+        disabled={requestPasswordResetMutation.isPending}
       >
-        {resetPasswordMutation.isPending ? "Sending..." : AUTH_CONTENT.passwordReset.submitButton}
+        {requestPasswordResetMutation.isPending ? "Sending..." : AUTH_CONTENT.passwordReset.submitButton}
       </Button>
     </form>
   );

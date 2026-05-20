@@ -4,7 +4,8 @@ import * as authService from '../services/auth.service';
 import type {
   LoginCredentials,
   SignupData,
-  PasswordResetRequest,
+  RequestPasswordResetRequest,
+  ResetPasswordRequest,
   TwoFactorLoginVerifyRequest,
   VerifyEmailRequest,
 } from '../types/auth.types';
@@ -67,9 +68,15 @@ export const useLogout = () => {
   });
 };
 
+export const useRequestPasswordReset = () => {
+  return useMutation({
+    mutationFn: (data: RequestPasswordResetRequest) => authService.requestPasswordReset(data),
+  });
+};
+
 export const useResetPassword = () => {
   return useMutation({
-    mutationFn: (data: PasswordResetRequest) => authService.resetPassword(data),
+    mutationFn: (data: ResetPasswordRequest) => authService.resetPassword(data),
   });
 };
 

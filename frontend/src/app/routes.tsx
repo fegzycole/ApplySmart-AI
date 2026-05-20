@@ -18,7 +18,7 @@ const VerifyEmailPage = lazy(() => import("@/features/authentication/pages/Verif
 const OAuthCallbackPage = lazy(() => import("@/features/authentication/pages/OAuthCallbackPage").then(m => ({ default: m.OAuthCallbackPage })));
 
 // Layout & Dashboard
-const AppLayout = lazy(() => import("@/features/dashboard/components/layout/AppLayout").then(m => ({ default: m.AppLayout })));
+const AppLayout = lazy(() => import("@/shared/components/layout/AppLayout").then(m => ({ default: m.AppLayout })));
 const DashboardHomePage = lazy(() => import("@/features/dashboard/pages/DashboardHomePage").then(m => ({ default: m.DashboardHomePage })));
 
 // Features

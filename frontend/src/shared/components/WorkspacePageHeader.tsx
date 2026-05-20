@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 
+import { cn } from "@/shared/lib/utils";
+
 interface WorkspacePageHeaderProps {
   badge: string;
   badgeIcon: LucideIcon;
@@ -23,7 +25,12 @@ export function WorkspacePageHeader({
   footerClassName,
 }: WorkspacePageHeaderProps) {
   return (
-    <header className={`relative overflow-hidden rounded-[2rem] border border-border bg-card p-4 shadow-2xl shadow-primary/5 dark:shadow-none sm:rounded-[2.5rem] sm:p-6 lg:p-8 ${className ?? ""}`}>
+    <header
+      className={cn(
+        "relative overflow-hidden rounded-[2rem] border border-border bg-card p-4 shadow-2xl shadow-primary/5 dark:shadow-none sm:rounded-[2.5rem] sm:p-6 lg:p-8",
+        className,
+      )}
+    >
       <div className="flex flex-col gap-4 sm:gap-6">
         <div className="flex flex-col gap-4 sm:gap-5 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl space-y-3 sm:space-y-4">
@@ -51,7 +58,7 @@ export function WorkspacePageHeader({
         </div>
 
         {footer ? (
-          <div className={footerClassName ?? ""}>
+          <div className={footerClassName}>
             {footer}
           </div>
         ) : null}

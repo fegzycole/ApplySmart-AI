@@ -28,8 +28,13 @@ export interface SignupData {
   password: string;
 }
 
-export interface PasswordResetRequest {
+export interface RequestPasswordResetRequest {
   email: string;
+}
+
+export interface ResetPasswordRequest extends RequestPasswordResetRequest {
+  code: string;
+  newPassword: string;
 }
 
 export interface OAuthCodeExchangeRequest {
@@ -55,10 +60,4 @@ export interface SignupResponse {
 export interface VerifyEmailRequest {
   email: string;
   code: string;
-}
-
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  data?: T;
 }

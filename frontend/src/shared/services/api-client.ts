@@ -1,5 +1,5 @@
-import { API_ENDPOINTS } from '../constants/api-endpoints';
-import { tokenStorage } from '../utils/token-storage';
+import { API_ENDPOINTS } from "@/shared/constants/api-endpoints";
+import { tokenStorage } from "@/shared/utils/token-storage";
 
 export const API_CONFIG = {
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
@@ -18,12 +18,6 @@ export function resolveBackendUrl(path: string): string {
   return `${apiRoot}${path}`;
 }
 
-export interface ApiResponse<T> {
-  data: T;
-  status: number;
-  message?: string;
-}
-
 export class ApiError extends Error {
   status: number;
   data?: unknown;
@@ -36,6 +30,22 @@ export class ApiError extends Error {
   }
 }
 
+type RequestMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+function findHeaderValue(headers: Record<string, string>, headerName: string): string | undefined {
+  const normalizedHeaderName = headerName.toLowerCase();
+  const matchingHeader = Object.entries(headers).find(([key]) => key.toLowerCase() === normalizedHeaderName);
+
+  return matchingHeader?.[1];
+}
+
+interface RequestOptions<D = unknown> {
+  method: RequestMethod;
+  data?: D;
+  params?: Record<string, string>;
+  customTimeout?: number;
+}
+
 export class ApiClient {
   private baseURL: string;
   private headers: Record<string, string>;
@@ -45,11 +55,37 @@ export class ApiClient {
     this.baseURL = config.baseURL;
     this.headers = { ...config.headers };
     this.timeout = config.timeout;
+  }
 
+  private buildHeaders(options: { isFormData?: boolean } = {}): {
+    headers: Record<string, string>;
+    usedAuth: boolean;
+  } {
+    const headers: Record<string, string> = {};
     const token = tokenStorage.getToken();
+
+    Object.entries(this.headers).forEach(([key, value]) => {
+      const normalizedKey = key.toLowerCase();
+
+      if (options.isFormData && normalizedKey === 'content-type') {
+        return;
+      }
+
+      if (normalizedKey === 'authorization' && token) {
+        return;
+      }
+
+      headers[key] = value;
+    });
+
     if (token) {
-      this.headers['Authorization'] = `Bearer ${token}`;
+      headers['Authorization'] = `Bearer ${token}`;
     }
+
+    return {
+      headers,
+      usedAuth: Boolean(token || findHeaderValue(headers, 'authorization')),
+    };
   }
 
   private handleUnauthorizedResponse(usedAuth: boolean) {
@@ -67,22 +103,73 @@ export class ApiClient {
     }
   }
 
-  private async handleResponse<T>(response: Response, usedAuth: boolean): Promise<T> {
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
+  private buildUrl(endpoint: string, params?: Record<string, string>): string {
+    let urlString = `${this.baseURL}${endpoint}`;
 
-      if (response.status === 401) {
-        this.handleUnauthorizedResponse(usedAuth);
-      }
-
-      throw new ApiError(
-        error.message || `HTTP Error ${response.status}`,
-        response.status,
-        error
-      );
+    if (!params) {
+      return urlString;
     }
 
-    return response.json();
+    const searchParams = new URLSearchParams();
+    Object.entries(params).forEach(([key, value]) => {
+      searchParams.append(key, value);
+    });
+
+    return `${urlString}?${searchParams.toString()}`;
+  }
+
+  private buildBody<D>(data: D | undefined, isFormData: boolean): BodyInit | undefined {
+    if (!data) {
+      return undefined;
+    }
+
+    return isFormData ? (data as unknown as FormData) : JSON.stringify(data);
+  }
+
+  private async parseErrorBody(response: Response): Promise<unknown> {
+    return response.json().catch(() => ({}));
+  }
+
+  private getErrorMessage(error: unknown, status: number): string {
+    if (error && typeof error === 'object' && 'message' in error && typeof error.message === 'string') {
+      return error.message;
+    }
+
+    return `HTTP Error ${status}`;
+  }
+
+  private async throwForError(response: Response, usedAuth: boolean): Promise<void> {
+    if (response.ok) {
+      return;
+    }
+
+    const error = await this.parseErrorBody(response);
+
+    if (response.status === 401) {
+      this.handleUnauthorizedResponse(usedAuth);
+    }
+
+    throw new ApiError(this.getErrorMessage(error, response.status), response.status, error);
+  }
+
+  private async parseJsonResponse<T>(response: Response, usedAuth: boolean): Promise<T> {
+    await this.throwForError(response, usedAuth);
+
+    if (response.status === 204) {
+      return undefined as T;
+    }
+
+    const responseText = await response.text();
+    if (!responseText) {
+      return undefined as T;
+    }
+
+    return JSON.parse(responseText) as T;
+  }
+
+  private async parseBlobResponse(response: Response, usedAuth: boolean): Promise<Blob> {
+    await this.throwForError(response, usedAuth);
+    return response.blob();
   }
 
   private async fetchWithTimeout(
@@ -110,136 +197,79 @@ export class ApiClient {
     }
   }
 
-  async get<T>(endpoint: string, params?: Record<string, string>): Promise<T> {
-    let urlString = `${this.baseURL}${endpoint}`;
-
-    if (params) {
-      const searchParams = new URLSearchParams();
-      Object.entries(params).forEach(([key, value]) => {
-        searchParams.append(key, value);
-      });
-      urlString += `?${searchParams.toString()}`;
-    }
-
-    const response = await this.fetchWithTimeout(urlString, {
-      method: 'GET',
-      headers: this.headers,
-    });
-
-    return this.handleResponse<T>(response, Boolean(this.headers['Authorization']));
-  }
-
-  async post<T, D = unknown>(endpoint: string, data?: D, customTimeout?: number): Promise<T> {
-    const isFormData = data instanceof FormData;
-
-    const headers: Record<string, string> = {};
-    Object.keys(this.headers).forEach(key => {
-      if (isFormData && key === 'Content-Type') {
-        return;
-      }
-      headers[key] = this.headers[key];
-    });
+  private async request<T, D = unknown>(endpoint: string, options: RequestOptions<D>): Promise<T> {
+    const isFormData = options.data instanceof FormData;
+    const { headers, usedAuth } = this.buildHeaders({ isFormData });
 
     const response = await this.fetchWithTimeout(
-      `${this.baseURL}${endpoint}`,
+      this.buildUrl(endpoint, options.params),
       {
-        method: 'POST',
+        method: options.method,
         headers,
-        body: isFormData ? (data as FormData) : (data ? JSON.stringify(data) : undefined),
+        body: this.buildBody(options.data, isFormData),
       },
-      customTimeout
+      options.customTimeout
     );
 
-    return this.handleResponse<T>(response, Boolean(headers['Authorization']));
+    return this.parseJsonResponse<T>(response, usedAuth);
+  }
+
+  private async requestBlob<D = unknown>(url: string, options: RequestOptions<D>): Promise<Blob> {
+    const { headers, usedAuth } = this.buildHeaders();
+    const response = await this.fetchWithTimeout(
+      url,
+      {
+        method: options.method,
+        headers,
+        body: this.buildBody(options.data, false),
+      },
+      options.customTimeout
+    );
+
+    return this.parseBlobResponse(response, usedAuth);
+  }
+
+  async get<T>(endpoint: string, params?: Record<string, string>): Promise<T> {
+    return this.request<T>(endpoint, { method: 'GET', params });
+  }
+
+  async post<T, D = unknown>(
+    endpoint: string,
+    data?: D,
+    customTimeout?: number,
+    params?: Record<string, string>,
+  ): Promise<T> {
+    return this.request<T, D>(endpoint, { method: 'POST', data, customTimeout, params });
   }
 
   async postBlob<D = unknown>(endpoint: string, data?: D, customTimeout?: number): Promise<Blob> {
-    const response = await this.fetchWithTimeout(
-      `${this.baseURL}${endpoint}`,
-      {
-        method: 'POST',
-        headers: this.headers,
-        body: data ? JSON.stringify(data) : undefined,
-      },
-      customTimeout
-    );
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-
-      if (response.status === 401) {
-        this.handleUnauthorizedResponse(Boolean(this.headers['Authorization']));
-      }
-
-      throw new ApiError(
-        error.message || `HTTP Error ${response.status}`,
-        response.status,
-        error
-      );
-    }
-
-    return response.blob();
+    return this.requestBlob<D>(`${this.baseURL}${endpoint}`, {
+      method: 'POST',
+      data,
+      customTimeout,
+    });
   }
 
   async getBlobByUrl(pathOrUrl: string, customTimeout?: number): Promise<Blob> {
-    const response = await this.fetchWithTimeout(
+    return this.requestBlob(
       resolveBackendUrl(pathOrUrl),
-      {
-        method: 'GET',
-        headers: this.headers,
-      },
-      customTimeout
+      { method: 'GET', customTimeout }
     );
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-
-      if (response.status === 401) {
-        this.handleUnauthorizedResponse(Boolean(this.headers['Authorization']));
-      }
-
-      throw new ApiError(
-        error.message || `HTTP Error ${response.status}`,
-        response.status,
-        error
-      );
-    }
-
-    return response.blob();
   }
 
   async put<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
-    const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
-      method: 'PUT',
-      headers: this.headers,
-      body: data ? JSON.stringify(data) : undefined,
-    });
-
-    return this.handleResponse<T>(response, Boolean(this.headers['Authorization']));
+    return this.request<T, D>(endpoint, { method: 'PUT', data });
   }
 
   async patch<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
-    const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
-      method: 'PATCH',
-      headers: this.headers,
-      body: data ? JSON.stringify(data) : undefined,
-    });
-
-    return this.handleResponse<T>(response, Boolean(this.headers['Authorization']));
+    return this.request<T, D>(endpoint, { method: 'PATCH', data });
   }
 
   async delete<T, D = unknown>(endpoint: string, data?: D): Promise<T> {
-    const response = await this.fetchWithTimeout(`${this.baseURL}${endpoint}`, {
-      method: 'DELETE',
-      headers: this.headers,
-      body: data ? JSON.stringify(data) : undefined,
-    });
-
-    return this.handleResponse<T>(response, Boolean(this.headers['Authorization']));
+    return this.request<T, D>(endpoint, { method: 'DELETE', data });
   }
 
   setAuthToken(token: string) {
-    this.headers['Authorization'] = `Bearer ${token}`;
     tokenStorage.setToken(token);
   }
 

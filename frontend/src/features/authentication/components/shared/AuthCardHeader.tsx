@@ -1,4 +1,5 @@
 import { Sparkles } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 import { AUTH_CARD_STYLES } from "../../constants/authentication.constants";
 
 interface AuthCardHeaderProps {
@@ -8,7 +9,7 @@ interface AuthCardHeaderProps {
 
 export function AuthCardHeader({ title, description }: AuthCardHeaderProps) {
   return (
-    <div className={AUTH_CARD_STYLES.header.container + " group"}>
+    <div className={cn(AUTH_CARD_STYLES.header.container, "group")}>
       <div className={AUTH_CARD_STYLES.header.icon.wrapper}>
         <Sparkles className={AUTH_CARD_STYLES.header.icon.icon} />
       </div>

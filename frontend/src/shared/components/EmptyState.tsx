@@ -1,3 +1,5 @@
+import { cn } from "@/shared/lib/utils";
+
 interface EmptyStateProps {
   message: string;
   height?: string;
@@ -5,7 +7,7 @@ interface EmptyStateProps {
 
 export function EmptyState({ message, height = "h-32" }: EmptyStateProps) {
   return (
-    <div className={`flex items-center justify-center ${height} text-zinc-500`}>
+    <div className={cn("flex items-center justify-center text-zinc-500", height)}>
       {message}
     </div>
   );

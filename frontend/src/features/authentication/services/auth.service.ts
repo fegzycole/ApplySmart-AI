@@ -4,15 +4,16 @@ import { tokenStorage } from '@/shared/utils/token-storage';
 import type {
   LoginCredentials,
   SignupData,
-  PasswordResetRequest,
+  RequestPasswordResetRequest,
+  ResetPasswordRequest,
   OAuthCodeExchangeRequest,
   TwoFactorLoginVerifyRequest,
   AuthResponse,
   SignupResponse,
   VerifyEmailRequest,
-  ApiResponse,
   User
 } from '../types/auth.types';
+import type { ApiSuccessResponse } from '@/shared/types/api-response.types';
 
 const ENDPOINTS = API_ENDPOINTS.AUTH;
 
@@ -67,10 +68,19 @@ export const logout = async (): Promise<void> => {
   }
 };
 
-export const resetPassword = async (data: PasswordResetRequest): Promise<void> => {
-  await apiClient.post<void, PasswordResetRequest>(
+export const requestPasswordReset = async (
+  data: RequestPasswordResetRequest,
+): Promise<ApiSuccessResponse> => {
+  return apiClient.post<ApiSuccessResponse, RequestPasswordResetRequest>(
+    ENDPOINTS.REQUEST_PASSWORD_RESET,
+    data,
+  );
+};
+
+export const resetPassword = async (data: ResetPasswordRequest): Promise<ApiSuccessResponse> => {
+  return apiClient.post<ApiSuccessResponse, ResetPasswordRequest>(
     ENDPOINTS.RESET_PASSWORD,
-    data
+    data,
   );
 };
 
@@ -101,15 +111,15 @@ export const exchangeOAuthCode = async (code: string): Promise<AuthResponse> => 
   return response;
 };
 
-export const verifyEmail = async (data: VerifyEmailRequest): Promise<ApiResponse<void>> => {
-  return apiClient.post<ApiResponse<void>, VerifyEmailRequest>(
+export const verifyEmail = async (data: VerifyEmailRequest): Promise<ApiSuccessResponse> => {
+  return apiClient.post<ApiSuccessResponse, VerifyEmailRequest>(
     ENDPOINTS.VERIFY_EMAIL,
     data
   );
 };
 
-export const resendVerificationCode = async (email: string): Promise<ApiResponse<void>> => {
-  return apiClient.post<ApiResponse<void>, { email: string }>(
+export const resendVerificationCode = async (email: string): Promise<ApiSuccessResponse> => {
+  return apiClient.post<ApiSuccessResponse, { email: string }>(
     ENDPOINTS.RESEND_VERIFICATION,
     { email }
   );

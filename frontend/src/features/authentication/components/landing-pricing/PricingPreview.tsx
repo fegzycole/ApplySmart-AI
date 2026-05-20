@@ -2,6 +2,7 @@ import { FEATURE_FLAGS } from "@/shared/config/feature-flags";
 import { Check, ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router";
 import { Button } from "@/shared/components/ui/button";
+import { cn } from "@/shared/lib/utils";
 import { motion } from "framer-motion";
 
 const plans = [
@@ -89,9 +90,10 @@ export function PricingPreview() {
             <motion.div 
               key={plan.name}
               variants={itemVariants}
-              className={`canvas-card rounded-[3.5rem] p-12 flex flex-col relative overflow-hidden group ${
-                plan.isPopular ? "border-primary/20 bg-primary/5 scale-105 z-10 shadow-primary/10" : ""
-              }`}
+              className={cn(
+                "canvas-card group relative flex flex-col overflow-hidden rounded-[3.5rem] p-12",
+                plan.isPopular && "z-10 scale-105 border-primary/20 bg-primary/5 shadow-primary/10",
+              )}
             >
               {plan.isPopular && (
                 <div className="absolute top-8 right-8 bg-primary text-primary-foreground px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest flex items-center gap-2">
@@ -123,9 +125,10 @@ export function PricingPreview() {
                 <Link to="/signup">
                   <Button 
                     variant={plan.buttonVariant} 
-                    className={`w-full h-16 text-lg rounded-[1.5rem] group-hover:shadow-xl transition-all ${
-                      plan.isPopular ? "shadow-primary/20" : ""
-                    }`}
+                    className={cn(
+                      "h-16 w-full rounded-[1.5rem] text-lg transition-all group-hover:shadow-xl",
+                      plan.isPopular && "shadow-primary/20",
+                    )}
                   >
                     {plan.buttonText} <ArrowRight className="size-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>

@@ -1,4 +1,5 @@
 import { Card, CardContent } from "@/shared/components/ui/card";
+import { cn } from "@/shared/lib/utils";
 
 interface TestimonialCardProps {
   quote: string;
@@ -15,7 +16,12 @@ interface TestimonialCardProps {
 
 export function TestimonialCard({ quote, author, gradient }: TestimonialCardProps) {
   return (
-    <Card className={`border-0 bg-gradient-to-br ${gradient.card} shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2`}>
+    <Card
+      className={cn(
+        "transform border-0 bg-gradient-to-br shadow-xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl",
+        gradient.card,
+      )}
+    >
       <CardContent className="pt-8">
         <div className="flex gap-1 mb-6">
           {[...Array(5)].map((_, i) => (
@@ -28,7 +34,7 @@ export function TestimonialCard({ quote, author, gradient }: TestimonialCardProp
           {quote}
         </p>
         <div className="flex items-center gap-4">
-          <div className={`size-12 rounded-full bg-gradient-to-br ${gradient.avatar} flex items-center justify-center shadow-lg`}>
+          <div className={cn("flex size-12 items-center justify-center rounded-full bg-gradient-to-br shadow-lg", gradient.avatar)}>
             <span className="text-white font-semibold">{author.initials}</span>
           </div>
           <div>

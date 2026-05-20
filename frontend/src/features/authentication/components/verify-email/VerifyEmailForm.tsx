@@ -5,6 +5,7 @@ import { Button } from "@/shared/components/ui/button";
 import { ControlledFormField } from "../shared";
 import { FORM_STYLES, VERIFY_EMAIL_FIELD, AUTH_CONTENT } from "../../constants";
 import { useVerifyEmail, useResendVerification } from "../../hooks/useAuthQueries";
+import { getAuthErrorMessage } from "../../utils/auth-errors";
 
 interface VerifyEmailFormProps {
   email: string;
@@ -40,8 +41,8 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
       await verifyEmailMutation.mutateAsync({ email, code });
       toast.success("Email verified successfully. Please log in to continue.");
       navigate("/login", { state: { email } });
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Invalid or expired verification code");
+    } catch (error: unknown) {
+      toast.error(getAuthErrorMessage(error, "Invalid or expired verification code"));
     }
   };
 
@@ -54,8 +55,8 @@ export function VerifyEmailForm({ email }: VerifyEmailFormProps) {
     try {
       await resendVerificationMutation.mutateAsync(email);
       toast.success("A new verification code has been sent to your email.");
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to resend verification code");
+    } catch (error: unknown) {
+      toast.error(getAuthErrorMessage(error, "Failed to resend verification code"));
     }
   };
 

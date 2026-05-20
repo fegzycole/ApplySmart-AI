@@ -4,6 +4,7 @@ export const API_ENDPOINTS = {
     LOGIN_2FA_VERIFY: '/auth/login/2fa/verify',
     SIGNUP: '/auth/signup',
     LOGOUT: '/auth/logout',
+    REQUEST_PASSWORD_RESET: '/auth/request-password-reset',
     RESET_PASSWORD: '/auth/reset-password',
     REFRESH_TOKEN: '/auth/refresh',
     CURRENT_USER: '/auth/me',

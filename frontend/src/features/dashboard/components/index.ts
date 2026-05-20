@@ -1,4 +1,4 @@
-export { AppLayout } from "./layout";
+export { AppLayout } from "@/shared/components/layout";
 export { DashboardHeroPanel } from "./overview/DashboardHeroPanel";
 export { DashboardMetricGrid } from "./overview/DashboardMetricGrid";
 export { ApplicationVelocityPanel } from "./panels/ApplicationVelocityPanel";
