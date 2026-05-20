@@ -7,24 +7,31 @@ import { PreviewSkills } from "./micro/PreviewSkills";
 
 export function ProfessionalTemplatePreview() {
   return (
-    <PreviewWrapper font="serif">
+    <PreviewWrapper font="libre">
       <PreviewHeader
         name="Alexander Smith"
         contact={["alex.smith@email.com", "(555) 123-4567", "San Francisco, CA"]}
         layout="left"
-        borderColor="border-black"
-        borderWidth="border-b-[1px]"
+        borderColor="border-[#1e293b]"
+        borderWidth="border-b-[2px]"
         nameSize="text-[5.5px]"
+        nameWeight="font-bold"
         separator=" "
       />
 
-      <PreviewSection title="Professional Summary" titleColor="text-black" titleSize="text-[3px]" borderColor="border-slate-400">
-        <PreviewText italic>
+      <PreviewSection
+        title="Professional Summary"
+        titleClassName="border-b border-[#e2e8f0] pb-[0.5px] text-[3px] font-bold uppercase tracking-[0.1em] text-[#1e293b]"
+      >
+        <PreviewText className="text-[#334155]">
           Accomplished software engineer with extensive experience in full-stack development and enterprise systems. Proven track record of delivering high-quality solutions.
         </PreviewText>
       </PreviewSection>
 
-      <PreviewSection title="Professional Experience" titleColor="text-black" titleSize="text-[3px]" borderColor="border-slate-400">
+      <PreviewSection
+        title="Experience History"
+        titleClassName="border-b border-[#e2e8f0] pb-[0.5px] text-[3px] font-bold uppercase tracking-[0.1em] text-[#1e293b]"
+      >
         <PreviewJob
           title="Senior Software Engineer"
           company="Tech Corporation"
@@ -35,11 +42,14 @@ export function ProfessionalTemplatePreview() {
             "Led team of 5 engineers in agile development environment"
           ]}
           layout="professional"
-          companyColor="text-slate-700"
+          companyColor="text-[#334155]"
         />
       </PreviewSection>
 
-      <PreviewSection title="Technical Skills" titleColor="text-black" titleSize="text-[3px]" borderColor="border-slate-400">
+      <PreviewSection
+        title="Core Competencies"
+        titleClassName="border-b border-[#e2e8f0] pb-[0.5px] text-[3px] font-bold uppercase tracking-[0.1em] text-[#1e293b]"
+      >
         <PreviewSkills skills={["JavaScript", "Python", "Java", "React", "Spring", "AWS"]} variant="professional" />
       </PreviewSection>
     </PreviewWrapper>

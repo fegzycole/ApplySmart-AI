@@ -2,17 +2,33 @@ import { PreviewWrapper } from "./micro/PreviewWrapper";
 import { PreviewHeader } from "./micro/PreviewHeader";
 import { PreviewSection } from "./micro/PreviewSection";
 import { PreviewJob } from "./micro/PreviewJob";
+import { PreviewText } from "./micro/PreviewText";
 
 export function ClassicTemplatePreview() {
   return (
-    <PreviewWrapper font="serif">
+    <PreviewWrapper font="garamond">
       <PreviewHeader
-        name="Alexander Smith"
+        name="ALEXANDER SMITH"
         contact={["alex.smith@email.com | (555) 123-4567 | San Francisco, CA"]}
-        separator=""
+        borderColor="border-[#18181b]"
+        borderWidth="border-b-[2px]"
+        nameSize="text-[5.8px]"
+        nameWeight="font-bold"
       />
 
-      <PreviewSection title="Experience" titleColor="text-black" titleSize="text-[3px]" borderColor="border-slate-500">
+      <PreviewSection
+        title="Professional Summary"
+        titleClassName="border-b border-[#18181b] pb-[0.5px] text-[3px] font-bold uppercase tracking-[0.16em] text-[#18181b]"
+      >
+        <PreviewText italic className="text-[#18181b]">
+          Senior software engineer with a record of delivering reliable platforms and collaborative product outcomes.
+        </PreviewText>
+      </PreviewSection>
+
+      <PreviewSection
+        title="Professional Experience"
+        titleClassName="border-b border-[#18181b] pb-[0.5px] text-[3px] font-bold uppercase tracking-[0.16em] text-[#18181b]"
+      >
         <PreviewJob
           title="Senior Software Engineer"
           company="Tech Corporation"
@@ -26,16 +42,22 @@ export function ClassicTemplatePreview() {
         />
       </PreviewSection>
 
-      <PreviewSection title="Education" titleColor="text-black" titleSize="text-[3px]" borderColor="border-slate-500">
+      <PreviewSection
+        title="Education"
+        titleClassName="border-b border-[#18181b] pb-[0.5px] text-[3px] font-bold uppercase tracking-[0.16em] text-[#18181b]"
+      >
         <div>
-          <div className="text-[2.6px] font-bold">Bachelor of Science in Computer Science</div>
-          <div className="text-[2.4px] text-slate-600">University of California, 2020</div>
+          <div className="text-[2.6px] font-bold uppercase text-[#18181b]">University of California</div>
+          <div className="text-[2.4px] font-medium italic text-[#27272a]">Bachelor of Science in Computer Science</div>
         </div>
       </PreviewSection>
 
-      <PreviewSection title="Skills" titleColor="text-black" titleSize="text-[3px]" borderColor="border-slate-500">
-        <div className="text-[2.4px] text-slate-700">
-          JavaScript, TypeScript, React, Node.js, Python, Java, SQL, AWS, Docker, Git
+      <PreviewSection
+        title="Core Competencies"
+        titleClassName="border-b border-[#18181b] pb-[0.5px] text-[3px] font-bold uppercase tracking-[0.16em] text-[#18181b]"
+      >
+        <div className="text-[2.4px] font-medium tracking-wide text-[#18181b]">
+          JavaScript • TypeScript • React • Node.js • Python • Java • SQL • AWS
         </div>
       </PreviewSection>
     </PreviewWrapper>

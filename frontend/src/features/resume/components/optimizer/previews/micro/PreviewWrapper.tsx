@@ -1,19 +1,22 @@
-import type { ReactNode } from "react";
-import { cn } from "@/shared/lib/utils";
+import type { CSSProperties, ReactNode } from "react";
 
-const FONT_CLASS_NAMES = {
-  sans: "font-sans",
-  serif: "font-serif",
+const FONT_FAMILY_STYLES = {
+  inter: { fontFamily: '"Inter", "Helvetica Neue", Helvetica, Arial, sans-serif' },
+  garamond: { fontFamily: '"EB Garamond", "Times New Roman", serif' },
+  jakarta: { fontFamily: '"Plus Jakarta Sans", "Inter", sans-serif' },
+  libre: { fontFamily: '"Libre Baskerville", Georgia, serif' },
 } as const;
 
 interface PreviewWrapperProps {
   children: ReactNode;
-  font?: "sans" | "serif";
+  font?: keyof typeof FONT_FAMILY_STYLES;
 }
 
-export function PreviewWrapper({ children, font = "sans" }: PreviewWrapperProps) {
+export function PreviewWrapper({ children, font = "inter" }: PreviewWrapperProps) {
+  const style: CSSProperties = FONT_FAMILY_STYLES[font];
+
   return (
-    <div className={cn("space-y-[2px] p-1.5 text-[2.8px] leading-[1.3]", FONT_CLASS_NAMES[font])}>
+    <div className="space-y-[2px] p-1.5 text-[2.8px] leading-[1.3]" style={style}>
       {children}
     </div>
   );
