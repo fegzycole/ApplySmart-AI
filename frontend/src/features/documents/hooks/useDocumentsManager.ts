@@ -1,15 +1,12 @@
 import { useDeferredValue, useMemo, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
-import {
-  COVER_LETTER_KEYS,
-  useDeleteCoverLetter,
-} from "@/features/cover-letter/hooks/useCoverLetterQueries";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
+import { COVER_LETTER_KEYS } from "@/features/cover-letter/hooks/useCoverLetterQueries";
 import {
   fetchCoverLettersPage,
   type CoverLetter,
   type CoverLetterPageParams,
 } from "@/features/cover-letter/services/cover-letter.service";
-import { RESUME_KEYS, useDeleteResume } from "@/features/resume/hooks/useResumeQueries";
+import { RESUME_KEYS } from "@/features/resume/hooks/useResumeQueries";
 import {
   fetchResumesPage,
   type Resume,
@@ -19,11 +16,13 @@ import {
 import { DOCUMENT_TAB_META, DOCUMENT_TABS } from "../constants/documents.constants";
 import type {
   DocumentsOverview,
-  DocumentsPreviewTarget,
   DocumentsTabData,
   DocumentsTabId,
   DocumentsTabPaginationState,
 } from "../types/documents.types";
+import { useDocumentDeletionState } from "./useDocumentDeletionState";
+import { useDocumentPreviewState } from "./useDocumentPreviewState";
+import { shouldShowDocumentsPageSkeleton } from "../utils/documents-query-state";
 
 const DOCUMENTS_PAGE_SIZE = 8;
 
@@ -31,39 +30,35 @@ function getNextPageParam(lastPage: { last: boolean; number: number }) {
   return lastPage.last ? undefined : lastPage.number + 1;
 }
 
+interface PaginationQuery {
+  fetchNextPage: () => Promise<unknown>;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+}
+
 export function useDocumentsManager() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<DocumentsTabId>("original");
-  const [visitedTabs, setVisitedTabs] = useState<Set<DocumentsTabId>>(() => new Set(["original"]));
-  const [resumeToDelete, setResumeToDelete] = useState<Resume | null>(null);
-  const [coverLetterToDelete, setCoverLetterToDelete] = useState<CoverLetter | null>(null);
-  const [previewTarget, setPreviewTarget] = useState<DocumentsPreviewTarget | null>(null);
   const deferredSearchQuery = useDeferredValue(searchQuery.trim());
+  const deletionState = useDocumentDeletionState();
+  const previewState = useDocumentPreviewState();
 
   const handleSetActiveTab = (tab: DocumentsTabId) => {
-    setVisitedTabs((prev) => {
-      if (prev.has(tab)) return prev;
-      const next = new Set(prev);
-      next.add(tab);
-      return next;
-    });
     setActiveTab(tab);
   };
 
-  const deleteResumeMutation = useDeleteResume();
-  const deleteCoverLetterMutation = useDeleteCoverLetter();
-  const originalResumesQuery = useResumeDocumentsInfiniteQuery("original", deferredSearchQuery, visitedTabs.has("original"));
-  const optimizedResumesQuery = useResumeDocumentsInfiniteQuery("optimized", deferredSearchQuery, visitedTabs.has("optimized"));
-  const builtResumesQuery = useResumeDocumentsInfiniteQuery("built", deferredSearchQuery, visitedTabs.has("built"));
-  const coverLettersQuery = useCoverLettersInfiniteQuery(deferredSearchQuery, visitedTabs.has("coverLetters"));
+  const originalResumesQuery = useResumeDocumentsInfiniteQuery("original", deferredSearchQuery);
+  const optimizedResumesQuery = useResumeDocumentsInfiniteQuery("optimized", deferredSearchQuery);
+  const builtResumesQuery = useResumeDocumentsInfiniteQuery("built", deferredSearchQuery);
+  const coverLettersQuery = useCoverLettersInfiniteQuery(deferredSearchQuery);
 
   const documentsByTab = useMemo<DocumentsTabData>(
-    () => ({
-      original: originalResumesQuery.data?.pages.flatMap((page) => page.content) ?? [],
-      optimized: optimizedResumesQuery.data?.pages.flatMap((page) => page.content) ?? [],
-      built: builtResumesQuery.data?.pages.flatMap((page) => page.content) ?? [],
-      coverLetters: coverLettersQuery.data?.pages.flatMap((page) => page.content) ?? [],
-    }),
+    () => buildDocumentsByTab(
+      originalResumesQuery,
+      optimizedResumesQuery,
+      builtResumesQuery,
+      coverLettersQuery,
+    ),
     [
       builtResumesQuery.data,
       coverLettersQuery.data,
@@ -73,12 +68,7 @@ export function useDocumentsManager() {
   );
 
   const tabCounts = useMemo(
-    () => ({
-      original: originalResumesQuery.data?.pages[0]?.totalElements ?? 0,
-      optimized: optimizedResumesQuery.data?.pages[0]?.totalElements ?? 0,
-      built: builtResumesQuery.data?.pages[0]?.totalElements ?? 0,
-      coverLetters: coverLettersQuery.data?.pages[0]?.totalElements ?? 0,
-    }),
+    () => buildTabCounts(originalResumesQuery, optimizedResumesQuery, builtResumesQuery, coverLettersQuery),
     [
       builtResumesQuery.data,
       coverLettersQuery.data,
@@ -88,111 +78,24 @@ export function useDocumentsManager() {
   );
 
   const overview = useMemo<DocumentsOverview>(
-    () => ({
-      originalResumes: tabCounts.original,
-      optimizedResumes: tabCounts.optimized,
-      builtResumes: tabCounts.built,
-      coverLetters: tabCounts.coverLetters,
-      totalDocuments:
-        tabCounts.original +
-        tabCounts.optimized +
-        tabCounts.built +
-        tabCounts.coverLetters,
-    }),
+    () => buildOverview(tabCounts),
     [tabCounts],
   );
 
   const tabs = useMemo(
-    () =>
-      DOCUMENT_TABS.map((id) => ({
-        id,
-        label: DOCUMENT_TAB_META[id].label,
-        description: DOCUMENT_TAB_META[id].description,
-        count: tabCounts[id],
-      })),
+    () => buildTabs(tabCounts),
     [tabCounts],
   );
 
   const paginationByTab = useMemo<Record<DocumentsTabId, DocumentsTabPaginationState>>(
     () => ({
-      original: {
-        hasNextPage: Boolean(originalResumesQuery.hasNextPage),
-        isFetchingNextPage: originalResumesQuery.isFetchingNextPage,
-        loadMore: () => {
-          if (originalResumesQuery.hasNextPage && !originalResumesQuery.isFetchingNextPage) {
-            void originalResumesQuery.fetchNextPage();
-          }
-        },
-      },
-      optimized: {
-        hasNextPage: Boolean(optimizedResumesQuery.hasNextPage),
-        isFetchingNextPage: optimizedResumesQuery.isFetchingNextPage,
-        loadMore: () => {
-          if (optimizedResumesQuery.hasNextPage && !optimizedResumesQuery.isFetchingNextPage) {
-            void optimizedResumesQuery.fetchNextPage();
-          }
-        },
-      },
-      built: {
-        hasNextPage: Boolean(builtResumesQuery.hasNextPage),
-        isFetchingNextPage: builtResumesQuery.isFetchingNextPage,
-        loadMore: () => {
-          if (builtResumesQuery.hasNextPage && !builtResumesQuery.isFetchingNextPage) {
-            void builtResumesQuery.fetchNextPage();
-          }
-        },
-      },
-      coverLetters: {
-        hasNextPage: Boolean(coverLettersQuery.hasNextPage),
-        isFetchingNextPage: coverLettersQuery.isFetchingNextPage,
-        loadMore: () => {
-          if (coverLettersQuery.hasNextPage && !coverLettersQuery.isFetchingNextPage) {
-            void coverLettersQuery.fetchNextPage();
-          }
-        },
-      },
+      original: createPaginationState(originalResumesQuery),
+      optimized: createPaginationState(optimizedResumesQuery),
+      built: createPaginationState(builtResumesQuery),
+      coverLetters: createPaginationState(coverLettersQuery),
     }),
     [builtResumesQuery, coverLettersQuery, optimizedResumesQuery, originalResumesQuery],
   );
-
-  const deleteResume = () => {
-    if (!resumeToDelete) {
-      return;
-    }
-
-    deleteResumeMutation.mutate(resumeToDelete.id, {
-      onSuccess: () => setResumeToDelete(null),
-    });
-  };
-
-  const deleteCoverLetter = () => {
-    if (!coverLetterToDelete) {
-      return;
-    }
-
-    deleteCoverLetterMutation.mutate(coverLetterToDelete.id, {
-      onSuccess: () => setCoverLetterToDelete(null),
-    });
-  };
-
-  const openResumePreview = (resume: Resume) => {
-    setPreviewTarget({ type: "resume", resume });
-  };
-
-  const openCoverLetterPreview = (coverLetter: CoverLetter) => {
-    setPreviewTarget({ type: "coverLetter", coverLetter });
-  };
-
-  const closePreview = () => {
-    setPreviewTarget(null);
-  };
-
-  const activeTabQueryMap = {
-    original: originalResumesQuery,
-    optimized: optimizedResumesQuery,
-    built: builtResumesQuery,
-    coverLetters: coverLettersQuery,
-  };
 
   return {
     activeTab,
@@ -203,21 +106,89 @@ export function useDocumentsManager() {
     tabs,
     documentsByTab,
     paginationByTab,
-    isLoading: activeTabQueryMap[activeTab].isPending,
-    resumeToDelete,
-    setResumeToDelete,
-    deleteResume,
-    coverLetterToDelete,
-    setCoverLetterToDelete,
-    deleteCoverLetter,
-    previewTarget,
-    openResumePreview,
-    openCoverLetterPreview,
-    closePreview,
+    isLoading: shouldShowDocumentsPageSkeleton([
+      originalResumesQuery,
+      optimizedResumesQuery,
+      builtResumesQuery,
+      coverLettersQuery,
+    ]),
+    ...deletionState,
+    ...previewState,
   };
 }
 
-function useResumeDocumentsInfiniteQuery(documentKind: ResumeDocumentKind, searchQuery: string, enabled: boolean) {
+function buildDocumentsByTab(
+  originalResumesQuery: { data?: { pages: Array<{ content: Resume[] }> } },
+  optimizedResumesQuery: { data?: { pages: Array<{ content: Resume[] }> } },
+  builtResumesQuery: { data?: { pages: Array<{ content: Resume[] }> } },
+  coverLettersQuery: { data?: { pages: Array<{ content: CoverLetter[] }> } },
+): DocumentsTabData {
+  return {
+    original: getPageContent(originalResumesQuery),
+    optimized: getPageContent(optimizedResumesQuery),
+    built: getPageContent(builtResumesQuery),
+    coverLetters: getPageContent(coverLettersQuery),
+  };
+}
+
+function buildTabCounts(
+  originalResumesQuery: { data?: { pages: Array<{ totalElements: number }> } },
+  optimizedResumesQuery: { data?: { pages: Array<{ totalElements: number }> } },
+  builtResumesQuery: { data?: { pages: Array<{ totalElements: number }> } },
+  coverLettersQuery: { data?: { pages: Array<{ totalElements: number }> } },
+): Record<DocumentsTabId, number> {
+  return {
+    original: getTotalElements(originalResumesQuery),
+    optimized: getTotalElements(optimizedResumesQuery),
+    built: getTotalElements(builtResumesQuery),
+    coverLetters: getTotalElements(coverLettersQuery),
+  };
+}
+
+function buildOverview(tabCounts: Record<DocumentsTabId, number>): DocumentsOverview {
+  return {
+    originalResumes: tabCounts.original,
+    optimizedResumes: tabCounts.optimized,
+    builtResumes: tabCounts.built,
+    coverLetters: tabCounts.coverLetters,
+    totalDocuments: sumDocumentCounts(tabCounts),
+  };
+}
+
+function buildTabs(tabCounts: Record<DocumentsTabId, number>) {
+  return DOCUMENT_TABS.map((id) => ({
+    id,
+    label: DOCUMENT_TAB_META[id].label,
+    description: DOCUMENT_TAB_META[id].description,
+    count: tabCounts[id],
+  }));
+}
+
+function createPaginationState(query: PaginationQuery): DocumentsTabPaginationState {
+  return {
+    hasNextPage: Boolean(query.hasNextPage),
+    isFetchingNextPage: query.isFetchingNextPage,
+    loadMore: () => {
+      if (query.hasNextPage && !query.isFetchingNextPage) {
+        void query.fetchNextPage();
+      }
+    },
+  };
+}
+
+function getPageContent<T>(query: { data?: { pages: Array<{ content: T[] }> } }) {
+  return query.data?.pages.flatMap((page) => page.content) ?? [];
+}
+
+function getTotalElements(query: { data?: { pages: Array<{ totalElements: number }> } }) {
+  return query.data?.pages[0]?.totalElements ?? 0;
+}
+
+function sumDocumentCounts(tabCounts: Record<DocumentsTabId, number>) {
+  return DOCUMENT_TABS.reduce((total, tab) => total + tabCounts[tab], 0);
+}
+
+function useResumeDocumentsInfiniteQuery(documentKind: ResumeDocumentKind, searchQuery: string) {
   return useInfiniteQuery({
     queryKey: [...RESUME_KEYS.lists(), "documents", documentKind, searchQuery],
     initialPageParam: 0,
@@ -229,11 +200,11 @@ function useResumeDocumentsInfiniteQuery(documentKind: ResumeDocumentKind, searc
         documentKind,
       } satisfies ResumePageParams),
     getNextPageParam,
-    enabled,
+    placeholderData: keepPreviousData,
   });
 }
 
-function useCoverLettersInfiniteQuery(searchQuery: string, enabled: boolean) {
+function useCoverLettersInfiniteQuery(searchQuery: string) {
   return useInfiniteQuery({
     queryKey: [...COVER_LETTER_KEYS.lists(), "documents", searchQuery],
     initialPageParam: 0,
@@ -244,6 +215,6 @@ function useCoverLettersInfiniteQuery(searchQuery: string, enabled: boolean) {
         query: searchQuery || undefined,
       } satisfies CoverLetterPageParams),
     getNextPageParam,
-    enabled,
+    placeholderData: keepPreviousData,
   });
 }

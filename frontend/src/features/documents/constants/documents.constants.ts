@@ -2,6 +2,9 @@ import { FileCheck2, FileStack, FileText, Sparkles } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { DocumentsTabId, ResumeDocumentKind } from "../types/documents.types";
 
+export const DOCUMENT_GRAIN_BACKGROUND =
+  'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")';
+
 export const DOCUMENTS_PAGE_STYLES = {
   container: "min-h-screen pb-20 bg-[#fafafa] dark:bg-zinc-950",
   wrapper: "mx-auto flex max-w-[1700px] flex-col gap-8 px-3 pt-8 sm:gap-10 sm:px-6 sm:pt-10 lg:gap-12 lg:px-8 lg:pt-12",

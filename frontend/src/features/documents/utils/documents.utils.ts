@@ -1,23 +1,7 @@
 import type { CoverLetter } from "@/features/cover-letter/services/cover-letter.service";
 import type { Resume } from "@/features/resume/services/resume.service";
-import type { ResumeDocumentKind } from "../types/documents.types";
+import { getResumeDocumentKind } from "@/features/resume/utils/resume-document-kind";
 import { RESUME_DOCUMENT_SECTIONS } from "../constants/documents.constants";
-
-export function getResumeDocumentKind(resume: Resume): ResumeDocumentKind {
-  if (resume.documentKind) {
-    return resume.documentKind;
-  }
-
-  if (resume.status === "optimized") {
-    return "optimized";
-  }
-
-  if (resume.status === "published" || (resume.status === "draft" && !resume.content && Boolean(resume.fileUrl))) {
-    return "built";
-  }
-
-  return "original";
-}
 
 export function getResumeDocumentLabel(resume: Resume) {
   return RESUME_DOCUMENT_SECTIONS[getResumeDocumentKind(resume)].shortLabel;

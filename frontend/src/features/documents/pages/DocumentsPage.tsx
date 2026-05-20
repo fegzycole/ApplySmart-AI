@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
+import { DestructiveConfirmationDialog } from "@/shared/components";
 import { Tabs, TabsContent } from "@/shared/components/ui/tabs";
-import { DeleteDialog } from "@/features/resume/components/resumes/DeleteDialog";
 import { cn } from "@/shared/lib/utils";
 import { useDocumentsManager } from "../hooks/useDocumentsManager";
 import {
@@ -110,9 +110,19 @@ export function DocumentsPage() {
           </>
         )}
 
-        <DeleteDialog
+        <DestructiveConfirmationDialog
           open={Boolean(resumeToDelete)}
-          resume={resumeToDelete}
+          title="Delete Resume?"
+          confirmLabel="Delete Resume"
+          description={(
+            <>
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-zinc-900 dark:text-white">
+                "{resumeToDelete?.name}"
+              </span>
+              ? This action cannot be undone.
+            </>
+          )}
           onOpenChange={(open) => {
             if (!open) {
               setResumeToDelete(null);

@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { PenSquare, Sparkles, Compass, ShieldAlert } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
+import { DOCUMENT_GRAIN_BACKGROUND } from "../constants/documents.constants";
 
 interface DocumentsEmptyStateProps {
   hasSearchQuery: boolean;
@@ -12,13 +13,10 @@ export function DocumentsEmptyState({
 }: DocumentsEmptyStateProps) {
   return (
     <div className="group relative overflow-hidden rounded-[4rem] p-24 text-center bg-white border border-zinc-100 shadow-2xl shadow-zinc-200/50 dark:bg-zinc-900 dark:border-zinc-800 dark:shadow-none">
-      {/* Premium Artifact Aura */}
       <div className="absolute inset-0 bg-gradient-to-br from-sky-200/20 via-indigo-200/10 to-transparent blur-[120px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-      
-      {/* Frosted Grain Texture */}
       <div 
         className="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-overlay" 
-        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} 
+        style={{ backgroundImage: DOCUMENT_GRAIN_BACKGROUND }}
       />
 
       <div className="relative z-10 flex flex-col items-center">

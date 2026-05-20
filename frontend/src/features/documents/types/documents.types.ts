@@ -1,7 +1,8 @@
 import type { CoverLetter } from "@/features/cover-letter/services/cover-letter.service";
 import type { Resume } from "@/features/resume/services/resume.service";
+import type { ResumeDocumentKind } from "@/shared/types/document.types";
 
-export type ResumeDocumentKind = "original" | "optimized" | "built";
+export type { ResumeDocumentKind };
 export type DocumentsTabId = ResumeDocumentKind | "coverLetters";
 
 export interface DocumentsTabDefinition {
