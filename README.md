@@ -1,568 +1,415 @@
-# Apply Smart AI - Full Stack Application
+# ApplySmart AI
 
-A production-ready, AI-powered career optimization platform built with React + Spring Boot.
+ApplySmart AI is a full-stack career platform for building, optimizing, storing, and managing job-search documents. The application combines a Spring Boot backend, a React/Vite frontend, Anthropic Claude workflows, Cloudinary file storage, PostgreSQL, Redis, and Dockerized deployment support.
 
-## 🚀 Features
+## Current Capabilities
 
-### Core Features
+### Resume Optimization
 
-- **AI-Powered Resume Optimization** - Uses Claude AI to analyze and optimize resumes for ATS systems
-- **AI Cover Letter Generation** - Personalized cover letters tailored to job descriptions
-- **Job Application Tracker** - Kanban-style board to manage your job search
-- **Dashboard Analytics** - Visual insights into your job search progress
-- **Admin Panel** - Complete admin dashboard with user management and analytics
-- **Feature Flags** - Centralized feature toggle system for controlled rollouts
+- Optimize an uploaded PDF, DOCX, or TXT resume against a target job description.
+- Optimize from a saved original resume without re-uploading the file.
+- Analyze resumes with AI and return score, strengths, improvements, keywords, and ATS compatibility.
+- Generate optimized resume PDFs with selectable templates.
+- Optionally generate a matching cover letter during the resume optimization flow.
+- Separate source/original resumes from optimized and built resumes in the UI.
 
-### User Experience
+### Resume Builder
 
-- **Skeleton Loading States** - Professional loading animations across all pages
-- **Responsive Design** - Works seamlessly on desktop, tablet, and mobile
-- **Dark Mode** - Full dark mode support throughout the application
+- Build structured resumes from profile, summary, work experience, education, skills, projects, and certifications.
+- Preview resumes live while editing.
+- Render PDFs without saving, or save built resumes to the document vault.
+- Support multiple resume templates, including modern, classic, creative, and professional layouts.
 
-### Technical Features
+### Documents Vault
 
-- **File Storage** - Cloudinary integration for resume uploads
-- **Email Notifications** - Automated emails for application updates
-- **Secure Authentication** - JWT-based auth with refresh tokens
-- **Redis Caching** - High-performance caching layer
-- **PostgreSQL Database** - Reliable data persistence
-- **Docker Support** - One-command deployment
+- Browse original resumes, optimized resumes, built resumes, and cover letters in dedicated tabs.
+- Search documents across paginated backend results.
+- Preview resume and cover-letter artifacts.
+- Download and delete saved documents.
+- Display accurate document counts across all tabs.
 
-## 📁 Project Structure
+### Cover Letters
 
-```
-apply-smart-ai/
-├── frontend/                     # React + TypeScript + Vite
-│   ├── src/
-│   │   ├── features/            # Feature-based architecture
-│   │   │   ├── admin/           # Admin panel & analytics
-│   │   │   ├── authentication/  # Login, signup, landing
-│   │   │   ├── cover-letter/    # AI cover letter generation
-│   │   │   ├── dashboard/       # User dashboard & charts
-│   │   │   ├── job-tracker/     # Kanban job tracker
-│   │   │   ├── pricing/         # Pricing page
-│   │   │   ├── resume/          # Resume management & AI
-│   │   │   └── settings/        # User settings & profile
-│   │   ├── shared/              # Shared resources
-│   │   │   ├── components/      # Reusable UI components
-│   │   │   │   ├── ui/          # shadcn/ui components
-│   │   │   │   └── skeletons/   # Loading skeletons
-│   │   │   ├── config/          # Feature flags & config
-│   │   │   ├── services/        # API clients
-│   │   │   ├── hooks/           # Custom React hooks
-│   │   │   └── utils/           # Utility functions
-│   │   └── main.tsx
-│   ├── package.json
-│   └── vite.config.ts
-├── backend/                     # Spring Boot 3.2
-│   ├── src/main/java/ai/applysmart/
-│   │   ├── config/              # Application configuration
-│   │   │   ├── FeatureFlags.java
-│   │   │   └── SecurityConfig.java
-│   │   ├── security/            # Security & JWT
-│   │   ├── entity/              # JPA entities
-│   │   ├── repository/          # Data repositories
-│   │   ├── service/             # Business logic
-│   │   │   ├── impl/            # Service implementations
-│   │   │   └── AdminService.java
-│   │   ├── controller/          # REST controllers
-│   │   │   └── AdminController.java
-│   │   ├── dto/                 # Data Transfer Objects
-│   │   │   └── admin/           # Admin DTOs
-│   │   ├── exception/           # Exception handling
-│   │   └── util/                # Utility classes
-│   ├── src/main/resources/
-│   │   ├── application.yml
-│   │   └── db/migration/        # Flyway migrations
-│   └── pom.xml
-├── docker-compose.yml           # Docker services
-└── .env.example                 # Environment variables template
+- Generate tailored cover letters from a job description and optional linked resume.
+- Generate cover letters from an uploaded resume file.
+- Choose tone options and add highlights.
+- Regenerate and update existing cover letters.
+- Store generated cover letters in the document vault.
 
-```
+### Job Search Workflow
 
-## 🛠 Technology Stack
+- Track job applications in a job tracker.
+- View dashboard analytics for application status, document coverage, funnel metrics, and trends.
+- Manage profile, account, and security settings.
+
+### Authentication and Security
+
+- Email/password signup and login.
+- Email verification and password reset by code.
+- JWT access and refresh token flow.
+- OAuth2 login code exchange for external providers.
+- Authenticator-app two-factor setup, enable, disable, and login verification.
+- BCrypt password hashing, Redis-backed token/session infrastructure, rate limiting, and centralized validation.
+
+### Admin and Operations
+
+- Admin APIs and dashboard areas for users and analytics.
+- OpenAPI/Swagger documentation.
+- Actuator health endpoints.
+- Docker Compose infrastructure for PostgreSQL, Redis, and backend runtime.
+- Backend Docker image includes Chromium for browser-accurate PDF rendering with OpenHTMLToPDF fallback.
+
+## Technology Stack
 
 ### Frontend
 
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **State Management**: TanStack Query (React Query)
-- **Routing**: React Router v7
-- **Styling**: Tailwind CSS
-- **UI Components**: shadcn/ui (Radix UI + Tailwind)
-- **Charts**: Recharts
-- **Drag & Drop**: React DnD
-- **HTTP Client**: Axios
-- **Form Handling**: React Hook Form + Zod
+- React 18
+- TypeScript
+- Vite
+- React Router v7 via `react-router`
+- TanStack Query
+- Tailwind CSS 4
+- Radix UI primitives
+- Framer Motion
+- Lucide icons
+- Recharts
+- Vitest
 
 ### Backend
 
-- **Framework**: Spring Boot 3.2
-- **Language**: Java 17
-- **Database**: PostgreSQL 15
-- **Cache**: Redis 7
-- **AI Integration**: Anthropic Claude API
-- **File Storage**: Cloudinary
-- **Email**: Spring Mail (SMTP)
-- **Authentication**: JWT with Redis
-- **API Documentation**: OpenAPI/Swagger
-- **Build Tool**: Maven
+- Java 17
+- Spring Boot 3.2
+- Spring Security
+- Spring Data JPA
+- PostgreSQL 15
+- Redis 7
+- Flyway migrations
+- Anthropic Claude API through WebClient
+- Cloudinary
+- Spring Mail
+- Bucket4j rate limiting
+- Apache Tika, Apache POI, and PDFBox for document parsing
+- Chromium and OpenHTMLToPDF for PDF generation
+- Maven
 
-### DevOps
+## Repository Layout
 
-- **Containerization**: Docker & Docker Compose
-- **Monitoring**: Spring Actuator + Prometheus
-- **Logging**: SLF4J + Logback
-
-## 📋 Prerequisites
-
-- **Java 17 or higher**
-- **Node.js 18 or higher**
-- **Docker & Docker Compose**
-- **Maven 3.8+**
-- **Git**
-
-### Required API Keys
-
-1. **Anthropic Claude API** - Get from [anthropic.com](https://www.anthropic.com)
-2. **Cloudinary Account** - Get from [cloudinary.com](https://cloudinary.com)
-3. **Gmail App Password** - For email notifications (or other SMTP provider)
-
-## 🚀 Quick Start
-
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/your-username/apply-smart-ai.git
-cd apply-smart-ai
+```text
+career-boost-ai/
+|-- backend/
+|   |-- src/main/java/ai/applysmart/
+|   |   |-- config/              # Runtime configuration and properties
+|   |   |-- controller/          # HTTP controllers
+|   |   |-- dto/                 # API request/response DTOs
+|   |   |-- entity/              # JPA entities
+|   |   |-- exception/           # Domain exceptions and global handler
+|   |   |-- repository/          # Spring Data repositories
+|   |   |-- security/            # JWT, OAuth2, access handling, user details
+|   |   |-- service/             # Domain services and focused collaborators
+|   |   |-- util/                # Cross-domain utility code
+|   |   `-- validation/          # Shared validation rules
+|   |-- src/main/resources/
+|   |   |-- db/migration/        # Flyway migrations
+|   |   |-- fonts/               # Resume PDF fonts
+|   |   |-- templates/           # Resume HTML templates
+|   |   `-- application.yml
+|   `-- pom.xml
+|-- frontend/
+|   |-- src/
+|   |   |-- app/                 # Route definitions
+|   |   |-- features/            # Feature modules
+|   |   `-- shared/              # Shared UI, layout, API client, hooks, types
+|   |-- package.json
+|   `-- vite.config.ts
+|-- docker-compose.yml
+|-- docker-compose.infra.yml
+|-- .env.example
+`-- README.md
 ```
 
-### 2. Configure Environment Variables
+For architectural rules and agent guidance, see `docs/ENGINEERING_PATTERNS.md`.
+
+## Prerequisites
+
+- Java 17
+- Node.js 18 or newer
+- npm
+- Docker and Docker Compose
+- Maven 3.8 or newer, or Docker for Maven-based backend verification
+
+External services used by the application:
+
+- Anthropic API key
+- Cloudinary account
+- SMTP account for email
+- PostgreSQL
+- Redis
+- Optional OAuth provider credentials for Google and GitHub
+
+## Environment Setup
+
+Create backend/root environment variables:
 
 ```bash
 cp .env.example .env
-# Edit .env with your actual API keys and configuration
 ```
 
-### 3. Start with Docker Compose (Recommended)
+Create frontend environment variables:
 
 ```bash
-# Start PostgreSQL and Redis
-docker-compose up -d postgres redis
+cp frontend/.env.example frontend/.env.local
+```
 
-# Wait for services to be healthy (about 10 seconds)
-docker-compose ps
+Key frontend variables:
 
-# Build and start backend
+```env
+VITE_API_BASE_URL=http://localhost:8080/api/v1
+VITE_API_TIMEOUT=30000
+```
+
+Key backend/root variables include:
+
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`
+- `REDIS_HOST`, `REDIS_PORT`, `REDIS_PASSWORD`
+- `JWT_SECRET`, `JWT_EXPIRATION`
+- `ANTHROPIC_API_KEY`
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`
+- `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`
+- OAuth provider credentials when OAuth login is enabled
+
+## Local Development
+
+Start PostgreSQL and Redis:
+
+```bash
+docker compose up -d postgres redis
+```
+
+Run the backend:
+
+```bash
 cd backend
-mvn clean install
 mvn spring-boot:run
+```
 
-# In a new terminal, start frontend
+Run the frontend in another terminal:
+
+```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-### 4. Access the Application
+Default local URLs:
 
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8080
-- **API Documentation**: http://localhost:8080/swagger-ui.html
-- **Health Check**: http://localhost:8080/actuator/health
+- Frontend: `http://localhost:5173`
+- Backend API: `http://localhost:8080/api/v1`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+- Health: `http://localhost:8080/actuator/health`
 
-## 🔧 Development Setup
+## Docker
 
-### Backend Setup
-
-```bash
-cd backend
-
-# Install dependencies and build
-mvn clean install
-
-# Run tests
-mvn test
-
-# Run application in dev mode
-mvn spring-boot:run -Dspring-boot.run.profiles=dev
-
-# Package for production
-mvn clean package -DskipTests
-```
-
-### Frontend Setup
+Run the backend with PostgreSQL and Redis:
 
 ```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Run tests
-npm run test
-
-# Type check
-npm run type-check
+docker compose up -d --build
 ```
 
-## 📚 API Documentation
-
-Complete API documentation is available in [API_DOCUMENTATION.md](./API_DOCUMENTATION.md).
-
-Quick links:
-
-- Authentication: `/api/v1/auth/*`
-- Resumes: `/api/v1/resumes/*`
-- Cover Letters: `/api/v1/cover-letters/*`
-- Jobs: `/api/v1/jobs/*`
-- Dashboard: `/api/v1/dashboard/*`
-- Settings: `/api/v1/settings/*`
-- Admin: `/api/v1/admin/*` (Admin role required)
-
-### Example API Calls
-
-#### Register a new user
+Run only VPS-style infrastructure:
 
 ```bash
-curl -X POST http://localhost:8080/api/v1/auth/signup \
-  -H "Content-Type: application/json" \
-  -d '{
-    "email": "john.doe@example.com",
-    "password": "SecurePassword123!",
-    "firstName": "John",
-    "lastName": "Doe"
-  }'
-```
-
-#### Analyze Resume with AI
-
-```bash
-curl -X POST http://localhost:8080/api/v1/resumes/1/analyze \
-  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "jobDescription": "We are seeking a Senior Java Developer..."
-  }'
-```
-
-#### Get Admin Analytics (Admin only)
-
-```bash
-curl -X GET http://localhost:8080/api/v1/admin/analytics \
-  -H "Authorization: Bearer YOUR_ADMIN_JWT_TOKEN"
-```
-
-## 🗄 Database Schema
-
-### Core Tables
-
-- **users** - User accounts and authentication
-- **resumes** - Resume documents and metadata
-- **cover_letters** - Generated cover letters
-- **jobs** - Job application tracking
-- **subscriptions** - User subscription plans
-- **sessions** - Active user sessions
-- **ai_usage_logs** - AI API usage tracking
-
-### Relationships
-
-- User → Resumes (One-to-Many)
-- User → CoverLetters (One-to-Many)
-- User → Jobs (One-to-Many)
-- User → Subscription (One-to-One)
-
-## 🔐 Security
-
-- **Password Hashing**: BCrypt with cost factor 12
-- **JWT Tokens**: 24-hour access tokens, 30-day refresh tokens
-- **Session Management**: Redis-based session tracking
-- **CORS**: Configurable allowed origins
-- **Rate Limiting**: Per-user and per-endpoint limits
-- **Input Validation**: Bean Validation + custom validators
-- **SQL Injection Protection**: JPA parameterized queries
-- **XSS Protection**: Content Security Policy headers
-- **HTTPS Only**: Forced SSL in production
-
-## 📊 Performance Optimizations
-
-### Caching Strategy
-
-- **User data**: 5-minute TTL
-- **Resume list**: 2-minute TTL
-- **Dashboard data**: 5-minute TTL
-- **Job list**: 1-minute TTL
-
-### Database
-
-- Proper indexing on frequently queried fields
-- Connection pooling (HikariCP)
-- Query optimization with projections
-- Lazy loading for large content fields
-
-### Async Processing
-
-- Email sending (Spring @Async)
-- File uploads to Cloudinary
-- Analytics tracking
-
-## 📈 Monitoring & Observability
-
-### Health Checks
-
-```bash
-# Application health
-curl http://localhost:8080/actuator/health
-
-# Detailed health with components
-curl http://localhost:8080/actuator/health/details
-```
-
-### Metrics
-
-```bash
-# Prometheus metrics
-curl http://localhost:8080/actuator/prometheus
-
-# Application metrics
-curl http://localhost:8080/actuator/metrics
-```
-
-### Logs
-
-```bash
-# View backend logs
-tail -f backend/logs/apply-smart.log
-
-# View Docker logs
-docker-compose logs -f backend
-```
-
-## 🚢 Deployment
-
-This application uses GitHub Actions for automated deployment:
-- **Backend**: Deployed to VPS server
-- **Frontend**: Deployed to Vercel
-
-### Quick Start
-
-See the complete deployment guide: [DEPLOYMENT.md](./DEPLOYMENT.md)
-
-### Architecture
-
-```
-┌─────────────────┐         ┌──────────────────┐
-│                 │         │                  │
-│   Vercel        │────────▶│   VPS Server     │
-│   (Frontend)    │   API   │   (Backend)      │
-│                 │         │                  │
-└─────────────────┘         │  ┌────────────┐  │
-                            │  │ PostgreSQL │  │
-                            │  └────────────┘  │
-                            │  ┌────────────┐  │
-                            │  │   Redis    │  │
-                            │  └────────────┘  │
-                            └──────────────────┘
-```
-
-### Deployment Workflows
-
-**Backend** (`.github/workflows/deploy-backend.yml`):
-- Triggers on push to `main` (backend changes)
-- Builds JAR with Maven
-- Deploys to VPS via SSH
-- Runs health checks
-- Auto-rollback on failure
-
-**Frontend** (`.github/workflows/deploy-frontend.yml`):
-- Triggers on push to `main` (frontend changes)
-- Builds with Vite
-- Deploys to Vercel
-- Provides preview URLs
-
-### Required Secrets
-
-Configure in GitHub Settings → Secrets and variables → Actions:
-
-**VPS Secrets:**
-- `VPS_HOST`
-- `VPS_USERNAME`
-- `VPS_SSH_PRIVATE_KEY`
-
-**Vercel Secrets:**
-- `VERCEL_TOKEN`
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
-
-**Environment Variables:** See [DEPLOYMENT.md](./DEPLOYMENT.md) for complete list.
-
-### Manual Deployment
-
-**Local Docker (Development)**:
-```bash
-# Start all services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
-```
-
-**VPS Infrastructure Only**:
-```bash
-# On VPS - start PostgreSQL and Redis
 docker compose -f docker-compose.infra.yml up -d
 ```
 
-For complete deployment instructions, see [DEPLOYMENT.md](./DEPLOYMENT.md).
-
-## 🐛 Troubleshooting
-
-### Backend Won't Start
-
-1. Check if PostgreSQL is running:
-
-   ```bash
-   docker-compose ps postgres
-   ```
-
-2. Check database connection:
-
-   ```bash
-   psql -h localhost -U postgres -d applysmart
-   ```
-
-3. View backend logs:
-   ```bash
-   tail -f backend/logs/apply-smart.log
-   ```
-
-### Frontend Build Fails
-
-1. Clear node_modules and reinstall:
-
-   ```bash
-   cd frontend
-   rm -rf node_modules package-lock.json
-   npm install
-   ```
-
-2. Check Node.js version:
-   ```bash
-   node --version  # Should be 18+
-   ```
-
-### Redis Connection Issues
+Build the backend image locally:
 
 ```bash
-# Check Redis is running
-docker-compose ps redis
-
-# Test Redis connection
-redis-cli -h localhost -p 6379 -a redis_password ping
+docker build -t career-boost-ai-backend:verify ./backend
 ```
 
-### AI API Errors
+Verify Chromium is available in the backend image:
 
-1. Verify Anthropic API key is set:
+```bash
+docker run --rm --entrypoint sh career-boost-ai-backend:verify -lc 'command -v chromium'
+```
 
-   ```bash
-   echo $ANTHROPIC_API_KEY
-   ```
+## Verification Commands
 
-2. Check API quota and limits
-3. Review backend logs for detailed error messages
+Frontend:
 
-## 📝 Contributing
+```bash
+cd frontend
+npm run typecheck
+npm test
+npm run build
+```
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Backend:
 
-### Code Style
+```bash
+cd backend
+mvn test
+```
 
-- **Backend**: Follow Google Java Style Guide
-- **Frontend**: ESLint + Prettier configuration
-- **Commits**: Conventional Commits specification
+If local Maven is unavailable:
 
-## 📄 License
+```bash
+docker run --rm -v "$PWD/backend":/app -w /app maven:3.9-eclipse-temurin-17 mvn test -B
+```
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Repository sanity check:
 
-## 🤝 Support
+```bash
+git diff --check
+```
 
-- **Documentation**: [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
-- **Issues**: [GitHub Issues](https://github.com/your-username/apply-smart-ai/issues)
-- **Email**: support@applysmart.ai
+## API Overview
 
-## 🎯 Roadmap
+Base path: `/api/v1`
 
-### Version 1.0 (Current)
+Primary endpoint groups:
 
-- [x] AI-powered resume optimization
-- [x] Cover letter generation
-- [x] Job application tracker
-- [x] User dashboard with analytics
-- [x] Admin panel with user management
-- [x] Feature flags system
-- [x] Skeleton loading states
-- [ ] Subscription & billing system (planned)
+- `POST /auth/signup`
+- `POST /auth/login`
+- `POST /auth/login/2fa/verify`
+- `POST /auth/refresh`
+- `POST /auth/request-password-reset`
+- `POST /auth/reset-password`
+- `POST /auth/verify-email`
+- `POST /auth/oauth2/exchange`
+- `GET /auth/me`
+- `GET /resumes`
+- `POST /resumes/upload`
+- `POST /resumes/{id}/analyze`
+- `POST /resumes/{id}/optimize`
+- `POST /resumes/optimize-upload`
+- `POST /resumes/build/from-data`
+- `POST /resumes/build/pdf`
+- `GET /cover-letters`
+- `POST /cover-letters/generate`
+- `POST /cover-letters/generate-from-file`
+- `POST /cover-letters/{id}/regenerate`
+- `GET /jobs`
+- `GET /dashboard/*`
+- `GET /settings/*`
+- `GET /admin/*`
 
-## 💡 Architecture Highlights
+### Example: Analyze a Resume
 
-### Backend Design Patterns
+`jobDescription` is a query parameter for this endpoint.
 
-- **Layered Architecture**: Controller → Service → Repository
-- **DTO Pattern**: Separate DTOs from entities
-- **Repository Pattern**: Spring Data JPA repositories
-- **Service Layer**: Business logic encapsulation
-- **Exception Handling**: Global exception handler
-- **Dependency Injection**: Constructor-based DI
-- **SOLID Principles**: Throughout the codebase
+```bash
+curl -X POST "http://localhost:8080/api/v1/resumes/1/analyze?jobDescription=Senior%20Java%20Developer" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
 
-### Frontend Architecture
+### Example: Optimize an Existing Resume
 
-- **Feature-Based**: Organized by domain features
-- **Custom Hooks**: Reusable React hooks
-- **React Query**: Server state management
-- **Component Composition**: Atomic design principles
-- **Type Safety**: Full TypeScript coverage
+```bash
+curl -X POST http://localhost:8080/api/v1/resumes/1/optimize \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jobDescription": "We need a backend engineer with Java, Spring Boot, PostgreSQL, and AWS experience.",
+    "template": "MODERN",
+    "coverLetter": {
+      "enabled": true,
+      "tone": "professional",
+      "highlights": "Backend systems, API design, data modeling"
+    }
+  }'
+```
 
-## 🔥 Key Differentiators for Recruiters
+### Example: Build a Resume PDF From Structured Data
 
-1. **Production-Ready**: Complete authentication, authorization, and security
-2. **AI Integration**: Real Claude API integration, not mocked
-3. **Admin Panel**: Full-featured admin dashboard with analytics and user management
-4. **Feature Flags**: Centralized feature toggle system across frontend and backend
-5. **Professional UX**: Skeleton loading states and responsive design
-6. **Cloud Services**: Cloudinary for file storage, not local filesystem
-7. **Caching Strategy**: Redis for performance optimization
-8. **Email Notifications**: Real SMTP integration
-9. **Docker Support**: One-command deployment
-10. **Comprehensive Testing**: Unit and integration tests
-11. **API Documentation**: OpenAPI/Swagger with examples
-12. **Error Handling**: Graceful degradation and user-friendly errors
-13. **Performance**: Optimized queries, caching, and async processing
-14. **Security**: JWT, BCrypt, rate limiting, input validation
-15. **Code Quality**: SOLID principles, DRY code, clean architecture
+```bash
+curl -X POST http://localhost:8080/api/v1/resumes/build/pdf \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -H "Content-Type: application/json" \
+  --output resume.pdf \
+  -d '{
+    "name": "Ada Lovelace",
+    "template": "PROFESSIONAL",
+    "resumeData": {
+      "personalInfo": {
+        "name": "Ada Lovelace",
+        "email": "ada@example.com"
+      },
+      "summary": "Backend engineer focused on reliable systems.",
+      "workExperience": [],
+      "education": [],
+      "skills": ["Java", "Spring Boot", "PostgreSQL"]
+    }
+  }'
+```
 
-## 👨‍💻 Author
+## Architecture Notes
 
-Built with ❤️ by Ferguson Iyara
+### Backend
 
----
+- Controllers stay thin and handle HTTP concerns only.
+- Services own business workflows, transactions, lookups, and orchestration.
+- Domain collaborators are colocated under `service/<domain>`.
+- DTO mapping is explicit and colocated with the owning domain.
+- Resume optimization is split across parsing, naming, file creation, template selection, PDF rendering, and workflow orchestration.
+- Template rendering is handled by dedicated section renderers and shared render support.
+- Errors flow through `GlobalExceptionHandler`.
 
-**⭐ If you found this project impressive, please star it on GitHub!**
+### Frontend
+
+- Feature code lives in `frontend/src/features/<feature>`.
+- Shared app layout, primitives, API client, response types, and utilities live in `frontend/src/shared`.
+- Components describe UI; hooks coordinate state and mutations; services call APIs; utilities transform data.
+- Server state is managed through TanStack Query.
+- The Documents Vault uses paginated queries and keeps previous data while searching to avoid UI flicker.
+- Conditional class composition uses the shared `cn(...)` helper.
+
+## Security and Production Readiness
+
+- JWT access/refresh token flow.
+- Redis-backed token/session and rate-limit infrastructure.
+- Two-factor authentication support.
+- OAuth login code exchange without putting tokens in redirect query strings.
+- Bean Validation and custom validation rules.
+- Soft delete for user-owned documents.
+- Centralized exception handling with safe server-error responses.
+- Docker runtime uses a non-root user.
+- Backend image includes Chromium for PDF generation.
+
+## Troubleshooting
+
+Check infrastructure health:
+
+```bash
+docker compose ps
+```
+
+Check backend health:
+
+```bash
+curl http://localhost:8080/actuator/health
+```
+
+Inspect backend logs:
+
+```bash
+docker compose logs -f backend
+```
+
+Verify frontend can reach the API:
+
+```bash
+cat frontend/.env.local
+```
+
+Common issues:
+
+- Missing or weak `JWT_SECRET`
+- PostgreSQL or Redis not running
+- Incorrect `VITE_API_BASE_URL`
+- Missing Anthropic, Cloudinary, or SMTP credentials
+- OAuth redirect URI mismatch between provider settings and `.env`
+
+## Author
+
+Built by Ferguson Iyara.
