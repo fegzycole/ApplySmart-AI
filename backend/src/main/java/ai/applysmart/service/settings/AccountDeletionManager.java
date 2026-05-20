@@ -9,7 +9,7 @@ import ai.applysmart.repository.ResumeRepository;
 import ai.applysmart.repository.SubscriptionRepository;
 import ai.applysmart.repository.UserRepository;
 import ai.applysmart.repository.VerificationCodeRepository;
-import ai.applysmart.service.file.FileStorageService;
+import ai.applysmart.service.file.FileDeletionScheduler;
 import ai.applysmart.service.token.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -31,7 +31,7 @@ public class AccountDeletionManager {
     private final SubscriptionRepository subscriptionRepository;
     private final VerificationCodeRepository verificationCodeRepository;
     private final TokenService tokenService;
-    private final FileStorageService fileStorageService;
+    private final FileDeletionScheduler fileDeletionScheduler;
 
     public void deleteAccount(DeleteAccountRequest request, User user) {
         validateDeleteRequest(request, user);
@@ -46,7 +46,7 @@ public class AccountDeletionManager {
         resumeRepository.deleteAllByUserId(user.getId());
         userRepository.deleteById(user.getId());
 
-        filePublicIds.forEach(fileStorageService::deleteFile);
+        filePublicIds.forEach(fileDeletionScheduler::deleteAfterCommit);
     }
 
     private void validateDeleteRequest(DeleteAccountRequest request, User user) {

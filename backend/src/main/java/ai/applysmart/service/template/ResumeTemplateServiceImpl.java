@@ -26,7 +26,7 @@ public class ResumeTemplateServiceImpl implements ResumeTemplateService {
 
         try {
             String templateHtml = templateLoader.load(template);
-            String renderedHtml = dataBinder.bind(templateHtml, resumeData);
+            String renderedHtml = dataBinder.bind(templateHtml, resumeData, template);
 
             log.debug("Successfully rendered template for: {}",
                     resumeData.getPersonalInfo() != null ? resumeData.getPersonalInfo().getName() : "Unknown");

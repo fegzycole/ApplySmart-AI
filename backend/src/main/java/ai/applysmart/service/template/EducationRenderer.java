@@ -1,90 +1,97 @@
 package ai.applysmart.service.template;
 
 import ai.applysmart.dto.resume.ParsedResumeDto.Education;
+import ai.applysmart.dto.resume.ResumeTemplate;
 import org.springframework.stereotype.Component;
 
 import static ai.applysmart.util.HtmlEscaper.escape;
-import static ai.applysmart.util.HtmlEscaper.orEmpty;
 
 @Component
 public class EducationRenderer implements SectionRenderer<Education> {
 
-    private static final String[] FIELD_FIRST_CREDENTIALS = {
-            "certificate",
-            "diploma",
-            "program",
-            "bootcamp",
-            "nanodegree",
-            "fellowship"
-    };
-
     @Override
     public String render(Education edu) {
+        return render(edu, ResumeTemplate.MODERN);
+    }
+
+    public String render(Education edu, ResumeTemplate template) {
+        return switch (template) {
+            case CLASSIC -> renderClassic(edu);
+            case PROFESSIONAL -> renderProfessional(edu);
+            case MODERN, CREATIVE -> renderSingleColumn(edu);
+        };
+    }
+
+    public String renderList(java.util.List<Education> items, ResumeTemplate template) {
+        if (items == null || items.isEmpty()) {
+            return "";
+        }
+        return items.stream()
+                .map(item -> render(item, template))
+                .reduce("", (a, b) -> a + "\n" + b);
+    }
+
+    private String renderSingleColumn(Education edu) {
         StringBuilder html = new StringBuilder();
         html.append("<div class=\"education-item\">\n");
-        appendHeader(html, edu);
-        appendGpa(html, edu);
+        appendSingleColumnHeader(html, edu);
         html.append("</div>\n");
         return html.toString();
     }
 
-    private void appendHeader(StringBuilder html, Education edu) {
+    private String renderProfessional(Education edu) {
+        StringBuilder html = new StringBuilder();
+        html.append("<div class=\"education-item\">\n");
         html.append("  <div class=\"education-header\">\n");
-        html.append("    <div>\n");
-        html.append("      <h3 class=\"degree\">").append(getEducationCredential(edu)).append("</h3>\n");
-        html.append("      <div class=\"institution\">").append(orEmpty(edu.getInstitution())).append("</div>\n");
+        html.append("    <div class=\"education-primary\">\n");
+        html.append("      <h3 class=\"degree\">").append(ResumeTemplateRenderSupport.getEducationTitle(edu)).append("</h3>\n");
+        if (ResumeTemplateRenderSupport.hasText(edu.getLocation())) {
+            html.append("      <div class=\"location\">").append(escape(edu.getLocation().trim())).append("</div>\n");
+        }
         html.append("    </div>\n");
         html.append("    <div class=\"education-meta\">\n");
-        html.append("      <div class=\"date\">");
-        if (edu.getStartDate() != null && !edu.getStartDate().isEmpty()) {
-            html.append(escape(edu.getStartDate())).append(" - ");
+        html.append("      <div class=\"date\">").append(ResumeTemplateRenderSupport.formatEducationDate(edu)).append("</div>\n");
+        html.append("    </div>\n");
+        html.append("  </div>\n");
+        html.append("</div>\n");
+        return html.toString();
+    }
+
+    private String renderClassic(Education edu) {
+        StringBuilder html = new StringBuilder();
+        html.append("<div class=\"education-item\">\n");
+        html.append("  <div class=\"education-header\">\n");
+        html.append("    <div class=\"education-primary\">\n");
+        html.append("      <div class=\"institution\">")
+                .append(ResumeTemplateRenderSupport.textOrFallback(edu.getInstitution(), "Institution"))
+                .append("</div>\n");
+        html.append("      <div class=\"degree\">").append(ResumeTemplateRenderSupport.getEducationCredential(edu)).append("</div>\n");
+        html.append("    </div>\n");
+        html.append("    <div class=\"education-meta\">\n");
+        html.append("      <div class=\"date\">").append(ResumeTemplateRenderSupport.formatEducationDate(edu)).append("</div>\n");
+        html.append("    </div>\n");
+        html.append("  </div>\n");
+        html.append("</div>\n");
+        return html.toString();
+    }
+
+    private void appendSingleColumnHeader(StringBuilder html, Education edu) {
+        html.append("  <div class=\"education-header\">\n");
+        html.append("    <div class=\"education-primary\">\n");
+        html.append("      <h3 class=\"degree\">").append(ResumeTemplateRenderSupport.getEducationCredential(edu)).append("</h3>\n");
+        html.append("      <div class=\"institution\">")
+                .append(ResumeTemplateRenderSupport.textOrFallback(edu.getInstitution(), "Institution"))
+                .append("</div>\n");
+        html.append("    </div>\n");
+        html.append("    <div class=\"education-meta\">\n");
+        html.append("      <div class=\"date\">").append(ResumeTemplateRenderSupport.formatEducationDate(edu)).append("</div>\n");
+        if (ResumeTemplateRenderSupport.hasText(edu.getLocation())) {
+            html.append("      <div class=\"location\">").append(escape(edu.getLocation().trim())).append("</div>\n");
         }
-        html.append(orEmpty(edu.getGraduationDate())).append("</div>\n");
-        if (edu.getLocation() != null && !edu.getLocation().isEmpty()) {
-            html.append("      <div class=\"location\">").append(escape(edu.getLocation())).append("</div>\n");
+        if (ResumeTemplateRenderSupport.hasText(edu.getGpa())) {
+            html.append("      <div class=\"gpa\">GPA: ").append(escape(edu.getGpa().trim())).append("</div>\n");
         }
         html.append("    </div>\n");
         html.append("  </div>\n");
-    }
-
-    private void appendGpa(StringBuilder html, Education edu) {
-        if (edu.getGpa() != null && !edu.getGpa().isEmpty()) {
-            html.append("  <div class=\"gpa\">GPA: ").append(escape(edu.getGpa())).append("</div>\n");
-        }
-    }
-
-    private String getEducationCredential(Education edu) {
-        String degree = edu.getDegree() != null ? edu.getDegree().trim() : "";
-        String field = edu.getField() != null ? edu.getField().trim() : "";
-
-        if (!degree.isEmpty() && !field.isEmpty()) {
-            if (isFieldFirstCredential(degree)) {
-                return escape(field) + " " + escape(degree);
-            }
-
-            return escape(degree) + " in " + escape(field);
-        }
-
-        if (!degree.isEmpty()) {
-            return escape(degree);
-        }
-
-        if (!field.isEmpty()) {
-            return escape(field);
-        }
-
-        return "";
-    }
-
-    private boolean isFieldFirstCredential(String degree) {
-        String normalizedDegree = degree.toLowerCase();
-
-        for (String credential : FIELD_FIRST_CREDENTIALS) {
-            if (normalizedDegree.contains(credential)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

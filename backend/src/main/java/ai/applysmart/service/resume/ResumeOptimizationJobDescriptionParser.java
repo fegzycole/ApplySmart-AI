@@ -1,74 +1,33 @@
 package ai.applysmart.service.resume;
 
 import ai.applysmart.service.ai.AnthropicClient;
-import ai.applysmart.util.TextUtils;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 @Component
 public class ResumeOptimizationJobDescriptionParser {
 
+    private static final ResumeOptimizationJobDescriptionCandidateExtractor CANDIDATE_EXTRACTOR =
+            new ResumeOptimizationJobDescriptionCandidateExtractor();
+
     private final AnthropicClient anthropicClient;
-    private final ObjectMapper objectMapper;
+    private final ResumeOptimizationJobTargetAiResponseParser aiResponseParser;
 
     public ResumeOptimizationJobDescriptionParser(AnthropicClient anthropicClient, ObjectMapper objectMapper) {
         this.anthropicClient = anthropicClient;
-        this.objectMapper = objectMapper;
+        this.aiResponseParser = new ResumeOptimizationJobTargetAiResponseParser(objectMapper);
     }
 
-    private static final List<Pattern> COMPANY_PATTERNS = List.of(
-            Pattern.compile("(?i)^(?:company|organization|employer)\\s*[:\\-]\\s*(.+)$"),
-            Pattern.compile("(?i)^about\\s+([A-Z][\\p{L}0-9&.,'()\\-/ ]{1,80})$"),
-            Pattern.compile("(?i)^join\\s+([A-Z][\\p{L}0-9&.,'()\\-/ ]{1,80}?)(?:\\s+as\\b|\\s+to\\b|\\s+in\\b|\\s+for\\b|[.!,:-]|$)"),
-            Pattern.compile("(?i)^([A-Z][\\p{L}0-9&.,'()\\-/ ]{1,80}?)\\s+(?:is\\s+hiring|is\\s+looking|seeks|seeking|hiring)\\b"),
-            Pattern.compile("(?i)\\bat\\s+([A-Z][\\p{L}0-9&.,'()\\-/ ]{1,80}?)(?:\\s+as\\b|\\s+for\\b|\\s+to\\b|[.!,:;\\n]|$)")
-    );
-
-    private static final List<Pattern> POSITION_PATTERNS = List.of(
-            Pattern.compile("(?i)^(?:position|role|job title|title)\\s*[:\\-]\\s*(.+)$"),
-            Pattern.compile("(?i)^join\\s+[A-Z][\\p{L}0-9&.,'()\\-/ ]{1,80}?\\s+as\\s+(.+?)(?:\\s+to\\b|\\s+in\\b|\\s+for\\b|[.!,:-]|$)"),
-            Pattern.compile("(?i)^([A-Z][\\p{L}0-9/&,.'()\\- ]{2,80}?)\\s+at\\s+[A-Z][\\p{L}0-9&.,'()\\-/ ]{1,80}(?:[.!,:;\\n]|$)"),
-            Pattern.compile("(?i)(?:looking for|hiring|seeking|seeks)\\s+(?:an?\\s+)?([A-Z][\\p{L}0-9/&,.'()\\- ]{2,80}?)(?:\\s+to\\b|\\s+who\\b|\\s+with\\b|[.!,:;\\n]|$)")
-    );
-
-    private static final List<String> REJECTED_COMPANY_VALUES = List.of(
-            "about us",
-            "about the role",
-            "our team",
-            "the company",
-            "company",
-            "role",
-            "position",
-            "job description",
-            "responsibilities",
-            "requirements"
-    );
-
-    private static final List<String> REJECTED_POSITION_VALUES = List.of(
-            "about us",
-            "about the role",
-            "our team",
-            "the company",
-            "job description",
-            "responsibilities",
-            "requirements",
-            "qualifications"
-    );
-
     public Optional<String> extractCompanyName(String jobDescription) {
-        return extractValue(jobDescription, COMPANY_PATTERNS, REJECTED_COMPANY_VALUES, 80);
+        return CANDIDATE_EXTRACTOR.extractCompanyName(jobDescription);
     }
 
     public Optional<String> extractPositionTitle(String jobDescription) {
-        return extractValue(jobDescription, POSITION_PATTERNS, REJECTED_POSITION_VALUES, 80);
+        return CANDIDATE_EXTRACTOR.extractPositionTitle(jobDescription);
     }
 
     public Optional<ResumeOptimizationJobTarget> extractTarget(String jobDescription) {
@@ -82,77 +41,20 @@ public class ResumeOptimizationJobDescriptionParser {
         return Optional.of(new ResumeOptimizationJobTarget(company.get(), position.get()));
     }
 
-    private Optional<String> extractValue(
-            String jobDescription,
-            List<Pattern> patterns,
-            List<String> rejectedValues,
-            int maxLength
-    ) {
-        String normalizedDescription = TextUtils.trimToNull(jobDescription);
-        if (normalizedDescription == null) {
-            return Optional.empty();
-        }
-
-        String[] lines = normalizedDescription.split("\\R");
-        for (String rawLine : lines) {
-            String line = normalizeLine(rawLine);
-            if (line == null) {
-                continue;
-            }
-
-            for (Pattern pattern : patterns) {
-                Matcher matcher = pattern.matcher(line);
-                if (!matcher.find()) {
-                    continue;
-                }
-
-                String candidate = normalizeCandidate(matcher.group(1), rejectedValues, maxLength);
-                if (candidate != null) {
-                    return Optional.of(candidate);
-                }
-            }
+    public Optional<ResumeOptimizationJobTarget> extractTargetWithAI(String jobDescription) {
+        try {
+            String response = anthropicClient.complete(buildExtractionPrompt(jobDescription));
+            return aiResponseParser.parsePartialTarget(response)
+                    .map(ResumeOptimizationJobTargetAiResponseParser.PartialJobTarget::toJobTarget);
+        } catch (Exception e) {
+            log.warn("AI-based job description parsing failed", e);
         }
 
         return Optional.empty();
     }
 
-    private String normalizeLine(String rawLine) {
-        String trimmed = TextUtils.trimToNull(rawLine);
-        if (trimmed == null) {
-            return null;
-        }
-
-        return trimmed.replaceFirst("^[\\-•*#>\\s]+", "");
-    }
-
-    private String normalizeCandidate(String rawCandidate, List<String> rejectedValues, int maxLength) {
-        String candidate = TextUtils.trimToNull(rawCandidate);
-        if (candidate == null) {
-            return null;
-        }
-
-        String cleaned = candidate
-                .replaceAll("\\s+", " ")
-                .replaceAll("^[\"'\u201c\u201d\u2018\u2019]+|[\"'\u201c\u201d\u2018\u2019]+$", "")
-                .replaceAll("[\\s,.;:!\\-]+$", "")
-                .trim();
-
-        if (cleaned.isBlank() || cleaned.length() > maxLength) {
-            return null;
-        }
-
-        String normalized = cleaned.toLowerCase();
-        for (String rejectedValue : rejectedValues) {
-            if (normalized.equals(rejectedValue)) {
-                return null;
-            }
-        }
-
-        return cleaned;
-    }
-
-    public Optional<ResumeOptimizationJobTarget> extractTargetWithAI(String jobDescription) {
-        String prompt = "Extract the company name and job position/title from the following job description.\n"
+    private String buildExtractionPrompt(String jobDescription) {
+        return "Extract the company name and job position/title from the following job description.\n"
                 + "Return ONLY a JSON object with exactly two fields: \"company\" and \"position\".\n"
                 + "If either cannot be determined, use null for that field.\n"
                 + "Do not include any explanation, markdown, or extra text.\n\n"
@@ -160,22 +62,5 @@ public class ResumeOptimizationJobDescriptionParser {
                 + "{\"company\": \"Acme Corp\", \"position\": \"Senior Software Engineer\"}\n\n"
                 + "Job description:\n"
                 + jobDescription;
-
-        try {
-            String response = anthropicClient.complete(prompt);
-            JsonNode node = objectMapper.readTree(response);
-            String company = node.has("company") && !node.get("company").isNull()
-                    ? node.get("company").asText().trim() : null;
-            String position = node.has("position") && !node.get("position").isNull()
-                    ? node.get("position").asText().trim() : null;
-
-            if (company != null && position != null) {
-                return Optional.of(new ResumeOptimizationJobTarget(company, position));
-            }
-        } catch (Exception e) {
-            log.warn("AI-based job description parsing failed", e);
-        }
-
-        return Optional.empty();
     }
 }

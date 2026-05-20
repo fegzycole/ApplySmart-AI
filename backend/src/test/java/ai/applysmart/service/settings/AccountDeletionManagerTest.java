@@ -9,7 +9,7 @@ import ai.applysmart.repository.ResumeRepository;
 import ai.applysmart.repository.SubscriptionRepository;
 import ai.applysmart.repository.UserRepository;
 import ai.applysmart.repository.VerificationCodeRepository;
-import ai.applysmart.service.file.FileStorageService;
+import ai.applysmart.service.file.FileDeletionScheduler;
 import ai.applysmart.service.token.TokenService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,7 +49,7 @@ class AccountDeletionManagerTest {
     private TokenService tokenService;
 
     @Mock
-    private FileStorageService fileStorageService;
+    private FileDeletionScheduler fileDeletionScheduler;
 
     private AccountDeletionManager accountDeletionManager;
 
@@ -63,7 +63,7 @@ class AccountDeletionManagerTest {
                 subscriptionRepository,
                 verificationCodeRepository,
                 tokenService,
-                fileStorageService
+                fileDeletionScheduler
         );
     }
 
@@ -93,10 +93,10 @@ class AccountDeletionManagerTest {
         verify(jobRepository).deleteAllByUserId(17L);
         verify(resumeRepository).deleteAllByUserId(17L);
         verify(userRepository).deleteById(17L);
-        verify(fileStorageService).deleteFile("profile-public-id");
-        verify(fileStorageService).deleteFile("resume-public-id");
-        verify(fileStorageService).deleteFile("resume-public-id-2");
-        verify(fileStorageService).deleteFile("cover-letter-public-id");
+        verify(fileDeletionScheduler).deleteAfterCommit("profile-public-id");
+        verify(fileDeletionScheduler).deleteAfterCommit("resume-public-id");
+        verify(fileDeletionScheduler).deleteAfterCommit("resume-public-id-2");
+        verify(fileDeletionScheduler).deleteAfterCommit("cover-letter-public-id");
     }
 
     @Test

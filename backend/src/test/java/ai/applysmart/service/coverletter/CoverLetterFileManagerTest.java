@@ -3,6 +3,7 @@ package ai.applysmart.service.coverletter;
 import ai.applysmart.dto.file.FileUploadResult;
 import ai.applysmart.entity.CoverLetter;
 import ai.applysmart.entity.User;
+import ai.applysmart.service.file.FileDeletionScheduler;
 import ai.applysmart.service.file.FileStorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,9 +26,16 @@ class CoverLetterFileManagerTest {
     @Mock
     private FileStorageService fileStorageService;
 
+    @Mock
+    private FileDeletionScheduler fileDeletionScheduler;
+
     @Test
     void syncStoredFileUpdatesCoverLetterAndDeletesPreviousAsset() {
-        CoverLetterFileManager manager = new CoverLetterFileManager(coverLetterPdfRenderer, fileStorageService);
+        CoverLetterFileManager manager = new CoverLetterFileManager(
+                coverLetterPdfRenderer,
+                fileStorageService,
+                fileDeletionScheduler
+        );
         User user = User.builder().firstName("Ada").lastName("Lovelace").build();
         CoverLetter coverLetter = CoverLetter.builder()
                 .company("Acme")
@@ -51,17 +59,22 @@ class CoverLetterFileManagerTest {
 
         assertEquals("https://example.com/cover-letter.pdf", coverLetter.getFileUrl());
         assertEquals("new-public-id", coverLetter.getCloudinaryPublicId());
-        verify(fileStorageService).deleteFile("old-public-id");
+        verify(fileDeletionScheduler).deleteAfterRollback("new-public-id");
+        verify(fileDeletionScheduler).deleteAfterCommit("old-public-id");
     }
 
     @Test
     void deleteStoredFileDelegatesToStorageService() {
-        CoverLetterFileManager manager = new CoverLetterFileManager(coverLetterPdfRenderer, fileStorageService);
+        CoverLetterFileManager manager = new CoverLetterFileManager(
+                coverLetterPdfRenderer,
+                fileStorageService,
+                fileDeletionScheduler
+        );
         CoverLetter coverLetter = CoverLetter.builder().cloudinaryPublicId("cover-public-id").build();
 
         manager.deleteStoredFile(coverLetter);
 
-        verify(fileStorageService).deleteFile("cover-public-id");
+        verify(fileDeletionScheduler).deleteAfterCommit("cover-public-id");
         verify(coverLetterPdfRenderer, never()).renderPdf(org.mockito.Mockito.any(), org.mockito.Mockito.any());
     }
 }

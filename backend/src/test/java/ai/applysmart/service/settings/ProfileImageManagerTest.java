@@ -4,6 +4,7 @@ import ai.applysmart.dto.file.FileUploadResult;
 import ai.applysmart.entity.User;
 import ai.applysmart.exception.BadRequestException;
 import ai.applysmart.repository.UserRepository;
+import ai.applysmart.service.file.FileDeletionScheduler;
 import ai.applysmart.service.file.FileStorageService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,9 @@ class ProfileImageManagerTest {
 
     @Mock
     private FileStorageService fileStorageService;
+
+    @Mock
+    private FileDeletionScheduler fileDeletionScheduler;
 
     @Mock
     private UserRepository userRepository;
@@ -59,7 +63,8 @@ class ProfileImageManagerTest {
 
         assertEquals("https://cdn.example.com/new-avatar.png", updatedUser.getImageUrl());
         assertEquals("new-public-id", updatedUser.getProfileImagePublicId());
-        verify(fileStorageService).deleteFile("old-public-id");
+        verify(fileDeletionScheduler).deleteAfterRollback("new-public-id");
+        verify(fileDeletionScheduler).deleteAfterCommit("old-public-id");
     }
 
     @Test

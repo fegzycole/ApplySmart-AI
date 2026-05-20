@@ -1,4 +1,6 @@
-package ai.applysmart.util;
+package ai.applysmart.validation;
+
+import ai.applysmart.util.TextUtils;
 
 import java.util.List;
 import java.util.regex.Pattern;

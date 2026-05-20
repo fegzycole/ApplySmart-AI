@@ -5,7 +5,6 @@ import ai.applysmart.entity.CoverLetter;
 import ai.applysmart.entity.Job;
 import ai.applysmart.entity.Resume;
 import ai.applysmart.entity.User;
-import ai.applysmart.mapper.DashboardDtoMapper;
 import ai.applysmart.repository.CoverLetterRepository;
 import ai.applysmart.repository.JobRepository;
 import ai.applysmart.repository.ResumeRepository;

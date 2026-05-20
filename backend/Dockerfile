@@ -16,13 +16,14 @@ COPY src ./src
 RUN mvn clean package -DskipTests -B
 
 # Stage 2: Runtime stage
-FROM eclipse-temurin:17-jre
+FROM amazoncorretto:17-alpine
 
 WORKDIR /app
 
-# Install wget for healthcheck and create a non-root user for security
-RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/* \
-    && groupadd -r spring && useradd -r -g spring spring
+# Install Chromium for browser-accurate PDF rendering, wget for healthcheck,
+# and create a non-root user for security.
+RUN apk add --no-cache chromium wget ca-certificates fontconfig ttf-dejavu nss freetype harfbuzz \
+    && addgroup -S spring && adduser -S spring -G spring
 
 # Copy the built JAR from build stage
 COPY --from=build /app/target/*.jar app.jar

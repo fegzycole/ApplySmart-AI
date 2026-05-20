@@ -3,6 +3,7 @@ package ai.applysmart.service.resume;
 import ai.applysmart.dto.file.FileUploadResult;
 import ai.applysmart.entity.Resume;
 import ai.applysmart.entity.User;
+import ai.applysmart.service.file.FileDeletionScheduler;
 import ai.applysmart.service.file.FileParserService;
 import ai.applysmart.service.file.FileStorageService;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,6 +25,9 @@ class ResumeFileFactoryTest {
     @Mock
     private FileStorageService fileStorageService;
 
+    @Mock
+    private FileDeletionScheduler fileDeletionScheduler;
+
     private ResumeFileFactory resumeFileFactory;
 
     @BeforeEach
@@ -30,6 +35,7 @@ class ResumeFileFactoryTest {
         resumeFileFactory = new ResumeFileFactory(
                 fileParserService,
                 fileStorageService,
+                fileDeletionScheduler,
                 new ResumeFileValidator()
         );
     }
@@ -49,6 +55,7 @@ class ResumeFileFactoryTest {
         assertEquals(Resume.Status.PUBLISHED, resume.getStatus());
         assertEquals("https://example.com/built.pdf", resume.getFileUrl());
         assertEquals("built-public-id", resume.getCloudinaryPublicId());
+        verify(fileDeletionScheduler).deleteAfterRollback("built-public-id");
     }
 
     @Test
@@ -71,5 +78,16 @@ class ResumeFileFactoryTest {
         assertEquals("https://example.com/optimized.pdf", resume.getFileUrl());
         assertEquals("optimized-public-id", resume.getCloudinaryPublicId());
         assertEquals(91, resume.getScore());
+    }
+
+    @Test
+    void deleteStoredFileSchedulesDeletionAfterCommit() {
+        Resume resume = Resume.builder()
+                .cloudinaryPublicId("resume-public-id")
+                .build();
+
+        resumeFileFactory.deleteStoredFile(resume);
+
+        verify(fileDeletionScheduler).deleteAfterCommit("resume-public-id");
     }
 }

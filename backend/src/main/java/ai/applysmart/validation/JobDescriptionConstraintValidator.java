@@ -1,6 +1,5 @@
 package ai.applysmart.validation;
 
-import ai.applysmart.util.JobDescriptionValidationRules;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

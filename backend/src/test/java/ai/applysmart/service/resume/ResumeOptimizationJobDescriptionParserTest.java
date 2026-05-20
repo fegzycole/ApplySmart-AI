@@ -6,7 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 
 class ResumeOptimizationJobDescriptionParserTest {
 
@@ -41,6 +43,22 @@ class ResumeOptimizationJobDescriptionParserTest {
     }
 
     @Test
+    void extractPositionTitleReadsJobPostHeadingWithoutCompany() {
+        assertEquals(
+                "Product Designer",
+                parser.extractPositionTitle("""
+                        Product Designer
+
+                        About the role
+                        You will build intuitive financial tools for customers.
+
+                        Responsibilities:
+                        - Partner with product and engineering to ship new workflows.
+                        """).orElseThrow()
+        );
+    }
+
+    @Test
     void extractTargetUsesHiringSentenceWhenPresent() {
         ResumeOptimizationJobTarget target = parser.extractTarget(
                 "Moniepoint is hiring a Senior Product Designer to shape financial tools across Africa."
@@ -57,5 +75,40 @@ class ResumeOptimizationJobDescriptionParserTest {
                 Responsibilities
                 - Build intuitive financial tools.
                 """).isEmpty());
+    }
+
+    @Test
+    void extractCompanyReturnsEmptyForAboutTheRoleSectionHeading() {
+        assertTrue(parser.extractCompanyName("""
+                About the role
+                You will build intuitive financial tools for customers.
+                """).isEmpty());
+    }
+
+    @Test
+    void extractTargetWithAIReturnsPartialTargetWhenOneFieldIsPresent() {
+        AnthropicClient anthropicClient = Mockito.mock(AnthropicClient.class);
+        ResumeOptimizationJobDescriptionParser aiParser =
+                new ResumeOptimizationJobDescriptionParser(anthropicClient, new ObjectMapper());
+
+        when(anthropicClient.complete(Mockito.anyString()))
+                .thenReturn("{\"company\": \"Stripe\", \"position\": null}");
+
+        ResumeOptimizationJobTarget target = aiParser.extractTargetWithAI("Job description").orElseThrow();
+
+        assertEquals("Stripe", target.company());
+        assertNull(target.position());
+    }
+
+    @Test
+    void extractTargetWithAIReturnsEmptyWhenFieldsAreBlank() {
+        AnthropicClient anthropicClient = Mockito.mock(AnthropicClient.class);
+        ResumeOptimizationJobDescriptionParser aiParser =
+                new ResumeOptimizationJobDescriptionParser(anthropicClient, new ObjectMapper());
+
+        when(anthropicClient.complete(Mockito.anyString()))
+                .thenReturn("{\"company\": \"   \", \"position\": \"\"}");
+
+        assertTrue(aiParser.extractTargetWithAI("Job description").isEmpty());
     }
 }

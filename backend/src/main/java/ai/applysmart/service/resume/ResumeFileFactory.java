@@ -3,6 +3,7 @@ package ai.applysmart.service.resume;
 import ai.applysmart.dto.file.FileUploadResult;
 import ai.applysmart.entity.Resume;
 import ai.applysmart.entity.User;
+import ai.applysmart.service.file.FileDeletionScheduler;
 import ai.applysmart.service.file.FileParserService;
 import ai.applysmart.service.file.FileStorageService;
 import ai.applysmart.util.TextUtils;
@@ -18,12 +19,14 @@ public class ResumeFileFactory {
 
     private final FileParserService fileParserService;
     private final FileStorageService fileStorageService;
+    private final FileDeletionScheduler fileDeletionScheduler;
     private final ResumeFileValidator validator;
 
     public Resume createUploadedResume(MultipartFile file, User user) {
         String originalFilename = validator.requireUploadableFile(file);
         String content = fileParserService.extractTextFromFile(file);
         FileUploadResult uploadResult = fileStorageService.uploadFile(file);
+        fileDeletionScheduler.deleteAfterRollback(uploadResult.getPublicId());
 
         return Resume.builder()
                 .user(user)
@@ -40,6 +43,7 @@ public class ResumeFileFactory {
     public Resume createBuiltResume(byte[] pdfBytes, String name, User user) {
         validator.requireBuiltResumePdf(pdfBytes, name);
         FileUploadResult uploadResult = fileStorageService.uploadFileBytes(pdfBytes, name + ".pdf");
+        fileDeletionScheduler.deleteAfterRollback(uploadResult.getPublicId());
         log.info("Uploaded generated PDF to storage: {}", uploadResult.getUrl());
 
         return Resume.builder()
@@ -70,7 +74,7 @@ public class ResumeFileFactory {
 
     public void deleteStoredFile(Resume resume) {
         if (resume.getCloudinaryPublicId() != null) {
-            fileStorageService.deleteFile(resume.getCloudinaryPublicId());
+            fileDeletionScheduler.deleteAfterCommit(resume.getCloudinaryPublicId());
         }
     }
 }

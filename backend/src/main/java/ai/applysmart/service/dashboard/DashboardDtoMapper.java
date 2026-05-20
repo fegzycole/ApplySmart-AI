@@ -1,8 +1,7 @@
-package ai.applysmart.mapper;
+package ai.applysmart.service.dashboard;
 
 import ai.applysmart.dto.dashboard.*;
 import ai.applysmart.entity.Job;
-import ai.applysmart.service.dashboard.DashboardJobMetrics;
 import ai.applysmart.util.DateUtils;
 import org.springframework.stereotype.Component;
 

@@ -16,11 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ResumeOptimizationCoverLetterRequestFactoryTest {
 
+    private final AnthropicClient anthropicClient = Mockito.mock(AnthropicClient.class);
+
     private final ResumeOptimizationCoverLetterRequestFactory factory =
             new ResumeOptimizationCoverLetterRequestFactory(
                     new ResumeOptimizationCoverLetterTargetResolver(
                             new ResumeOptimizationJobDescriptionParser(
-                                    Mockito.mock(AnthropicClient.class),
+                                    anthropicClient,
                                     new ObjectMapper()
                             )
                     )
@@ -63,7 +65,91 @@ class ResumeOptimizationCoverLetterRequestFactoryTest {
     }
 
     @Test
+    void buildUsesFallbackCompanyWhenCompanyCannotBeInferred() {
+        Mockito.when(anthropicClient.complete(Mockito.anyString()))
+                .thenReturn("{\"company\": null, \"position\": \"Product Designer\"}");
+
+        OptimizeCoverLetterRequest coverLetterOptions = new OptimizeCoverLetterRequest();
+        coverLetterOptions.setEnabled(true);
+
+        OptimizeResumeRequest request = new OptimizeResumeRequest();
+        request.setJobDescription("""
+                Position: Product Designer
+                Responsibilities:
+                - Build intuitive financial tools.
+                """);
+        request.setCoverLetter(coverLetterOptions);
+        Resume optimizedResume = new Resume();
+        optimizedResume.setId(9L);
+
+        CoverLetterRequest result = factory.build(request, optimizedResume);
+
+        assertEquals(ResumeOptimizationCoverLetterTargetResolver.DEFAULT_COMPANY_NAME, result.getCompany());
+        assertEquals("Product Designer", result.getPosition());
+    }
+
+    @Test
+    void buildUsesAiPositionAndFallbackCompanyWhenOnlyPositionCanBeInferred() {
+        Mockito.when(anthropicClient.complete(Mockito.anyString()))
+                .thenReturn("{\"company\": null, \"position\": \"Product Designer\"}");
+
+        OptimizeCoverLetterRequest coverLetterOptions = new OptimizeCoverLetterRequest();
+        coverLetterOptions.setEnabled(true);
+
+        OptimizeResumeRequest request = new OptimizeResumeRequest();
+        request.setJobDescription("""
+                About the role
+                You will lead discovery and interface design for customer-facing financial tools.
+                Responsibilities:
+                - Partner with product and engineering to ship new workflows.
+                Requirements:
+                - Strong portfolio and experience with design systems.
+                """);
+        request.setCoverLetter(coverLetterOptions);
+        Resume optimizedResume = new Resume();
+        optimizedResume.setId(9L);
+
+        CoverLetterRequest result = factory.build(request, optimizedResume);
+
+        assertEquals(ResumeOptimizationCoverLetterTargetResolver.DEFAULT_COMPANY_NAME, result.getCompany());
+        assertEquals("Product Designer", result.getPosition());
+    }
+
+    @Test
+    void buildUsesHeadingPositionAndFallbackCompanyWhenCompanyCannotBeInferred() {
+        Mockito.when(anthropicClient.complete(Mockito.anyString()))
+                .thenReturn("{\"company\": null, \"position\": null}");
+
+        OptimizeCoverLetterRequest coverLetterOptions = new OptimizeCoverLetterRequest();
+        coverLetterOptions.setEnabled(true);
+
+        OptimizeResumeRequest request = new OptimizeResumeRequest();
+        request.setJobDescription("""
+                Product Designer
+
+                About the role
+                You will lead discovery and interface design for customer-facing financial tools.
+
+                Responsibilities:
+                - Partner with product and engineering to ship new workflows.
+                Requirements:
+                - Strong portfolio and experience with design systems.
+                """);
+        request.setCoverLetter(coverLetterOptions);
+        Resume optimizedResume = new Resume();
+        optimizedResume.setId(9L);
+
+        CoverLetterRequest result = factory.build(request, optimizedResume);
+
+        assertEquals(ResumeOptimizationCoverLetterTargetResolver.DEFAULT_COMPANY_NAME, result.getCompany());
+        assertEquals("Product Designer", result.getPosition());
+    }
+
+    @Test
     void buildRejectsJobDescriptionWhenPositionCannotBeInferred() {
+        Mockito.when(anthropicClient.complete(Mockito.anyString()))
+                .thenReturn("{\"company\": \"Stripe\", \"position\": null}");
+
         OptimizeCoverLetterRequest coverLetterOptions = new OptimizeCoverLetterRequest();
         coverLetterOptions.setEnabled(true);
 
@@ -83,7 +169,7 @@ class ResumeOptimizationCoverLetterRequestFactoryTest {
         );
 
         assertEquals(
-                "Could not infer the position from the job description. Please use a job description that clearly includes both.",
+                "Could not infer the position from the job description. Please use a job description that clearly includes the role title.",
                 exception.getMessage()
         );
     }

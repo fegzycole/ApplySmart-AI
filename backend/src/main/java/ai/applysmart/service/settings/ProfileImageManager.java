@@ -4,6 +4,7 @@ import ai.applysmart.dto.file.FileUploadResult;
 import ai.applysmart.entity.User;
 import ai.applysmart.exception.BadRequestException;
 import ai.applysmart.repository.UserRepository;
+import ai.applysmart.service.file.FileDeletionScheduler;
 import ai.applysmart.service.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,12 +19,14 @@ public class ProfileImageManager {
     private static final long MAX_PROFILE_IMAGE_SIZE_BYTES = 2 * 1024 * 1024;
 
     private final FileStorageService fileStorageService;
+    private final FileDeletionScheduler fileDeletionScheduler;
     private final UserRepository userRepository;
 
     public User updateProfileImage(MultipartFile file, User user) {
         validateFile(file);
 
         FileUploadResult uploadResult = fileStorageService.uploadFile(file, "applysmart/profile-images");
+        fileDeletionScheduler.deleteAfterRollback(uploadResult.getPublicId());
         String previousPublicId = user.getProfileImagePublicId();
 
         user.setImageUrl(uploadResult.getUrl());
@@ -31,7 +34,7 @@ public class ProfileImageManager {
         User savedUser = userRepository.save(user);
 
         if (previousPublicId != null && !previousPublicId.isBlank()) {
-            fileStorageService.deleteFile(previousPublicId);
+            fileDeletionScheduler.deleteAfterCommit(previousPublicId);
         }
 
         log.info("Updated profile image for user: {}", user.getId());

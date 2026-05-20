@@ -3,6 +3,7 @@ package ai.applysmart.service.coverletter;
 import ai.applysmart.dto.file.FileUploadResult;
 import ai.applysmart.entity.CoverLetter;
 import ai.applysmart.entity.User;
+import ai.applysmart.service.file.FileDeletionScheduler;
 import ai.applysmart.service.file.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ public class CoverLetterFileManager {
 
     private final CoverLetterPdfRenderer coverLetterPdfRenderer;
     private final FileStorageService fileStorageService;
+    private final FileDeletionScheduler fileDeletionScheduler;
 
     public void syncStoredFile(CoverLetter coverLetter, User user) {
         String previousPublicId = coverLetter.getCloudinaryPublicId();
@@ -24,17 +26,18 @@ public class CoverLetterFileManager {
                 buildFilename(coverLetter, user),
                 COVER_LETTER_FOLDER
         );
+        fileDeletionScheduler.deleteAfterRollback(uploadResult.getPublicId());
 
         coverLetter.setFileUrl(uploadResult.getUrl());
         coverLetter.setCloudinaryPublicId(uploadResult.getPublicId());
 
         if (previousPublicId != null && !previousPublicId.isBlank()) {
-            fileStorageService.deleteFile(previousPublicId);
+            fileDeletionScheduler.deleteAfterCommit(previousPublicId);
         }
     }
 
     public void deleteStoredFile(CoverLetter coverLetter) {
-        fileStorageService.deleteFile(coverLetter.getCloudinaryPublicId());
+        fileDeletionScheduler.deleteAfterCommit(coverLetter.getCloudinaryPublicId());
     }
 
     private String buildFilename(CoverLetter coverLetter, User user) {

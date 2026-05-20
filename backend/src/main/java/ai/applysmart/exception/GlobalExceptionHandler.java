@@ -7,14 +7,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -45,6 +50,71 @@ public class GlobalExceptionHandler {
 
         log.warn("Constraint violation: {}", errors);
         return error(HttpStatus.BAD_REQUEST, "Constraint Violation", "Validation failed", errors, request);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(
+            HttpMessageNotReadableException ex,
+            WebRequest request) {
+        log.warn("Malformed request body: {}", ex.getMessage());
+        return error(
+                HttpStatus.BAD_REQUEST,
+                "Malformed JSON",
+                "Request body is malformed or unreadable",
+                request
+        );
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingServletRequestParameter(
+            MissingServletRequestParameterException ex,
+            WebRequest request) {
+        Map<String, String> errors = Map.of(
+                ex.getParameterName(),
+                "Required request parameter is missing"
+        );
+
+        log.warn("Missing request parameter: {}", ex.getParameterName());
+        return error(
+                HttpStatus.BAD_REQUEST,
+                "Missing Request Parameter",
+                "Required request parameter is missing",
+                errors,
+                request
+        );
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(
+            MethodArgumentTypeMismatchException ex,
+            WebRequest request) {
+        String parameterName = ex.getName() != null ? ex.getName() : "parameter";
+        Map<String, String> errors = Map.of(
+                parameterName,
+                "Expected " + resolveRequiredTypeName(ex.getRequiredType())
+        );
+
+        log.warn("Request value type mismatch for parameter '{}': {}", parameterName, ex.getValue());
+        return error(
+                HttpStatus.BAD_REQUEST,
+                "Type Mismatch",
+                "Request value has an invalid type",
+                errors,
+                request
+        );
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceeded(
+            MaxUploadSizeExceededException ex,
+            WebRequest request) {
+        log.warn("Maximum upload size exceeded: {}", ex.getMaxUploadSize());
+        return error(
+                HttpStatus.PAYLOAD_TOO_LARGE,
+                "Payload Too Large",
+                "Uploaded file exceeds the maximum allowed size",
+                request
+        );
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -169,15 +239,19 @@ public class GlobalExceptionHandler {
     }
 
     private Map<String, String> collectValidationErrors(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
+        Map<String, String> errors = new LinkedHashMap<>();
         ex.getBindingResult().getAllErrors().forEach(error -> {
             String key = error instanceof FieldError fieldError
                     ? fieldError.getField()
                     : error.getObjectName();
             String message = error.getDefaultMessage() != null ? error.getDefaultMessage() : "Validation failed";
-            errors.put(key, message);
+            errors.putIfAbsent(key, message);
         });
         return errors;
+    }
+
+    private String resolveRequiredTypeName(Class<?> requiredType) {
+        return requiredType != null ? requiredType.getSimpleName() : "required type";
     }
 
     private String resolveDataIntegrityMessage(DataIntegrityViolationException ex) {
@@ -189,15 +263,15 @@ public class GlobalExceptionHandler {
             return "A conflict occurred with existing data";
         }
 
-        String normalizedMessage = rootCauseMessage.toLowerCase();
+        String normalizedMessage = rootCauseMessage.toLowerCase(Locale.ROOT);
 
-        if (rootCauseMessage.contains("users_email_key")
-                || rootCauseMessage.contains("idx_email")
+        if (normalizedMessage.contains("users_email_key")
+                || normalizedMessage.contains("idx_email")
                 || normalizedMessage.contains("duplicate") && normalizedMessage.contains("email")) {
             return "Email address already in use";
         }
 
-        if (rootCauseMessage.contains("subscriptions_user_id_key")
+        if (normalizedMessage.contains("subscriptions_user_id_key")
                 || normalizedMessage.contains("subscription")) {
             return "User already has an active subscription";
         }

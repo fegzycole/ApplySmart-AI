@@ -1,4 +1,4 @@
-package ai.applysmart.util;
+package ai.applysmart.validation;
 
 import org.junit.jupiter.api.Test;
 
@@ -46,6 +46,26 @@ class JobDescriptionValidationRulesTest {
 
                 Skills:
                 - Strong debugging, testing, and communication skills.
+                """;
+
+        assertNull(JobDescriptionValidationRules.findValidationError(jobDescription));
+    }
+
+    @Test
+    void acceptsLegitimateJobPostsWithoutCompanyName() {
+        String jobDescription = """
+                Product Designer
+
+                About the role
+                You will lead discovery and interface design for customer-facing financial tools.
+
+                Responsibilities:
+                - Partner with product and engineering to ship new workflows.
+                - Translate customer research into polished, accessible product experiences.
+
+                Requirements:
+                - Strong portfolio and experience with design systems.
+                - Experience working across product, engineering, and customer success.
                 """;
 
         assertNull(JobDescriptionValidationRules.findValidationError(jobDescription));

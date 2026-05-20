@@ -2,7 +2,6 @@ package ai.applysmart.service.dashboard;
 
 import ai.applysmart.dto.dashboard.ConversionMetricDto;
 import ai.applysmart.entity.Job;
-import ai.applysmart.mapper.DashboardDtoMapper;
 import ai.applysmart.util.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

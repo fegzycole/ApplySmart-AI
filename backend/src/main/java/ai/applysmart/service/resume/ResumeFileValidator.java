@@ -1,7 +1,7 @@
 package ai.applysmart.service.resume;
 
 import ai.applysmart.exception.BadRequestException;
-import ai.applysmart.util.JobDescriptionValidationRules;
+import ai.applysmart.validation.JobDescriptionValidationRules;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 

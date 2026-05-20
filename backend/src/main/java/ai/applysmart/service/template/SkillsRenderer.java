@@ -1,5 +1,6 @@
 package ai.applysmart.service.template;
 
+import ai.applysmart.dto.resume.ResumeTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,12 +16,16 @@ public class SkillsRenderer implements SectionRenderer<String> {
         return "<span class=\"skill\">" + escape(skill) + "</span>";
     }
 
+    public String renderList(List<String> skills, ResumeTemplate template) {
+        return renderList(skills);
+    }
+
     @Override
     public String renderList(List<String> skills) {
         if (skills == null || skills.isEmpty()) {
             return "";
         }
-        return skills.stream()
+        return ResumeTemplateRenderSupport.filterNonBlank(skills).stream()
                 .map(this::render)
                 .collect(Collectors.joining(""));
     }

@@ -1,13 +1,15 @@
 package ai.applysmart.service.resume;
 
 import ai.applysmart.exception.BadRequestException;
+import ai.applysmart.util.TextUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
 @Component
 public class ResumeOptimizationCoverLetterTargetResolver {
+
+    static final String DEFAULT_COMPANY_NAME = "Hiring Team";
 
     private final ResumeOptimizationJobDescriptionParser jobDescriptionParser;
 
@@ -19,20 +21,24 @@ public class ResumeOptimizationCoverLetterTargetResolver {
         String company = jobDescriptionParser.extractCompanyName(jobDescription).orElse(null);
         String position = jobDescriptionParser.extractPositionTitle(jobDescription).orElse(null);
 
-        if (company != null && position != null) {
-            return new ResumeOptimizationJobTarget(company, position);
+        if (company == null || position == null) {
+            Optional<ResumeOptimizationJobTarget> aiTarget = jobDescriptionParser.extractTargetWithAI(jobDescription);
+            if (aiTarget.isPresent()) {
+                ResumeOptimizationJobTarget target = aiTarget.get();
+                company = company != null ? company : TextUtils.trimToNull(target.company());
+                position = position != null ? position : TextUtils.trimToNull(target.position());
+            }
         }
 
-        // Regex couldn't extract one or both fields — fall back to AI extraction.
-        return jobDescriptionParser.extractTargetWithAI(jobDescription)
-                .orElseThrow(() -> {
-                    List<String> missingFields = new ArrayList<>();
-                    if (company == null) missingFields.add("company");
-                    if (position == null) missingFields.add("position");
-                    return new BadRequestException(
-                            "Could not infer the " + String.join(" and ", missingFields)
-                                    + " from the job description. Please use a job description that clearly includes both."
-                    );
-                });
+        if (position == null) {
+            throw new BadRequestException(
+                    "Could not infer the position from the job description. Please use a job description that clearly includes the role title."
+            );
+        }
+
+        return new ResumeOptimizationJobTarget(
+                company != null ? company : DEFAULT_COMPANY_NAME,
+                position
+        );
     }
 }

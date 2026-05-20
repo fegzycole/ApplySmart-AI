@@ -21,6 +21,18 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CoverLetterContentGeneratorTest {
 
+    private static final String VALID_JOB_DESCRIPTION = """
+            Backend Engineer
+
+            Responsibilities:
+            - Build and maintain resilient APIs that support high-volume product workflows.
+            - Partner with product and infrastructure teams to improve reliability.
+
+            Requirements:
+            - Experience with Java, Spring Boot, PostgreSQL, and distributed systems.
+            - Strong debugging, testing, and communication skills.
+            """;
+
     @Mock
     private ResumeRepository resumeRepository;
 
@@ -46,7 +58,7 @@ class CoverLetterContentGeneratorTest {
         CoverLetterRequest request = new CoverLetterRequest();
         request.setCompany("Stripe");
         request.setPosition("Backend Engineer");
-        request.setJobDescription("Build resilient APIs");
+        request.setJobDescription(VALID_JOB_DESCRIPTION);
         request.setTone("professional");
         request.setHighlights("Improved reliability");
 
@@ -58,7 +70,7 @@ class CoverLetterContentGeneratorTest {
 
         when(claudeService.generateCoverLetter(
                 eq(null),
-                eq("Build resilient APIs"),
+                eq(VALID_JOB_DESCRIPTION),
                 eq("Stripe"),
                 eq("Backend Engineer"),
                 eq("professional"),
@@ -75,7 +87,7 @@ class CoverLetterContentGeneratorTest {
         CoverLetterRequest request = new CoverLetterRequest();
         request.setCompany("  ");
         request.setPosition("Backend Engineer");
-        request.setJobDescription("Build resilient APIs");
+        request.setJobDescription(VALID_JOB_DESCRIPTION);
 
         User user = User.builder()
                 .email("user@example.com")
