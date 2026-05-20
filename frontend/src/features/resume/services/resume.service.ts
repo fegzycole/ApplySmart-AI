@@ -1,5 +1,8 @@
 import { apiClient } from '@/shared/services/api-client';
 import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
+import { AI_REQUEST_TIMEOUT_MS } from '@/shared/constants/timeouts';
+import type { ResumeDocumentKind } from '@/shared/types/document.types';
+import type { ApiSuccessResponse } from '@/shared/types/api-response.types';
 import type { PageResponse } from '@/shared/types/pagination.types';
 import type { CoverLetter } from '@/features/cover-letter/services/cover-letter.service';
 import type { ResumeTemplate } from "../types/resume-builder.types";
@@ -10,9 +13,8 @@ import type {
 } from "../utils/resume-builder-payload";
 
 const ENDPOINTS = API_ENDPOINTS.RESUMES;
-const AI_REQUEST_TIMEOUT_MS = 180000;
 
-export type ResumeDocumentKind = 'original' | 'optimized' | 'built';
+export type { ResumeDocumentKind };
 export type LegacyResumeStatus = 'draft' | 'optimized' | 'published';
 export interface ResumePageParams {
   page: number;
@@ -86,17 +88,17 @@ export const fetchResumeById = async (id: number): Promise<Resume> => {
   return apiClient.get<Resume>(ENDPOINTS.GET(id));
 };
 
-export const deleteResume = async (id: number): Promise<{ success: boolean; deletedId: number }> => {
-  return apiClient.delete(ENDPOINTS.DELETE(id));
+export const deleteResume = async (id: number): Promise<ApiSuccessResponse> => {
+  return apiClient.delete<ApiSuccessResponse>(ENDPOINTS.DELETE(id));
 };
 
 export const analyzeResume = async (
   resumeId: number,
   jobDescription?: string
 ): Promise<ResumeAnalysis> => {
-  return apiClient.post<ResumeAnalysis>(ENDPOINTS.ANALYZE(resumeId), {
-    jobDescription,
-  });
+  const params = jobDescription ? { jobDescription } : undefined;
+
+  return apiClient.post<ResumeAnalysis>(ENDPOINTS.ANALYZE(resumeId), undefined, undefined, params);
 };
 
 export const optimizeResume = async (

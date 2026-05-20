@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { cn } from "@/shared/lib/utils";
 import type { ResumeTemplate } from "../../types/resume-builder.types";
 
 interface TemplateCardProps {
@@ -16,17 +17,31 @@ export function TemplateCard({ id, name, description, color, gradient, isSelecte
     <button
       type="button"
       onClick={() => onSelect(id)}
-      className={`group relative w-full rounded-[1.75rem] border-2 p-3 text-left transition-all sm:rounded-3xl sm:p-4 ${
+      className={cn(
+        "group relative w-full rounded-[1.75rem] border-2 p-3 text-left transition-all sm:rounded-3xl sm:p-4",
         isSelected
           ? "border-primary bg-background shadow-2xl shadow-primary/10"
-          : "border-border bg-background/50 hover:border-primary/30 hover:bg-background dark:bg-card/30 dark:hover:bg-card/50"
-      }`}
+          : "border-border bg-background/50 hover:border-primary/30 hover:bg-background dark:bg-card/30 dark:hover:bg-card/50",
+      )}
       aria-pressed={isSelected}
     >
-      <div className={`pointer-events-none absolute inset-0 rounded-3xl ${gradient} transition-opacity ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-60"}`} />
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-0 rounded-3xl",
+          gradient,
+          "transition-opacity",
+          isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-60",
+        )}
+      />
 
       <div className="relative z-10 flex flex-col gap-2 sm:flex-row sm:items-start sm:gap-4">
-        <div className={`relative aspect-video w-full shrink-0 overflow-hidden rounded-xl bg-gradient-to-br ${color} shadow-lg ring-1 ring-black/5 sm:aspect-[4/5] sm:w-20 sm:rounded-2xl xl:w-24`}>
+        <div
+          className={cn(
+            "relative aspect-video w-full shrink-0 overflow-hidden rounded-xl bg-gradient-to-br",
+            color,
+            "shadow-lg ring-1 ring-black/5 sm:aspect-[4/5] sm:w-20 sm:rounded-2xl xl:w-24",
+          )}
+        >
           <div className="absolute inset-[10%] rounded-lg bg-white/95 shadow-sm">
             <div className="flex h-full">
               <div className="w-[18%] bg-zinc-100" />
@@ -55,19 +70,25 @@ export function TemplateCard({ id, name, description, color, gradient, isSelecte
             </div>
 
             <div
-              className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-all ${
+              className={cn(
+                "mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-all",
                 isSelected
                   ? "border-primary bg-primary text-primary-foreground scale-110 shadow-lg shadow-primary/20"
-                  : "border-muted-foreground/20 bg-background text-transparent"
-              }`}
+                  : "border-muted-foreground/20 bg-background text-transparent",
+              )}
             >
               <Check className="size-3.5" />
             </div>
           </div>
 
           <div className="mt-4 flex items-center justify-between gap-3 sm:mt-5">
-            <div className={`h-2 flex-1 rounded-full bg-gradient-to-r ${color} opacity-90`} />
-            <span className={`text-[10px] font-bold uppercase tracking-[0.2em] ${isSelected ? "text-primary" : "text-muted-foreground/40"}`}>
+            <div className={cn("h-2 flex-1 rounded-full bg-gradient-to-r", color, "opacity-90")} />
+            <span
+              className={cn(
+                "text-[10px] font-bold uppercase tracking-[0.2em]",
+                isSelected ? "text-primary" : "text-muted-foreground/40",
+              )}
+            >
               {isSelected ? "Active" : "Select"}
             </span>
           </div>

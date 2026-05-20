@@ -1,3 +1,5 @@
+import { cn } from "@/shared/lib/utils";
+
 interface PreviewJobProps {
   title: string;
   company: string;
@@ -23,7 +25,7 @@ export function PreviewJob({
         <div className="text-[2.8px]">
           <span className="font-bold">{title}</span>
           <span className="font-normal"> at </span>
-          <span className={`font-semibold ${companyColor}`}>{company}</span>
+          <span className={cn("font-semibold", companyColor)}>{company}</span>
         </div>
         <div className="text-[2.3px] text-slate-600 mt-[0.3px]">
           <span className="font-semibold">{period}</span>
@@ -58,7 +60,7 @@ export function PreviewJob({
       <div className="flex justify-between items-start">
         <div>
           <div className="font-bold text-[2.8px]">{title}</div>
-          <div className={`text-[2.5px] font-semibold ${companyColor}`}>{company}</div>
+          <div className={cn("text-[2.5px] font-semibold", companyColor)}>{company}</div>
         </div>
         <div className="text-[2.3px] text-slate-600 font-semibold">{period}</div>
       </div>

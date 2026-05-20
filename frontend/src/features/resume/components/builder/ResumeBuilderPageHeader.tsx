@@ -18,7 +18,6 @@ export function ResumeBuilderPageHeader() {
       animate={{ opacity: 1, y: 0 }}
       className="relative flex flex-col items-center text-center space-y-6 sm:space-y-10 pb-10 sm:pb-16 border-b border-border/50 mb-10 sm:mb-16"
     >
-      {/* Immersive Background Elements */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-48 sm:h-64 bg-gradient-to-b from-primary/5 to-transparent blur-3xl -z-10" />
 
       <motion.div

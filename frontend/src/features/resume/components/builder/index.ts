@@ -8,6 +8,8 @@ export { SummarySection } from "./SummarySection";
 export { WorkExperienceSection } from "./WorkExperienceSection";
 export { EducationSection } from "./EducationSection";
 export { SkillsSection } from "./SkillsSection";
+export { ProjectsSection } from "./ProjectsSection";
+export { CertificationsSection } from "./CertificationsSection";
 export { LiveResumePreview } from "./LiveResumePreview";
 export { SectionHeader } from "./SectionHeader";
 export { FormField } from "./FormField";

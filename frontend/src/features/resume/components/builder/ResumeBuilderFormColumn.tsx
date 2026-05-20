@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import { BuilderPanel } from "./BuilderPanel";
+import { CertificationsSection } from "./CertificationsSection";
 import { EducationSection } from "./EducationSection";
 import { PersonalInfoSection } from "./PersonalInfoSection";
+import { ProjectsSection } from "./ProjectsSection";
 import { SkillsSection } from "./SkillsSection";
 import { SummarySection } from "./SummarySection";
 import { WorkExperienceSection } from "./WorkExperienceSection";
@@ -42,6 +44,18 @@ export function ResumeBuilderFormColumn() {
       <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
         <BuilderPanel>
           <SkillsSection />
+        </BuilderPanel>
+      </motion.div>
+
+      <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
+        <BuilderPanel>
+          <ProjectsSection />
+        </BuilderPanel>
+      </motion.div>
+
+      <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item}>
+        <BuilderPanel>
+          <CertificationsSection />
         </BuilderPanel>
       </motion.div>
     </motion.div>

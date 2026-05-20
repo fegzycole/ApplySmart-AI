@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
+import { cn } from "@/shared/lib/utils";
 
 interface PreviewSectionProps {
   title: string;
@@ -19,7 +20,7 @@ export function PreviewSection({
 }: PreviewSectionProps) {
   return (
     <div className="space-y-[1px]">
-      <div className={`${titleWeight} ${titleSize} ${titleColor} uppercase tracking-wide border-b ${borderColor} pb-[0.5px]`}>
+      <div className={cn(titleWeight, titleSize, titleColor, "border-b pb-[0.5px] uppercase tracking-wide", borderColor)}>
         {title}
       </div>
       {children}

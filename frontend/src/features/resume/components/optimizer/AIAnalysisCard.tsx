@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { cn } from "@/shared/lib/utils";
 import { Wand2 } from "lucide-react";
 import { AI_ANALYSIS_FEATURES, OPTIMIZER_STYLES } from "../../constants/optimizer.constants";
 
@@ -19,7 +20,7 @@ export function AIAnalysisCard() {
               key={i}
               className="flex items-start gap-3 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-950/50 hover:bg-zinc-100 dark:hover:bg-zinc-900/50 transition-colors duration-200"
             >
-              <div className={`size-8 rounded-lg bg-gradient-to-br ${feature.gradient} flex items-center justify-center flex-shrink-0 shadow-lg`}>
+              <div className={cn("flex size-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br shadow-lg", feature.gradient)}>
                 <Icon className="size-4 text-white" />
               </div>
               <p className="text-sm text-zinc-700 dark:text-zinc-300 pt-1">{feature.text}</p>

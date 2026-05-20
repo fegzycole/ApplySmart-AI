@@ -22,19 +22,16 @@ export function ResumeBuilderWorkspace() {
         </motion.div>
 
         <div className={cn(BUILDER_LAYOUT_STYLES.bentoGrid, "gap-6 sm:gap-8 lg:gap-10")}>
-          {/* Top: Theme Selection - Full Width Bento Item */}
           <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className="col-span-12 min-w-0">
             <BuilderPanel className="bg-primary/5 border-primary/10 p-6 sm:p-8 lg:p-10">
               <ThemeSelector />
             </BuilderPanel>
           </motion.div>
 
-          {/* Main Stage: Form */}
           <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className={cn(BUILDER_LAYOUT_STYLES.mainStage, "col-span-12 min-w-0 space-y-6 sm:space-y-10 xl:col-span-6")}>
             <ResumeBuilderFormColumn />
           </motion.div>
 
-          {/* Side Stage: Preview */}
           <motion.div variants={MISSION_CONTROL_ANIMATIONS.stagger.item} className={cn(BUILDER_LAYOUT_STYLES.sideStage, "col-span-12 min-w-0 space-y-6 sm:space-y-10 xl:col-span-6")}>
             <div className="w-full overflow-hidden xl:sticky xl:top-8">
               <LiveResumePreview />

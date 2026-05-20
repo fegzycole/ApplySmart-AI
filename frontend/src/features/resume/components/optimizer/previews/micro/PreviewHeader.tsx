@@ -1,3 +1,5 @@
+import { cn } from "@/shared/lib/utils";
+
 interface PreviewHeaderProps {
   name: string;
   contact: string[];
@@ -22,15 +24,15 @@ export function PreviewHeader({
   separatorColor,
 }: PreviewHeaderProps) {
   const isCenter = layout === "center";
-  const borderClass = borderColor ? `${borderWidth} ${borderColor}` : "";
+  const borderClass = borderColor ? cn(borderWidth, borderColor) : undefined;
   const contactDisplay = isCenter ? "flex justify-center gap-[2px] flex-wrap" : "space-x-[3px]";
 
   return (
-    <div className={`pb-[2px] ${borderClass} ${isCenter ? "text-center" : ""}`}>
-      <div className={`${nameWeight} ${nameSize} mb-[1px] ${isCenter ? "" : "mb-[1.5px]"}`}>
+    <div className={cn("pb-[2px]", borderClass, isCenter && "text-center")}>
+      <div className={cn(nameWeight, nameSize, "mb-[1px]", !isCenter && "mb-[1.5px]")}>
         {name}
       </div>
-      <div className={`text-[2.3px] text-slate-600 ${contactDisplay}`}>
+      <div className={cn("text-[2.3px] text-slate-600", contactDisplay)}>
         {contact.map((item, idx) => (
           <span key={idx}>
             {item}

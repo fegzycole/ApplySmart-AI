@@ -25,6 +25,13 @@ const CREATIVE_THEME: SingleColumnTheme = {
   institutionClassName: "text-[11.5pt] text-[#64748b] font-bold uppercase tracking-wide",
   skillsClassName: "flex flex-wrap gap-3",
   skillsItemClassName: "inline-block px-5 py-2 bg-gradient-to-br from-[#0ea5e9]/10 to-[#2563eb]/10 text-[#0369a1] text-[10pt] rounded-2xl font-black border-2 border-[#bae6fd] shadow-sm",
+  certificationClassName: "mb-3 last:mb-0 text-[11pt] leading-relaxed text-[#475569] font-medium",
+  certificationNameClassName: "text-[#0f172a] font-extrabold",
+  projectContainerClassName: "mb-5 last:mb-0",
+  projectNameClassName: "text-[13pt] font-extrabold text-[#0f172a]",
+  projectDescriptionClassName: "mt-2 text-[11pt] leading-relaxed text-[#475569] font-medium",
+  projectMetaClassName: "mt-2 text-[10pt] leading-normal text-[#64748b]",
+  projectMetaLabelClassName: "text-[#0ea5e9] font-black",
 };
 
 export function CreativePreview({ data }: CreativePreviewProps) {

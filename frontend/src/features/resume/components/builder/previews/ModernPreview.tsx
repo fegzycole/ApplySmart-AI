@@ -25,6 +25,13 @@ const MODERN_THEME: SingleColumnTheme = {
   institutionClassName: "text-[11pt] text-[#64748b] font-medium",
   skillsClassName: "flex flex-wrap gap-2.5",
   skillsItemClassName: "inline-block px-4 py-1.5 bg-[#f1f5f9] text-[#475569] text-[10pt] rounded-lg font-semibold border border-[#e2e8f0]",
+  certificationClassName: "mb-3 last:mb-0 text-[10.5pt] leading-[1.6] text-[#475569]",
+  certificationNameClassName: "text-[#1e293b] font-bold",
+  projectContainerClassName: "mb-[18px] last:mb-0",
+  projectNameClassName: "text-[12pt] font-bold text-[#1e293b]",
+  projectDescriptionClassName: "mt-1.5 text-[10.5pt] leading-relaxed text-[#475569]",
+  projectMetaClassName: "mt-1.5 text-[10pt] leading-normal text-[#64748b]",
+  projectMetaLabelClassName: "text-[#4f46e5] font-bold",
 };
 
 export function ModernPreview({ data }: ModernPreviewProps) {

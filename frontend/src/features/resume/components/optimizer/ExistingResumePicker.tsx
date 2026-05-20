@@ -2,6 +2,10 @@ import { useMemo, useState } from "react";
 import { Loader2, Search } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import type { Resume } from "../../services/resume.service";
+import {
+  getOriginalResumeOptionCount,
+  getVisibleExistingResumeOptions,
+} from "../../utils/resume-optimizer-options";
 import { ExistingResumeOptionCard } from "./ExistingResumeOptionCard";
 
 const DEFAULT_VISIBLE_RESUMES = 5;
@@ -20,18 +24,12 @@ export function ExistingResumePicker({
   selectedResumeId,
 }: ExistingResumePickerProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const hasSearchQuery = searchQuery.trim().length > 0;
 
   const filteredResumes = useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-
-    if (!normalizedQuery) {
-      return resumes.slice(0, DEFAULT_VISIBLE_RESUMES);
-    }
-
-    return resumes.filter((resume) =>
-      resume.name.trim().toLowerCase().includes(normalizedQuery)
-    );
+    return getVisibleExistingResumeOptions(resumes, searchQuery, DEFAULT_VISIBLE_RESUMES);
   }, [resumes, searchQuery]);
+  const originalResumeCount = useMemo(() => getOriginalResumeOptionCount(resumes), [resumes]);
 
   if (loading) {
     return (
@@ -81,9 +79,9 @@ export function ExistingResumePicker({
         <div className="flex items-start gap-2 px-1">
           <div className="mt-[0.22rem] h-1.5 w-1.5 shrink-0 rounded-full bg-sky-500" />
           <p className="min-w-0 truncate text-[10px] font-black uppercase leading-[1.1] tracking-[0.2em] text-zinc-400">
-            {searchQuery.trim()
+            {hasSearchQuery
               ? `${filteredResumes.length} matching`
-              : `${Math.min(resumes.length, DEFAULT_VISIBLE_RESUMES)} of ${resumes.length} artifacts`}
+              : `${Math.min(originalResumeCount, DEFAULT_VISIBLE_RESUMES)} of ${originalResumeCount} original artifacts`}
           </p>
         </div>
       </div>
@@ -99,7 +97,18 @@ export function ExistingResumePicker({
         ))}
       </div>
 
-      {searchQuery.trim() && filteredResumes.length === 0 ? (
+      {!hasSearchQuery && originalResumeCount === 0 ? (
+        <div className="rounded-[2.5rem] border-2 border-dashed border-zinc-200 bg-zinc-50/30 px-6 py-12 text-center dark:border-zinc-800 dark:bg-zinc-900/40">
+          <div className="text-base font-black tracking-tight text-zinc-900 dark:text-zinc-50 uppercase">
+            No original artifacts found
+          </div>
+          <div className="mt-2 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+            Save or upload a source resume to begin a fresh optimization.
+          </div>
+        </div>
+      ) : null}
+
+      {hasSearchQuery && filteredResumes.length === 0 ? (
         <div className="rounded-[2.5rem] border-2 border-dashed border-zinc-200 bg-zinc-50/30 px-6 py-12 text-center dark:border-zinc-800 dark:bg-zinc-900/40">
           <div className="text-base font-black tracking-tight text-zinc-900 dark:text-zinc-50 uppercase">
             No matching artifacts found

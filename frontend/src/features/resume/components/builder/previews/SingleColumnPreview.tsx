@@ -12,6 +12,9 @@ import {
   formatEducationDate,
   getEducationTitle,
   getResponsibilities,
+  getTechnologies,
+  hasCertificationContent,
+  hasProjectContent,
   hasResumeContent,
 } from "./preview-utils";
 
@@ -35,6 +38,13 @@ export interface SingleColumnTheme {
   institutionClassName: string;
   skillsClassName: string;
   skillsItemClassName: string;
+  certificationClassName: string;
+  certificationNameClassName: string;
+  projectContainerClassName: string;
+  projectNameClassName: string;
+  projectDescriptionClassName: string;
+  projectMetaClassName: string;
+  projectMetaLabelClassName: string;
 }
 
 interface SingleColumnPreviewProps {
@@ -43,7 +53,9 @@ interface SingleColumnPreviewProps {
 }
 
 export function SingleColumnPreview({ data, theme }: SingleColumnPreviewProps) {
-  const { personalInfo, summary, workExperience, education, skills } = data;
+  const { personalInfo, summary, workExperience, education, skills, certifications, projects } = data;
+  const visibleCertifications = certifications.filter(hasCertificationContent);
+  const visibleProjects = projects.filter(hasProjectContent);
 
   return (
     <div
@@ -119,6 +131,44 @@ export function SingleColumnPreview({ data, theme }: SingleColumnPreviewProps) {
             className={theme.skillsClassName}
             itemClassName={theme.skillsItemClassName}
           />
+        </PreviewSection>
+      )}
+
+      {visibleCertifications.length > 0 && (
+        <PreviewSection title="Certifications" className="mb-[18px]" titleClassName={theme.sectionTitleClassName}>
+          {visibleCertifications.map((certification) => (
+            <div key={certification.id} className={theme.certificationClassName}>
+              <strong className={theme.certificationNameClassName}>
+                {certification.name || "Certification"}
+              </strong>
+              {certification.issuer && ` - ${certification.issuer}`}
+              {certification.date && ` (${certification.date})`}
+            </div>
+          ))}
+        </PreviewSection>
+      )}
+
+      {visibleProjects.length > 0 && (
+        <PreviewSection title="Projects" className="mb-[18px]" titleClassName={theme.sectionTitleClassName}>
+          {visibleProjects.map((project) => {
+            const technologies = getTechnologies(project);
+
+            return (
+              <div key={project.id} className={theme.projectContainerClassName}>
+                <h3 className={theme.projectNameClassName}>{project.name || "Project"}</h3>
+                {project.description && (
+                  <p className={theme.projectDescriptionClassName}>{project.description}</p>
+                )}
+                {technologies.length > 0 && (
+                  <div className={theme.projectMetaClassName}>
+                    <strong className={theme.projectMetaLabelClassName}>Technologies:</strong>{" "}
+                    {technologies.join(", ")}
+                  </div>
+                )}
+                {project.link && <div className={theme.projectMetaClassName}>{project.link}</div>}
+              </div>
+            );
+          })}
         </PreviewSection>
       )}
 

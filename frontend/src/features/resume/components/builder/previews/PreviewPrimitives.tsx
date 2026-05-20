@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { cn } from "@/shared/lib/utils";
 import type { PersonalInfo } from "../../../types/resume-builder.types";
 import { getContactEntries } from "./preview-utils";
 
@@ -18,7 +19,7 @@ export function ContactDetails({ personalInfo, className, itemClassName }: Conta
   return (
     <div className={className}>
       {entries.map(({ field, value }) => (
-        <span key={field} className={`${itemClassName ?? ""} whitespace-nowrap`.trim()}>
+        <span key={field} className={cn(itemClassName, "whitespace-nowrap")}>
           {value}
         </span>
       ))}
@@ -53,7 +54,7 @@ interface SummaryTextProps {
 }
 
 export function SummaryText({ summary, className }: SummaryTextProps) {
-  return <p className={`${className} whitespace-pre-wrap break-words`.trim()}>{summary}</p>;
+  return <p className={cn(className, "whitespace-pre-wrap break-words")}>{summary}</p>;
 }
 
 interface ResponsibilitiesListProps {

@@ -1,6 +1,8 @@
 import type {
+  Certification,
   Education,
   PersonalInfo,
+  Project,
   ResumeData,
   WorkExperience,
 } from "../../../types/resume-builder.types";
@@ -36,6 +38,10 @@ export function formatDateRange(startDate: string, endDate: string, fallback = "
 
 export function getResponsibilities(experience: WorkExperience) {
   return experience.responsibilities.filter(Boolean);
+}
+
+export function getTechnologies(project: Project) {
+  return project.technologies.filter(Boolean);
 }
 
 export function formatEducationDate(education: Education) {
@@ -85,6 +91,25 @@ export function hasResumeContent(data: ResumeData) {
       data.summary ||
       data.workExperience.length ||
       data.education.length ||
-      data.skills.length
+      data.skills.length ||
+      data.certifications.some(hasCertificationContent) ||
+      data.projects.some(hasProjectContent)
+  );
+}
+
+export function hasCertificationContent(certification: Certification) {
+  return Boolean(
+    certification.name.trim() ||
+      certification.issuer.trim() ||
+      certification.date.trim()
+  );
+}
+
+export function hasProjectContent(project: Project) {
+  return Boolean(
+    project.name.trim() ||
+      project.description.trim() ||
+      project.link.trim() ||
+      getTechnologies(project).length
   );
 }

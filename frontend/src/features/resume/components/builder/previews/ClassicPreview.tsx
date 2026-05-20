@@ -1,11 +1,20 @@
 import type { ResumeData } from "../../../types/resume-builder.types";
 import { ContactDetails, PreviewSection, ResponsibilitiesList, SummaryText } from "./PreviewPrimitives";
-import { formatDateRange, formatEducationDate, getResponsibilities } from "./preview-utils";
+import {
+  formatDateRange,
+  formatEducationDate,
+  getResponsibilities,
+  getTechnologies,
+  hasCertificationContent,
+  hasProjectContent,
+} from "./preview-utils";
 
 const sectionTitleClassName = "text-[12pt] font-bold uppercase mb-4 border-b-2 border-zinc-800 tracking-[0.15em] pb-1";
 
 export function ClassicPreview({ data }: { data: ResumeData }) {
-  const { personalInfo, summary, workExperience, education, skills } = data;
+  const { personalInfo, summary, workExperience, education, skills, certifications, projects } = data;
+  const visibleCertifications = certifications.filter(hasCertificationContent);
+  const visibleProjects = projects.filter(hasProjectContent);
 
   return (
     <div className="bg-white p-12 md:p-20 min-h-[11in] w-full" style={{ fontFamily: '"EB Garamond", "Times New Roman", serif' }}>
@@ -71,6 +80,43 @@ export function ClassicPreview({ data }: { data: ResumeData }) {
           <p className="text-[11.5pt] leading-relaxed text-zinc-900 font-medium tracking-wide">
             {skills.join(" • ")}
           </p>
+        </PreviewSection>
+      )}
+
+      {visibleCertifications.length > 0 && (
+        <PreviewSection title="Certifications" className="mb-8" titleClassName={sectionTitleClassName}>
+          {visibleCertifications.map((certification) => (
+            <div key={certification.id} className="mb-2.5 text-[11pt] leading-[1.6] text-zinc-900 last:mb-0">
+              <strong className="font-bold text-zinc-900">{certification.name || "Certification"}</strong>
+              {certification.issuer && ` - ${certification.issuer}`}
+              {certification.date && ` (${certification.date})`}
+            </div>
+          ))}
+        </PreviewSection>
+      )}
+
+      {visibleProjects.length > 0 && (
+        <PreviewSection title="Projects" className="mb-8" titleClassName={sectionTitleClassName}>
+          {visibleProjects.map((project) => {
+            const technologies = getTechnologies(project);
+
+            return (
+              <div key={project.id} className="mb-[18px] last:mb-0">
+                <h3 className="text-[11.5pt] font-bold uppercase text-zinc-900">{project.name || "Project"}</h3>
+                {project.description && (
+                  <p className="mt-1.5 text-[11pt] leading-relaxed text-zinc-900">{project.description}</p>
+                )}
+                {technologies.length > 0 && (
+                  <div className="mt-1.5 text-[10.5pt] leading-normal text-zinc-700">
+                    <strong>Technologies:</strong> {technologies.join(", ")}
+                  </div>
+                )}
+                {project.link && (
+                  <div className="mt-1.5 text-[10.5pt] leading-normal text-zinc-700">{project.link}</div>
+                )}
+              </div>
+            );
+          })}
         </PreviewSection>
       )}
     </div>

@@ -1,6 +1,14 @@
 import type { ResumeData } from "../../../types/resume-builder.types";
 import { ContactDetails, PreviewSection, ResponsibilitiesList, SummaryText } from "./PreviewPrimitives";
-import { formatDateRange, formatEducationDate, getEducationTitle, getResponsibilities } from "./preview-utils";
+import {
+  formatDateRange,
+  formatEducationDate,
+  getEducationTitle,
+  getResponsibilities,
+  getTechnologies,
+  hasCertificationContent,
+  hasProjectContent,
+} from "./preview-utils";
 
 interface ProfessionalPreviewProps {
   data: ResumeData;
@@ -9,7 +17,9 @@ interface ProfessionalPreviewProps {
 const sectionTitleClassName = "text-[14pt] font-bold text-[#1e293b] mb-4 uppercase border-b-2 border-[#e2e8f0] pb-2 tracking-[0.1em]";
 
 export function ProfessionalPreview({ data }: ProfessionalPreviewProps) {
-  const { personalInfo, summary, workExperience, education, skills } = data;
+  const { personalInfo, summary, workExperience, education, skills, certifications, projects } = data;
+  const visibleCertifications = certifications.filter(hasCertificationContent);
+  const visibleProjects = projects.filter(hasProjectContent);
 
   return (
     <div className="bg-white p-10 md:p-16 min-h-[11in] w-full" style={{ fontFamily: '"Libre Baskerville", "Georgia", serif' }}>
@@ -82,6 +92,43 @@ export function ProfessionalPreview({ data }: ProfessionalPreviewProps) {
       {skills.length > 0 && (
         <PreviewSection title="Core Competencies" className="mb-8" titleClassName={sectionTitleClassName}>
           <p className="text-[11pt] text-[#334155] leading-relaxed font-medium">{skills.join("  •  ")}</p>
+        </PreviewSection>
+      )}
+
+      {visibleCertifications.length > 0 && (
+        <PreviewSection title="Certifications" className="mb-8" titleClassName={sectionTitleClassName}>
+          {visibleCertifications.map((certification) => (
+            <div key={certification.id} className="mb-3 text-[10.5pt] leading-[1.6] text-[#334155] last:mb-0">
+              <strong className="text-[#0f172a]">{certification.name || "Certification"}</strong>
+              {certification.issuer && ` - ${certification.issuer}`}
+              {certification.date && ` (${certification.date})`}
+            </div>
+          ))}
+        </PreviewSection>
+      )}
+
+      {visibleProjects.length > 0 && (
+        <PreviewSection title="Projects" className="mb-8" titleClassName={sectionTitleClassName}>
+          {visibleProjects.map((project) => {
+            const technologies = getTechnologies(project);
+
+            return (
+              <div key={project.id} className="mb-[18px] last:mb-0">
+                <h3 className="text-[12pt] font-bold text-[#0f172a]">{project.name || "Project"}</h3>
+                {project.description && (
+                  <p className="mt-1.5 text-[10.5pt] leading-[1.6] text-[#334155]">{project.description}</p>
+                )}
+                {technologies.length > 0 && (
+                  <div className="mt-1.5 text-[10pt] leading-normal text-[#475569]">
+                    <strong>Technologies:</strong> {technologies.join(", ")}
+                  </div>
+                )}
+                {project.link && (
+                  <div className="mt-1.5 text-[10pt] leading-normal text-[#475569]">{project.link}</div>
+                )}
+              </div>
+            );
+          })}
         </PreviewSection>
       )}
     </div>
