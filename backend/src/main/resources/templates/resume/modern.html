@@ -81,6 +81,17 @@
             color: #4f46e5;
             text-transform: uppercase;
             letter-spacing: 0.2em;
+            page-break-after: avoid;
+            page-break-inside: avoid;
+        }
+
+        .section-title + .summary,
+        .section-title + .skills-container,
+        .section-title + .experience-item,
+        .section-title + .education-item,
+        .section-title + .certification-item,
+        .section-title + .project-item {
+            page-break-before: avoid;
         }
 
         .summary {

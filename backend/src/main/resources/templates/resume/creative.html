@@ -84,6 +84,8 @@
             color: #0f172a;
             text-transform: uppercase;
             letter-spacing: 0.2em;
+            page-break-after: avoid;
+            page-break-inside: avoid;
         }
 
         .section-title::after {
@@ -94,6 +96,15 @@
             width: 48px;
             height: 6px;
             background: #0ea5e9;
+        }
+
+        .section-title + .summary,
+        .section-title + .skills-container,
+        .section-title + .experience-item,
+        .section-title + .education-item,
+        .section-title + .certification-item,
+        .section-title + .project-item {
+            page-break-before: avoid;
         }
 
         .summary {
