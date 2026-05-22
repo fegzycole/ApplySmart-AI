@@ -8,6 +8,7 @@ import ai.applysmart.dto.resume.ResumeOptimizationDto;
 import ai.applysmart.dto.resume.ResumeTemplate;
 import ai.applysmart.entity.Resume;
 import ai.applysmart.entity.User;
+import ai.applysmart.exception.ApiCommunicationException;
 import ai.applysmart.exception.FileProcessingException;
 import ai.applysmart.service.ai.ClaudeService;
 import ai.applysmart.service.file.FileDeletionScheduler;
@@ -161,6 +162,26 @@ class ResumeOptimizationWorkflowTest {
         );
 
         assertEquals("Failed to optimize uploaded resume", exception.getMessage());
+        verify(validator).requireOptimizationInput(multipartFile, JOB_DESCRIPTION);
+    }
+
+    @Test
+    void optimizeUploadedFilePreservesAiCommunicationFailures() {
+        User user = user();
+        OptimizeResumeRequest request = request(ResumeTemplate.CLASSIC);
+        ApiCommunicationException aiFailure = new ApiCommunicationException(
+                "AI service is temporarily unavailable. Please try again shortly."
+        );
+
+        when(multipartFile.getOriginalFilename()).thenReturn("resume.pdf");
+        when(resumeParserService.parseResume(multipartFile)).thenThrow(aiFailure);
+
+        ApiCommunicationException exception = assertThrows(
+                ApiCommunicationException.class,
+                () -> workflow.optimizeUploadedFile(multipartFile, request, user)
+        );
+
+        assertSame(aiFailure, exception);
         verify(validator).requireOptimizationInput(multipartFile, JOB_DESCRIPTION);
     }
 

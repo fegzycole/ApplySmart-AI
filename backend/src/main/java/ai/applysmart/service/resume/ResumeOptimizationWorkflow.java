@@ -8,6 +8,7 @@ import ai.applysmart.dto.resume.ResumeOptimizationDto;
 import ai.applysmart.dto.resume.ResumeTemplate;
 import ai.applysmart.entity.Resume;
 import ai.applysmart.entity.User;
+import ai.applysmart.exception.ApiCommunicationException;
 import ai.applysmart.exception.FileProcessingException;
 import ai.applysmart.service.ai.ClaudeService;
 import ai.applysmart.service.file.FileDeletionScheduler;
@@ -51,6 +52,8 @@ public class ResumeOptimizationWorkflow {
         try {
             ParsedResumeDto parsedResume = parseResume(file);
             return buildOptimizationArtifacts(parsedResume, request, user);
+        } catch (ApiCommunicationException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Error during optimization process for user {}", user.getId(), e);
             throw new FileProcessingException("Failed to optimize uploaded resume", e);

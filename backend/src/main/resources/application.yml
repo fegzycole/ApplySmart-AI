@@ -170,6 +170,8 @@ anthropic:
   max-tokens: 4096
   temperature: 0.7
   timeout: 180000
+  max-attempts: ${ANTHROPIC_MAX_ATTEMPTS:3}
+  retry-delay-millis: ${ANTHROPIC_RETRY_DELAY_MILLIS:750}
 
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}

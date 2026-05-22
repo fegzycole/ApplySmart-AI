@@ -1,5 +1,6 @@
 package ai.applysmart.service.ai;
 
+import ai.applysmart.dto.resume.ParsedResumeDto;
 import ai.applysmart.exception.ApiCommunicationException;
 import ai.applysmart.service.prompt.PromptBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -90,5 +94,25 @@ class ClaudeServiceImplTest {
                 ApiCommunicationException.class,
                 () -> service.generateCoverLetter(RESUME, JOB_DESCRIPTION, COMPANY, POSITION, TONE, ACHIEVEMENTS)
         );
+    }
+
+    @Test
+    void analyzeStructuredResumePreservesAiCommunicationFailures() {
+        ParsedResumeDto resume = ParsedResumeDto.builder()
+                .personalInfo(ParsedResumeDto.PersonalInfo.builder().name("Ada Lovelace").build())
+                .build();
+        ApiCommunicationException aiFailure = new ApiCommunicationException(
+                "AI service is temporarily unavailable. Please try again shortly."
+        );
+
+        when(promptBuilder.buildAnalysisPrompt(anyString(), eq(JOB_DESCRIPTION))).thenReturn("analysis-prompt");
+        when(anthropicClient.complete("analysis-prompt")).thenThrow(aiFailure);
+
+        ApiCommunicationException exception = assertThrows(
+                ApiCommunicationException.class,
+                () -> service.analyzeStructuredResume(resume, JOB_DESCRIPTION)
+        );
+
+        assertSame(aiFailure, exception);
     }
 }

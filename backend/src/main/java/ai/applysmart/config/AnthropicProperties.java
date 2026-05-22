@@ -33,4 +33,11 @@ public class AnthropicProperties {
 
     @Positive
     private int timeout = 180000;
+
+    @Min(1)
+    @Max(5)
+    private int maxAttempts = 3;
+
+    @Positive
+    private long retryDelayMillis = 750;
 }

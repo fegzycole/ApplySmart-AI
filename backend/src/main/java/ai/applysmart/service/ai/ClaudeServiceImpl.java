@@ -44,6 +44,8 @@ public class ClaudeServiceImpl implements ClaudeService {
         try {
             String resumeJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(resumeData);
             return analyzeResume(resumeJson, jobDescription);
+        } catch (ApiCommunicationException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Failed to serialize resume data for analysis", e);
             throw new ApiCommunicationException("Failed to analyse structured resume", e);

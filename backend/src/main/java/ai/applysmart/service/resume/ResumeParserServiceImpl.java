@@ -124,8 +124,8 @@ public class ResumeParserServiceImpl implements ResumeParserService {
         try {
             return anthropicClient.complete(prompt);
         } catch (ApiCommunicationException e) {
-            log.error("Error calling Claude API for resume parsing", e);
-            throw new FileProcessingException("Failed to parse resume with AI", e);
+            log.warn("AI service unavailable during resume parsing: {}", e.getMessage());
+            throw e;
         }
     }
 }
